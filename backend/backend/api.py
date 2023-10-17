@@ -1,4 +1,8 @@
 from ninja import NinjaAPI, Schema
+from api.models import Store, Aisle, Item, ListItem, ShoppingList
+from typing import List
+from django.shortcuts import get_object_or_404
+from datetime import date
 
 api = NinjaAPI()
 
@@ -11,11 +15,246 @@ class UserSchema(Schema):
     last_name: str = None
 
 
-@api.get("/hello")
-def hello(request):
-    return "Hello world"
+class StoreIn(Schema):
+    name: str
+
+
+class StoreOut(Schema):
+    id: int
+    name: str
+
+
+class AisleIn(Schema):
+    name: str
+    order: int = 1
+    store_id: int
+
+
+class AisleOut(Schema):
+    id: int
+    name: str
+    order: int = 1
+    store_id: int
+
+
+class ItemIn(Schema):
+    name: str
+    matches: str = None
+
+
+class ItemOut(Schema):
+    id: int
+    name: str
+    matches: str = None
+
+
+class ListItemIn(Schema):
+    qty: int = 1
+    purchased: bool = False
+    notes: str = None
+    purch_date: date = None
+    item_id: int
+    aisle_id: int
+    shopping_list_id: int
+
+
+class ListItemOut(Schema):
+    id: int
+    qty: int = 1
+    purchased: bool = False
+    notes: str = None
+    purch_date: date = None
+    item_id: int
+    aisle_id: int
+    shopping_list_id: int
+
+
+class ShoppingListIn(Schema):
+    name: str
+    store_id: int
+
+
+class ShoppingListOut(Schema):
+    id: int
+    name: str
+    store_id: int
 
 
 @api.get("/me", response=UserSchema)
 def me(request):
     return request.user
+
+
+@api.post("/aisles")
+def create_aisle(request, payload: AisleIn):
+    aisle = Aisle.objects.create(**payload.dict())
+    return {"id": aisle.id}
+
+
+@api.post("/items")
+def create_item(request, payload: ItemIn):
+    item = Item.objects.create(**payload.dict())
+    return {"id": item.id}
+
+
+@api.post("/listitems")
+def create_listitem(request, payload: ListItemIn):
+    listitem = ListItem.objects.create(**payload.dict())
+    return {"id": listitem.id}
+
+
+@api.post("/shoppinglists")
+def create_shoppinglist(request, payload: ShoppingListIn):
+    shoppinglist = ShoppingList.objects.create(**payload.dict())
+    return {"id": shoppinglist.id}
+
+
+@api.get("/aisles/{aisle_id}", response=AisleOut)
+def get_aisle(request, aisle_id: int):
+    aisle = get_object_or_404(Aisle, id=aisle_id)
+    return aisle
+
+
+@api.get("/items/{item_id}", response=ItemOut)
+def get_item(request, item_id: int):
+    item = get_object_or_404(Item, id=item_id)
+    return item
+
+
+@api.get("/listitems/{listitem_id}", response=ListItemOut)
+def get_listitem(request, listitem_id: int):
+    listitem = get_object_or_404(ListItem, id=listitem_id)
+    return listitem
+
+
+@api.get("/shoppinglists/{shoppinglist_id}", response=ShoppingListOut)
+def get_shoppinglist(request, shoppinglist_id: int):
+    shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
+    return shoppinglist
+
+
+@api.get("/aisles", response=List[AisleOut])
+def list_aisles(request):
+    qs = Aisle.objects.all()
+    return qs
+
+
+@api.get("/items", response=List[ItemOut])
+def list_items(request):
+    qs = Item.objects.all()
+    return qs
+
+
+@api.get("/listitems", response=List[ListItemOut])
+def list_listitems(request):
+    qs = ListItem.objects.all()
+    return qs
+
+
+@api.get("/shoppinglists", response=List[ShoppingListOut])
+def list_shoppinglists(request):
+    qs = ShoppingList.objects.all()
+    return qs
+
+
+@api.put("/aisles/{aisle_id}")
+def update_aisle(request, aisle_id: int, payload: AisleIn):
+    aisle = get_object_or_404(Aisle, id=aisle_id)
+    aisle.name = payload.name
+    aisle.order = payload.order
+    aisle.store = payload.store_id
+    aisle.save()
+    return {"success": True}
+
+
+@api.put("/items/{item_id}")
+def update_item(request, item_id: int, payload: ItemIn):
+    item = get_object_or_404(Item, id=item_id)
+    item.name = payload.name
+    item.matches = payload.matches
+    item.save()
+    return {"success": True}
+
+
+@api.put("/listitems/{listitem_id}")
+def update_listitem(request, listitem_id: int, payload: ListItemIn):
+    listitem = get_object_or_404(ListItem, id=listitem_id)
+    listitem.qty = payload.qty
+    listitem.purchased = payload.purchased
+    listitem.notes = payload.notes
+    listitem.purch_date = payload.purch_date
+    listitem.item_id = payload.item_id
+    listitem.aisle_id = payload.aisle_id
+    listitem.shopping_list_id = payload.shopping_list_id
+    listitem.save()
+    return {"success": True}
+
+
+@api.put("/shoppinglists/{shoppinglist_id}")
+def update_shoppinglist(request, shoppinglist_id: int, payload: ShoppingListIn):
+    shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
+    shoppinglist.name = payload.name
+    shoppinglist.store_id = payload.store_id
+    shoppinglist.save()
+    return {"success": True}
+
+
+@api.delete("/aisles/{aisle_id}")
+def delete_aisle(request, aisle_id: int):
+    aisle = get_object_or_404(Aisle, id=aisle_id)
+    aisle.delete()
+    return {"success": True}
+
+
+@api.delete("/items/{item_id}")
+def delete_item(request, item_id: int):
+    item = get_object_or_404(Item, id=item_id)
+    item.delete()
+    return {"success": True}
+
+
+@api.delete("/listitems/{listitem_id}")
+def delete_listitem(request, listitem_id: int):
+    listitem = get_object_or_404(ListItem, id=listitem_id)
+    listitem.delete()
+    return {"success": True}
+
+
+@api.delete("/shoppinglists/{shoppinglist_id}")
+def delete_shoppinglist(request, shoppinglist_id: int):
+    shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
+    shoppinglist.delete()
+    return {"success": True}
+    
+
+@api.post("/stores")
+def create_store(request, payload: StoreIn):
+    store = Store.objects.create(**payload.dict())
+    return {"id": store.id}
+
+
+@api.get("/stores/{store_id}", response=StoreOut)
+def get_store(request, store_id: int):
+    store = get_object_or_404(Store, id=store_id)
+    return store
+
+
+@api.get("/stores", response=List[StoreOut])
+def list_stores(request):
+    qs = Store.objects.all()
+    return qs
+
+
+@api.put("/stores/{store_id}")
+def update_store(request, store_id: int, payload: StoreIn):
+    store = get_object_or_404(Store, id=store_id)
+    store.name = payload.name
+    store.save()
+    return {"success": True}
+
+
+@api.delete("/stores/{store_id}")
+def delete_store(request, store_id: int):
+    store = get_object_or_404(Store, id=store_id)
+    store.delete()
+    return {"success": True}
