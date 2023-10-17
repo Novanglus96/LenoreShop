@@ -5,3 +5,5 @@ markdown==3.4.4
 django-filter==23.2
 django-cors-headers==4.2.0
 django-ninja==0.22.2
+channels==4.0.0
+daphne==4.0.0
