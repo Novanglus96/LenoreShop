@@ -50,12 +50,12 @@ services:
       - default
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.template2.rule=Host(`template2.danielleandjohn.love`)"
-      - "traefik.http.routers.template2.entrypoints=websecure"
-      - "traefik.http.services.template2.loadbalancer.server.port=80"
-      - "traefik.http.routers.template2.service=template2"
-      - "traefik.http.routers.template2.tls.certresolver=myresolver"
-      - "traefik.http.routers.template2.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
+      - "traefik.http.routers.shopping.rule=Host(`shopping.danielleandjohn.love`)"
+      - "traefik.http.routers.shopping.entrypoints=websecure"
+      - "traefik.http.services.shopping.loadbalancer.server.port=80"
+      - "traefik.http.routers.shopping.service=shopping"
+      - "traefik.http.routers.shopping.tls.certresolver=myresolver"
+      - "traefik.http.routers.shopping.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
       - "traefik.docker.network=web"
 
 networks:
