@@ -23,6 +23,7 @@ services:
       - db
     networks:
       - default
+      - web
     labels:
       - "traefik.enable=false"
     env_file:
