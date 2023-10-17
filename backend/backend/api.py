@@ -162,7 +162,7 @@ def update_aisle(request, aisle_id: int, payload: AisleIn):
     aisle = get_object_or_404(Aisle, id=aisle_id)
     aisle.name = payload.name
     aisle.order = payload.order
-    aisle.store = payload.store_id
+    aisle.store_id = payload.store_id
     aisle.save()
     return {"success": True}
 
@@ -225,7 +225,7 @@ def delete_shoppinglist(request, shoppinglist_id: int):
     shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
     shoppinglist.delete()
     return {"success": True}
-    
+
 
 @api.post("/stores")
 def create_store(request, payload: StoreIn):
