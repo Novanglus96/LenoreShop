@@ -1,0 +1,36 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.16",
+    "@heroicons/vue": "^2.0.18",
+    "axios": "^1.5.0",
+    "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
+    "roboto-fontface": "^0.10.0",
+    "vue": "^3.2.13",
+    "vue-router": "^4.0.3",
+    "vuetify": "^3.3.16",
+    "vuex": "^4.1.0",
+    "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@mdi/font": "^7.2.96",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "autoprefixer": "^10.4.15",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "postcss": "^8.4.29"
+  }
+}

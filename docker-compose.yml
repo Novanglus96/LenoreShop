@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+    restart: unless-stopped
+    expose:
+      - 80
+  backend:
+    build:
+      context: ./backend
+    command: /home/app/web/start.sh
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    expose:
+      - 8000
+    depends_on:
+      - db
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+    env_file:
+      - ./.env
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - web
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.template2.rule=Host(`template2.danielleandjohn.love`)"
+      - "traefik.http.routers.template2.entrypoints=websecure"
+      - "traefik.http.services.template2.loadbalancer.server.port=80"
+      - "traefik.http.routers.template2.service=template2"
+      - "traefik.http.routers.template2.tls.certresolver=myresolver"
+      - "traefik.http.routers.template2.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
+      - "traefik.docker.network=web"
+
+networks:
+  web:
+    name: web
+    external: true
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
