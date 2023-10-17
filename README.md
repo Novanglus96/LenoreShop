@@ -1,3 +1,3 @@
 # shopping App
 
-A dokckerized template app with Django backend, Django Rest Framework for API, VUE.js for Frontend and Postgres as the database.
+A dokckerized shopping list with Django backend, Django Ninja for API, VUE.js with PrimeVue UI kit for Frontend and Postgres as the database.
