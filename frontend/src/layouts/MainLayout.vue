@@ -12,10 +12,10 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Shopping App
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>Shopping App v1</div>
       </q-toolbar>
     </q-header>
 
@@ -28,13 +28,13 @@
         <q-item-label
           header
         >
-          Essential Links
+          Actions
         </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
-          :key="link.title"
           v-bind="link"
+          :key="link.title"
         />
       </q-list>
     </q-drawer>
@@ -51,46 +51,28 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Stores',
+    caption: 'available stores',
+    icon: 'mdi-store',
+    link: 'stores'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'Aisles',
+    caption: 'aisles defined for stores',
+    icon: 'mdi-bookshelf',
+    link: 'aisles'
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    title: 'Lists',
+    caption: 'shopping lists for stores',
+    icon: 'mdi-format-list-checkbox',
+    link: 'lists'
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    title: 'Items',
+    caption: 'items to be purchased',
+    icon: 'mdi-apple',
+    link: 'items'
   }
 ]
 
