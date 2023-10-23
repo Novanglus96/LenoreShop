@@ -1,9 +1,20 @@
 <template>
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-            quas!
-        </p>
+    <v-app>
+        <v-main>
+            <v-container fluid-class="pa-2">
+                <router-view />
+            </v-container>
+        </v-main>
+    </v-app>
 </template>
 <script setup>
+import { onMounted } from 'vue';
+import { useMainStore } from '@/stores/main';
+
+const mainstore = useMainStore();
+
+onMounted(() => {
+    mainstore.fetchAll();
+})
 
 </script>
