@@ -53,25 +53,25 @@ const linksList = [
   {
     title: 'Stores',
     caption: 'available stores',
-    icon: 'mdi-store',
+    icon: 'storefront',
     link: 'stores'
   },
   {
     title: 'Aisles',
     caption: 'aisles defined for stores',
-    icon: 'mdi-bookshelf',
+    icon: 'view_week',
     link: 'aisles'
   },
   {
     title: 'Lists',
     caption: 'shopping lists for stores',
-    icon: 'mdi-format-list-checkbox',
+    icon: 'shopping_cart',
     link: 'lists'
   },
   {
     title: 'Items',
     caption: 'items to be purchased',
-    icon: 'mdi-apple',
+    icon: 'all_inclusive',
     link: 'items'
   }
 ]
