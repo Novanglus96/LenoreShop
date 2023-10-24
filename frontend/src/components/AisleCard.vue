@@ -12,7 +12,7 @@
                   class="me-1 pb-1"
                 ></v-icon>{{aisle.name}}
                   </v-card-title>
-                  
+                  <v-card-subtitle>{{aisle.store.name}}</v-card-subtitle>
                   <v-card-actions>
                     <v-btn icon="mdi-pencil"/>
                     <v-btn icon="mdi-delete"/>
