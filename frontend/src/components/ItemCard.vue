@@ -1,21 +1,19 @@
 <template>
       <v-container>
         <v-row dense>
-          <v-col cols="12" v-for="store in getStores" :key="store.id">
+          <v-col cols="12" v-for="item in getItems" :key="item.id">
             <v-card
               color="secondary"
             >
                   <v-card-title class="text-h5">
                     <v-icon
-                  icon="mdi-storefront"
+                  icon="mdi-food-apple"
                   size="25"
                   class="me-1 pb-1"
-                ></v-icon>{{store.name}}
+                ></v-icon>{{item.name}}
                   </v-card-title>
                   
                   <v-card-actions>
-                    <v-btn icon="mdi-cart" :to="'/lists/' + store.id" />
-                    <v-btn icon="mdi-land-rows-vertical" :to="'/aisles/' + store.id" />
                     <v-btn icon="mdi-pencil"/>
                     <v-btn icon="mdi-delete"/>
                   </v-card-actions>
@@ -43,7 +41,7 @@
   const snackbarTimeout = ref(1500);
   
   const mainstore = useMainStore();
-  const getStores = computed(() => {
-    return mainstore.getStores;
+  const getItems = computed(() => {
+    return mainstore.getItems;
   })
 </script>

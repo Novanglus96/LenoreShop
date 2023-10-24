@@ -1,5 +1,6 @@
 <template>
   <div class="stores">
+    <v-btn>Add Store</v-btn>
     <StoreCard/>
   </div>
 </template>

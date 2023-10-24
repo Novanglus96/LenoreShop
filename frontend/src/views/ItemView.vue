@@ -1,18 +1,11 @@
 <template>
-  <div class="home">
-    <img alt="Shopping logo" src="/icons/favicon-128x128.png">
-    <HelloWorld />
+  <div class="items">
+    <v-btn>Add Item</v-btn>
+    <ItemCard/>
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+<script setup>
+import ItemCard from '@/components/ItemCard.vue'
 
-export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
-  }
-}
 </script>
