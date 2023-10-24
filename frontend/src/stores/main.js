@@ -51,7 +51,7 @@ export const useMainStore = defineStore('main', {
         async fetchAisles() {
             try {
                 const data = await axios.get('https://shopping.danielleandjohn.love/api/aisles')
-                this.stores = data.data
+                this.aisles = data.data
             }
             catch (error) {
                 console.log(error)
@@ -60,7 +60,7 @@ export const useMainStore = defineStore('main', {
         async fetchItems() {
             try {
                 const data = await axios.get('https://shopping.danielleandjohn.love/api/items')
-                this.stores = data.data
+                this.items = data.data
             }
             catch (error) {
                 console.log(error)
@@ -69,7 +69,7 @@ export const useMainStore = defineStore('main', {
         async fetchListItems() {
             try {
                 const data = await axios.get('https://shopping.danielleandjohn.love/api/listitems')
-                this.stores = data.data
+                this.listitems = data.data
             }
             catch (error) {
                 console.log(error)
@@ -78,11 +78,12 @@ export const useMainStore = defineStore('main', {
         async fetchShoppingLists() {
             try {
                 const data = await axios.get('https://shopping.danielleandjohn.love/api/shoppinglists')
-                this.stores = data.data
+                this.shoppinglists = data.data
             }
             catch (error) {
                 console.log(error)
             }
         },
     },
+    persist: true,
 })

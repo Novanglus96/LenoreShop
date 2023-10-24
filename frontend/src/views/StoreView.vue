@@ -1,18 +1,10 @@
 <template>
-  <div class="home">
-    <img alt="Shopping logo" src="/icons/favicon-128x128.png">
-    <HelloWorld />
+  <div class="stores">
+    <StoreCard/>
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+<script setup>
+import StoreCard from '@/components/StoreCard.vue'
 
-export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
-  }
-}
 </script>
