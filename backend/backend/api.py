@@ -155,7 +155,7 @@ def get_shoppinglist(request, shoppinglist_id: int):
 def get_shoppinglistfull(request, shoppinglist_id: int):
     shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
     store = shoppinglist.store
-    aisles = Aisle.objects.filter(store=store).order_by('order')
+    aisles = Aisle.objects.filter(store=store, listitem__shopping_list=shoppinglist).order_by('order')
     aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
     listitems = ListItem.objects.filter(shopping_list=shoppinglist)
     for listitem in listitems:
