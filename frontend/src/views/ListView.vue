@@ -1,9 +1,10 @@
 <template>
   <div class="lists">
-    This is my list view
+    <ShoppingList />
   </div>
 </template>
 
 <script setup>
+import ShoppingList from '@/components/ShoppingList.vue'
 
 </script>
