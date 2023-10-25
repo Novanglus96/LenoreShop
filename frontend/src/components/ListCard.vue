@@ -15,7 +15,7 @@
                   <v-card-subtitle>{{list.store.name}}</v-card-subtitle>
                   
                   <v-card-actions>
-                    <v-btn icon="mdi-pencil" :to="'/list/' + list.id" />
+                    <v-btn icon="mdi-pencil" @click="fetchShoppingListFull(list.id)" />
                     <v-btn icon="mdi-delete"/>
                   </v-card-actions>
             </v-card>
@@ -35,7 +35,9 @@
 <script setup>
   import { computed, ref } from 'vue';
   import { useMainStore } from '@/stores/main';
+  import { useRouter } from 'vue-router';
 
+  const router = useRouter();
   const snackbar = ref(false);
   const snackbarText = ref('');
   const snackbarColor = ref('');
@@ -45,4 +47,14 @@
   const getShoppingLists = computed(() => {
     return mainstore.getShoppingLists;
   })
+
+  const fetchShoppingListFull = async (list) => {
+    try {
+        const store = useMainStore();
+        await store.fetchShoppingListFull(list);
+        router.push('/list/' + list)
+    } catch (error) {
+        console.log(error)
+    }
+  }
 </script>

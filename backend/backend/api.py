@@ -67,6 +67,7 @@ class ListItemOut(Schema):
     item_id: int
     aisle_id: int
     shopping_list_id: int
+    item: ItemOut
 
 
 class ShoppingListIn(Schema):
@@ -78,6 +79,23 @@ class ShoppingListOut(Schema):
     id: int
     name: str
     store_id: int
+    store: StoreOut
+
+
+class AislesWithItems(Schema):
+    id: int
+    name: str
+    order: int = 1
+    store_id: int
+    listitems: List[ListItemOut]
+
+
+class ShoppingListFull(Schema):
+    id: int
+    name: str
+    store_id: int
+    store: StoreOut
+    aisles: List[AislesWithItems]
 
 
 @api.get("/me", response=UserSchema)
@@ -131,6 +149,37 @@ def get_listitem(request, listitem_id: int):
 def get_shoppinglist(request, shoppinglist_id: int):
     shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
     return shoppinglist
+
+
+@api.get("/shoppinglistfull/{shoppinglist_id}", response=ShoppingListFull)
+def get_shoppinglistfull(request, shoppinglist_id: int):
+    shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
+    store = shoppinglist.store
+    aisles = Aisle.objects.filter(store=store).order_by('order')
+    aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
+    listitems = ListItem.objects.filter(shopping_list=shoppinglist)
+    for listitem in listitems:
+        aisles_dict[listitem.aisle.id].listitems.append(
+            ListItemOut(
+                id=listitem.id,
+                qty=listitem.qty,
+                purchased=listitem.purchased,
+                notes=listitem.notes,
+                purch_date=listitem.purch_date,
+                item_id=listitem.item.id,
+                aisle_id=listitem.aisle_id,
+                shopping_list_id=listitem.shopping_list.id,
+                item=ItemOut(id=listitem.item.id, name=listitem.item.name, matches=listitem.item.matches)
+            )
+        )
+    response_data = ShoppingListFull(
+        id=shoppinglist.id,
+        name=shoppinglist.name,
+        store_id=store.id,
+        store=StoreOut(id=store.id, name=store.name),
+        aisles=list(aisles_dict.values())
+    )
+    return response_data
 
 
 @api.get("/aisles", response=List[AisleOut])
