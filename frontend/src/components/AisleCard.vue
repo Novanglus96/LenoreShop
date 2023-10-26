@@ -14,8 +14,8 @@
                   </v-card-title>
                   <v-card-subtitle>{{aisle.store.name}}</v-card-subtitle>
                   <v-card-actions>
-                    <v-btn icon="mdi-pencil"/>
-                    <v-btn icon="mdi-delete"/>
+                    <v-btn icon="mdi-pencil" :disabled="aisle.order === 0 ? true : false"/>
+                    <v-btn icon="mdi-delete" :disabled="aisle.order === 0 ? true : false"/>
                   </v-card-actions>
             </v-card>
           </v-col>
