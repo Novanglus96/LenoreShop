@@ -52,7 +52,7 @@
     try {
         const store = useMainStore();
         await store.fetchShoppingListFull(list);
-        router.push('/list/' + list)
+        router.push('/list')
     } catch (error) {
         console.log(error)
     }

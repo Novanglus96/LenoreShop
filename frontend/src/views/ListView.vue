@@ -1,5 +1,6 @@
 <template>
   <div class="lists">
+    <v-btn>Add Item</v-btn>
     <ShoppingList />
   </div>
 </template>

@@ -29,7 +29,7 @@ const routes = [
     component: ListsView
   },
   {
-    path: '/list/:list',
+    path: '/list',
     name: 'listview',
     component: ListView
   },

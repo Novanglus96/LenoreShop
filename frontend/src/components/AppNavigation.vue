@@ -20,6 +20,19 @@
                     <v-list-item-title>{{ menu.title }}</v-list-item-title>
                 </v-list-item>
             </v-list>
+            <v-list>
+                <v-list-item
+                    v-for="list in getShoppingLists"
+                    :key="list.id"
+                    @click="fetchShoppingListFull(list.id)"
+                    prepend-icon="mdi-cart"
+                >
+                    <v-list-item-title>{{ list.store.name }} | {{ list.name }}</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-if="getShoppingLists.length === 0">
+                    <v-list-item-title>No Lists</v-list-item-title>
+                </v-list-item>
+            </v-list>
         </v-menu>
         <v-app-bar-title>Shopping</v-app-bar-title>
         <v-menu
@@ -57,7 +70,12 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, computed } from 'vue';
+    import { useMainStore } from '@/stores/main';
+    import { useRouter } from 'vue-router';
+
+    const router = useRouter();
+    const mainstore = useMainStore();
 
     const menus = [
         { title: 'Home', url: '/', icon: 'mdi-home' },
@@ -67,6 +85,20 @@
       ]
 
     const menu = ref(false);
+
+    const getShoppingLists = computed(() => {
+        return mainstore.getShoppingLists;
+    }) 
+
+    const fetchShoppingListFull = async (list) => {
+        try {
+            const store = useMainStore();
+            await store.fetchShoppingListFull(list);
+            router.push('/list')
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 </script>
 
