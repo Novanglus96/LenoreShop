@@ -15,7 +15,7 @@
                   
                   <v-card-actions>
                     <v-btn icon="mdi-cart" :to="'/lists/' + store.id" />
-                    <v-btn icon="mdi-land-rows-vertical" :to="'/aisles/' + store.id" />
+                    <v-btn icon="mdi-land-rows-vertical" @click="fetchAislesByStore(store.id)" />
                     <v-btn icon="mdi-pencil"/>
                     <v-btn icon="mdi-delete"/>
                   </v-card-actions>
@@ -36,7 +36,9 @@
 <script setup>
   import { computed, ref } from 'vue';
   import { useMainStore } from '@/stores/main';
+  import { useRouter } from 'vue-router';
 
+  const router = useRouter();
   const snackbar = ref(false);
   const snackbarText = ref('');
   const snackbarColor = ref('');
@@ -46,4 +48,14 @@
   const getStores = computed(() => {
     return mainstore.getStores;
   })
+
+  const fetchAislesByStore = async (store_id) => {
+    try {
+        const store = useMainStore();
+        await store.fetchAislesByStore(store_id);
+        router.push('/aisles')
+    } catch (error) {
+        console.log(error)
+    }
+  }
 </script>

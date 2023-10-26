@@ -9,6 +9,7 @@ export const useMainStore = defineStore('main', {
         listitems: [],
         shoppinglists: [],
         shoppinglistfull: [],
+        aislesbystore: [],
     }),
     getters: {
       getStores(state){
@@ -28,6 +29,9 @@ export const useMainStore = defineStore('main', {
       },
       getShoppingListFull(state){
         return state.shoppinglistfull
+      },
+      getAislesByStore(state) {
+        return state.aislesbystore
       }
     },
     actions: {
@@ -92,6 +96,15 @@ export const useMainStore = defineStore('main', {
             try {
                 const data = await axios.get('https://shopping.danielleandjohn.love/api/shoppinglistfull/' + list)
                 this.shoppinglistfull = data.data
+            }
+            catch (error) {
+                console.log(error)
+            }
+        },
+        async fetchAislesByStore(store) {
+            try {
+                const data = await axios.get('https://shopping.danielleandjohn.love/api/aislesbystore/' + store)
+                this.aislesbystore = data.data
             }
             catch (error) {
                 console.log(error)

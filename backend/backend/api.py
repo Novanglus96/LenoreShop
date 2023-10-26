@@ -35,6 +35,7 @@ class AisleOut(Schema):
     name: str
     order: int = 1
     store_id: int
+    store: StoreOut
 
 
 class ItemIn(Schema):
@@ -185,6 +186,12 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
 @api.get("/aisles", response=List[AisleOut])
 def list_aisles(request):
     qs = Aisle.objects.all()
+    return qs
+
+
+@api.get("/aislesbystore/{store_id}", response=List[AisleOut])
+def list_aislesbystore(request, store_id: int):
+    qs = Aisle.objects.all().filter(store__id=store_id).order_by('order')
     return qs
 
 

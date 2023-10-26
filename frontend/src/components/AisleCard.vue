@@ -1,7 +1,7 @@
 <template>
       <v-container>
         <v-row dense>
-          <v-col cols="12" v-for="aisle in getAisles" :key="aisle.id">
+          <v-col cols="12" v-for="aisle in getAislesByStore" :key="aisle.id">
             <v-card
               color="secondary"
             >
@@ -41,7 +41,7 @@
   const snackbarTimeout = ref(1500);
   
   const mainstore = useMainStore();
-  const getAisles = computed(() => {
-    return mainstore.getAisles;
+  const getAislesByStore = computed(() => {
+    return mainstore.getAislesByStore;
   })
 </script>
