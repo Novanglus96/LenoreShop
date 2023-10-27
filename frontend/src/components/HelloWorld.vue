@@ -5,7 +5,7 @@
       A simple shopping list app!  To get started, setup your <router-link to="/stores">Stores</router-link> here.
     </p>
     <h3>Shopping Lists</h3>
-    <v-chip v-for="list in getShoppingLists" :key="list.id" @click="fetchShoppingListFull(list.id)">{{ list.store.name }} | {{ list.name }}</v-chip>
+    <v-chip v-for="list in getShoppingLists" :key="list.id" @click="fetchShoppingListFull(list.id)" variant="outlined" prepend-icon="mdi-cart">{{ list.store.name }} &bull; {{ list.name }}</v-chip>
   </div>
 </template>
 

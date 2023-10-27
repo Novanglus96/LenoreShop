@@ -90,7 +90,7 @@
   const dialog = ref(false)
   const formData = ref({
         name: '',
-        store_id: selectedStore.value ? parseInt(selectedStore.value) : 0,
+        store_id: selectedStore.value ? parseInt(selectedStore.value) : null,
       })
   const getStores = computed(() => {
     return mainstore.getStores;

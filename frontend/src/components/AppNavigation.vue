@@ -19,15 +19,14 @@
                 </template>
                     <v-list-item-title>{{ menu.title }}</v-list-item-title>
                 </v-list-item>
-            </v-list>
-            <v-list>
+                <v-divider></v-divider>
                 <v-list-item
                     v-for="list in getShoppingLists"
                     :key="list.id"
                     @click="fetchShoppingListFull(list.id)"
                     prepend-icon="mdi-cart"
                 >
-                    <v-list-item-title>{{ list.store.name }} | {{ list.name }}</v-list-item-title>
+                    <v-list-item-title>{{ list.store.name }} &bull; {{ list.name }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item v-if="getShoppingLists.length === 0">
                     <v-list-item-title>No Lists</v-list-item-title>
