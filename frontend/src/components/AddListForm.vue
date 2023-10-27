@@ -78,10 +78,7 @@
 <script setup>
   import { ref, computed } from 'vue';
   import { useMainStore } from '@/stores/main';
-  import { useRoute } from 'vue-router';
 
-  const route = useRoute();
-  const selectedStore = ref(route.params.store)
   const snackbar = ref(false);
   const snackbarText = ref('');
   const snackbarColor = ref('');
@@ -90,7 +87,7 @@
   const dialog = ref(false)
   const formData = ref({
         name: '',
-        store_id: selectedStore.value ? parseInt(selectedStore.value) : null,
+        store_id: mainstore.store_id,
       })
   const getStores = computed(() => {
     return mainstore.getStores;

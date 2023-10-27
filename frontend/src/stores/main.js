@@ -11,6 +11,7 @@ export const useMainStore = defineStore('main', {
         shoppinglistfull: [],
         aislesbystore: [],
         listsbystore: [],
+        store_id: 0,
     }),
     getters: {
       getStores(state){
@@ -150,6 +151,7 @@ export const useMainStore = defineStore('main', {
             try {
                 const response = await axios.post('https://shopping.danielleandjohn.love/api/shoppinglists', list)
                 this.fetchShoppingLists()
+                this.fetchListsByStore(list.store_id)
                 console.log(response)
             } catch (error) {
                 console.log('Error', error)

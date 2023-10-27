@@ -52,6 +52,7 @@
   const fetchAislesByStore = async (store_id) => {
     try {
         const store = useMainStore();
+        store.store_id = store_id;
         await store.fetchAislesByStore(store_id);
         router.push('/aisles')
     } catch (error) {
@@ -62,6 +63,7 @@
   const fetchListsByStore = async (store_id) => {
     try {
         const store = useMainStore();
+        store.store_id=store_id;
         await store.fetchListsByStore(store_id);
         router.push('/lists')
     } catch (error) {
