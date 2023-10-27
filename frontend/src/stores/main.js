@@ -156,6 +156,15 @@ export const useMainStore = defineStore('main', {
             } catch (error) {
                 console.log('Error', error)
             }
+        },
+        async addAisle(aisle) {
+            try {
+                const response = await axios.post('https://shopping.danielleandjohn.love/api/aisles', aisle)
+                this.fetchAislesByStore(aisle.store_id)
+                console.log(response)
+            } catch (error) {
+                console.log('Error', error)
+            }
         }
     },
     persist: true,
