@@ -3,7 +3,7 @@
         <v-row dense>
           <v-col cols="12" v-for="store in getStores" :key="store.id">
             <v-card
-              color="secondary"
+              color="primary"
             >
                   <v-card-title class="text-h5">
                     <v-icon
@@ -14,7 +14,7 @@
                   </v-card-title>
                   
                   <v-card-actions>
-                    <v-btn icon="mdi-cart" :to="'/lists/' + store.id" />
+                    <v-btn icon="mdi-cart"  @click="fetchListsByStore(store.id)" />
                     <v-btn icon="mdi-land-rows-vertical" @click="fetchAislesByStore(store.id)" />
                     <v-btn icon="mdi-pencil"/>
                     <v-btn icon="mdi-delete"/>
@@ -54,6 +54,16 @@
         const store = useMainStore();
         await store.fetchAislesByStore(store_id);
         router.push('/aisles')
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const fetchListsByStore = async (store_id) => {
+    try {
+        const store = useMainStore();
+        await store.fetchListsByStore(store_id);
+        router.push('/lists')
     } catch (error) {
         console.log(error)
     }

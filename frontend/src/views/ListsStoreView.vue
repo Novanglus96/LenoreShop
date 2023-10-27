@@ -1,7 +1,7 @@
 <template>
   <div class="lists">
     <AddListForm />
-    <ListCard showAll="false"/>
+    <ListCard showAll="true" />
   </div>
 </template>
 

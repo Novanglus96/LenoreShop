@@ -213,6 +213,12 @@ def list_shoppinglists(request):
     return qs
 
 
+@api.get("/listsbystore/{store_id}", response=List[ShoppingListOut])
+def list_listsbystore(request, store_id: int):
+    qs = ShoppingList.objects.all().filter(store__id=store_id)
+    return qs
+
+
 @api.put("/aisles/{aisle_id}")
 def update_aisle(request, aisle_id: int, payload: AisleIn):
     aisle = get_object_or_404(Aisle, id=aisle_id)

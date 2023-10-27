@@ -3,7 +3,7 @@
         <v-row dense>
           <v-col cols="12" v-for="item in getItems" :key="item.id">
             <v-card
-              color="secondary"
+              color="primary"
             >
                   <v-card-title class="text-h5">
                     <v-icon

@@ -10,6 +10,7 @@ export const useMainStore = defineStore('main', {
         shoppinglists: [],
         shoppinglistfull: [],
         aislesbystore: [],
+        listsbystore: [],
     }),
     getters: {
       getStores(state){
@@ -32,6 +33,9 @@ export const useMainStore = defineStore('main', {
       },
       getAislesByStore(state) {
         return state.aislesbystore
+      },
+      getListsByStore(state) {
+        return state.listsbystore
       }
     },
     actions: {
@@ -110,6 +114,15 @@ export const useMainStore = defineStore('main', {
                 console.log(error)
             }
         },
+        async fetchListsByStore(store) {
+            try {
+                const data = await axios.get('https://shopping.danielleandjohn.love/api/listsbystore/' + store)
+                this.listsbystore = data.data
+            }
+            catch (error) {
+                console.log(error)
+            }
+        },
         async addStore(store) {
             try {
                 const response = await axios.post('https://shopping.danielleandjohn.love/api/stores', store)
@@ -119,8 +132,25 @@ export const useMainStore = defineStore('main', {
                     "order": 0,
                     "store_id": response.data.id
                   }
-                  console.log(response.data.id, data)
                 await axios.post('https://shopping.danielleandjohn.love/api/aisles', data)
+            } catch (error) {
+                console.log('Error', error)
+            }
+        },
+        async addItem(item) {
+            try {
+                const response = await axios.post('https://shopping.danielleandjohn.love/api/items', item)
+                this.fetchItems()
+                console.log(response)
+            } catch (error) {
+                console.log('Error', error)
+            }
+        },
+        async addList(list) {
+            try {
+                const response = await axios.post('https://shopping.danielleandjohn.love/api/shoppinglists', list)
+                this.fetchShoppingLists()
+                console.log(response)
             } catch (error) {
                 console.log('Error', error)
             }

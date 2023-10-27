@@ -3,7 +3,7 @@
         <v-row dense>
           <v-col cols="12" v-for="list in getShoppingLists" :key="list.id">
             <v-card
-              color="secondary"
+              color="primary"
             >
                   <v-card-title class="text-h5">
                     <v-icon
@@ -33,10 +33,11 @@
 </template>
 
 <script setup>
-  import { computed, ref } from 'vue';
+  import { computed, ref, defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
 
+  const props = defineProps(['showAll'])
   const router = useRouter();
   const snackbar = ref(false);
   const snackbarText = ref('');
@@ -45,7 +46,12 @@
   
   const mainstore = useMainStore();
   const getShoppingLists = computed(() => {
-    return mainstore.getShoppingLists;
+    if (props.showAll == "true"){
+      return mainstore.getShoppingLists;
+    } else {
+      return mainstore.getListsByStore;
+    }
+    
   })
 
   const fetchShoppingListFull = async (list) => {

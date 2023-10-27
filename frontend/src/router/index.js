@@ -2,10 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import FourView from '../views/FourView.vue'
 import StoreView from '@/views/StoreView.vue'
-import ListsView from '@/views/ListsView.vue'
+import ListView from '@/views/ListView.vue'
 import ItemView from '@/views/ItemView.vue'
 import AisleView from '@/views/AisleView.vue'
-import ListView from '@/views/ListView.vue'
+import ListsStoreView from '@/views/ListsStoreView.vue'
+import ListsView from '@/views/ListsView.vue'
 
 const routes = [
   {
@@ -19,13 +20,13 @@ const routes = [
     component: StoreView
   },
   {
-    path: '/lists',
-    name: 'lists',
-    component: ListsView
+    path: '/alllists',
+    name: 'alllists',
+    component: ListsStoreView
   },
   {
-    path: '/lists/:store',
-    name: 'listfilter',
+    path: '/lists',
+    name: 'lists',
     component: ListsView
   },
   {
