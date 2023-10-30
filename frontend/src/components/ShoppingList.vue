@@ -24,7 +24,7 @@
                           :key="item.id"
                         >
                           <td width="25%"><span v-if="!editMode">{{ item.qty }}</span><v-text-field label="qty" v-if="editMode" v-model="item.qty" variant="outlined" type="number"></v-text-field></td>
-                          <td><span>{{ item.item.name }}</span><br /><span class="text-caption font-italic" v-if="!editMode">{{ item.note }}</span><v-text-field label="note" v-if="editMode" v-model="item.note" variant="outlined" type="text"></v-text-field></td>
+                          <td><span>{{ item.item.name }}</span><br /><span class="text-caption font-italic" v-if="!editMode">{{ item.notes }}</span><v-text-field label="note" v-if="editMode" v-model="item.notes" variant="outlined" type="text"></v-text-field></td>
                           <td width="25%"><v-btn icon="mdi-check" flat v-if="!editMode"></v-btn><v-btn icon="mdi-content-save" flat v-if="editMode"></v-btn><v-btn icon="mdi-delete" flat v-if="editMode"></v-btn></td>
                         </tr>
                       </tbody>

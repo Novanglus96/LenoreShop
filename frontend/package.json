@@ -20,6 +20,7 @@
     "vue": "^3.2.13",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.0.3",
+    "vuedraggable": "^4.1.0",
     "vuetify": "^3.3.22",
     "webfontloader": "^1.6.28"
   },

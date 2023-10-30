@@ -165,6 +165,15 @@ export const useMainStore = defineStore('main', {
             } catch (error) {
                 console.log('Error', error)
             }
+        },
+        async addListItem(item) {
+            try {
+                const response = await axios.post('https://shopping.danielleandjohn.love/api/listitems', item)
+                this.fetchShoppingListFull(item.shopping_list_id)
+                console.log(response)
+            } catch (error) {
+                console.log('Error', error)
+            }
         }
     },
     persist: true,

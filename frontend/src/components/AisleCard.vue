@@ -1,7 +1,14 @@
 <template>
       <v-container>
-        <v-row dense>
-          <v-col cols="12" v-for="aisle in getAislesByStore" :key="aisle.id">
+          <draggable
+            v-model="getAislesByStore"
+            key="order"
+            @start="dragging = true"
+            @end="dragging = false"
+          >
+            <template #item=" {element: aisle}">
+              <v-row dense>
+              <v-col cols="12">
             <v-card
               color="primary"
             >
@@ -18,8 +25,10 @@
                     <v-btn icon="mdi-delete" :disabled="aisle.order === 0 ? true : false"/>
                   </v-card-actions>
             </v-card>
-          </v-col>
-        </v-row>
+            </v-col>
+            </v-row>
+            </template>
+          </draggable>
         <v-snackbar
           v-model="snackbar"
           :color="snackbarColor"
@@ -34,11 +43,13 @@
 <script setup>
   import { computed, ref } from 'vue';
   import { useMainStore } from '@/stores/main';
+  import draggable from 'vuedraggable';
 
   const snackbar = ref(false);
   const snackbarText = ref('');
   const snackbarColor = ref('');
   const snackbarTimeout = ref(1500);
+  const dragging = ref(false);
   
   const mainstore = useMainStore();
   const getAislesByStore = computed(() => {

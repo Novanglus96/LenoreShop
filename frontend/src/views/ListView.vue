@@ -1,11 +1,12 @@
 <template>
   <div class="lists">
-    <v-btn>Add Item</v-btn>
+    <AddListItemForm />
     <ShoppingList />
   </div>
 </template>
 
 <script setup>
 import ShoppingList from '@/components/ShoppingList.vue'
+import AddListItemForm from '@/components/AddListItemForm.vue'
 
 </script>
