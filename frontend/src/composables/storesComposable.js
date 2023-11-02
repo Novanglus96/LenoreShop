@@ -3,7 +3,6 @@ import axios from "axios";
 
 async function createStore(newStore) {
   const response = await axios.post('https://shopping.danielleandjohn.love/api/stores', newStore)
-  console.log('response', response.data)
   const newAisle = {
     "name": "Uncategorized",
     "order": 0,
@@ -11,7 +10,6 @@ async function createStore(newStore) {
   }
 
   const aisle = await axios.post('https://shopping.danielleandjohn.love/api/aisles', newAisle)
-  console.log("aisle",aisle.data)
   return response.data
 }
 
@@ -27,7 +25,6 @@ export function useStores() {
   const createStoreMutation = useMutation({
     mutationFn: createStore,
     onSuccess: () => {
-      console.log('mutation successful')
       queryClient.invalidateQueries({ queryKey: ['stores'] })
     }
   })
