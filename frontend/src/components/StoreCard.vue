@@ -1,7 +1,7 @@
 <template>
       <v-container>
-        <v-row dense>
-          <v-col cols="12" v-for="store in getStores" :key="store.id">
+        <v-row dense v-if="!isLoading">
+          <v-col cols="12" v-for="store in props.stores" :key="store.id">
             <v-card
               color="primary"
             >
@@ -22,6 +22,11 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-row dense v-else>
+          <v-col cols="12">
+            <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
+          </v-col>
+        </v-row>
         <v-snackbar
           v-model="snackbar"
           :color="snackbarColor"
@@ -34,20 +39,20 @@
 </template>
 
 <script setup>
-  import { computed, ref } from 'vue';
+  import { ref, defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
+
+  const props = defineProps({
+    stores: Array,
+    isLoading: Boolean
+  })
 
   const router = useRouter();
   const snackbar = ref(false);
   const snackbarText = ref('');
   const snackbarColor = ref('');
   const snackbarTimeout = ref(1500);
-  
-  const mainstore = useMainStore();
-  const getStores = computed(() => {
-    return mainstore.getStores;
-  })
 
   const fetchAislesByStore = async (store_id) => {
     try {

@@ -59,33 +59,17 @@
     
 </template>
 <script setup>
-  import { ref } from 'vue';
-  import { useMainStore } from '@/stores/main';
+  import { ref, defineEmits } from 'vue';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
-  const mainstore = useMainStore();
+  const emit = defineEmits(['formSubmitted'])
   const dialog = ref(false)
   const formData = ref({
         name: '',
       })
 
   const submitForm = async () => {
-    try {
-      mainstore.addStore(formData.value);
-      dialog.value = false;
-      showSnackbar('Store added successfully!', 'success');
-    } catch (error) {
-      // Handle errors (e.g., show an error message)
-      console.log('Error:', error);
-      showSnackbar('Store not added!', 'error');
-    }
+    emit('formSubmitted', formData.value)
+    dialog.value = false;
   };
-  const showSnackbar = (text, color) => {
-    snackbarText.value = text;
-    snackbarColor.value = color;
-    snackbar.value = true;
-  }
+
 </script>
