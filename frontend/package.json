@@ -10,8 +10,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "^2.0.18",
-    "@tanstack/react-query": "^5.4.3",
-    "@tanstack/react-query-devtools": "^5.4.3",
+    "@tanstack/vue-query": "^5.4.3",
     "@vuepic/vue-datepicker": "^7.2.0",
     "axios": "^1.5.0",
     "chart.js": "^4.4.0",
