@@ -10,7 +10,10 @@ async function createStore(newStore) {
   }
 
   const aisle = await axios.post('https://shopping.danielleandjohn.love/api/aisles', newAisle)
-  return response.data
+  return {
+    storeData: response.data,
+    aisleData: aisle.data
+  }
 }
 
 export function useStores() {
