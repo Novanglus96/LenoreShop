@@ -1,13 +1,13 @@
 <template>
       <v-container>
           <draggable
-            v-model="getAislesByStore"
+            v-model="localAisles"
             key="order"
             @start="dragging = true"
             @end="dragging = false"
           >
             <template #item=" {element: aisle}">
-              <v-row dense>
+              <v-row dense v-if="!isLoading">
               <v-col cols="12">
             <v-card
               color="primary"
@@ -27,32 +27,26 @@
             </v-card>
             </v-col>
             </v-row>
+            <v-row dense v-else>
+              <v-col cols="12">
+                <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
+              </v-col>
+            </v-row>
             </template>
           </draggable>
-        <v-snackbar
-          v-model="snackbar"
-          :color="snackbarColor"
-          :timeout="snackbarTimeout"
-          content-class="centered-text"
-        >
-          {{ snackbarText }}
-        </v-snackbar>
       </v-container>
 </template>
 
 <script setup>
-  import { computed, ref } from 'vue';
-  import { useMainStore } from '@/stores/main';
+  import { defineProps, ref } from 'vue';
   import draggable from 'vuedraggable';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
+  const props = defineProps({
+    aisles: Array,
+    isLoading: Boolean
+  })
+
+  const localAisles = ref(props.aisles);
   const dragging = ref(false);
   
-  const mainstore = useMainStore();
-  const getAislesByStore = computed(() => {
-    return mainstore.getAislesByStore;
-  })
 </script>

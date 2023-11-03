@@ -47,14 +47,6 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-snackbar
-        v-model="snackbar"
-        :color="snackbarColor"
-        :timeout="snackbarTimeout"
-        content-class="centered-text"
-      >
-        {{ snackbarText }}
-      </v-snackbar>
     </v-dialog>
     
 </template>

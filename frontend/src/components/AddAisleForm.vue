@@ -64,26 +64,16 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-snackbar
-        v-model="snackbar"
-        :color="snackbarColor"
-        :timeout="snackbarTimeout"
-        content-class="centered-text"
-      >
-        {{ snackbarText }}
-      </v-snackbar>
     </v-dialog>
     
 </template>
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, defineEmits, computed } from 'vue';
   import { useMainStore } from '@/stores/main';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
   const mainstore = useMainStore();
+
+  const emit = defineEmits(['formSubmitted'])
   const dialog = ref(false)
   const formData = ref({
         name: '',
@@ -95,19 +85,8 @@
   })
   
   const submitForm = async () => {
-    try {
-      mainstore.addAisle(formData.value);
-      dialog.value = false;
-      showSnackbar('Aisle added successfully!', 'success');
-    } catch (error) {
-      // Handle errors (e.g., show an error message)
-      console.log('Error:', error);
-      showSnackbar('Aisle not added!', 'error');
-    }
-  };
-  const showSnackbar = (text, color) => {
-    snackbarText.value = text;
-    snackbarColor.value = color;
-    snackbar.value = true;
+    emit('formSubmitted', formData.value)
+    dialog.value = false;
   }
+
 </script>

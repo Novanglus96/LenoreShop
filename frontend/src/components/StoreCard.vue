@@ -14,8 +14,8 @@
                   </v-card-title>
                   
                   <v-card-actions>
-                    <v-btn icon="mdi-cart"  @click="fetchListsByStore(store.id)" />
-                    <v-btn icon="mdi-land-rows-vertical" @click="fetchAislesByStore(store.id)" />
+                    <v-btn icon="mdi-cart"  @click="showShoppingList(store.id)" />
+                    <v-btn icon="mdi-land-rows-vertical" @click="showAisle(store.id)" />
                     <v-btn icon="mdi-pencil"/>
                     <v-btn icon="mdi-delete"/>
                   </v-card-actions>
@@ -27,19 +27,11 @@
             <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
           </v-col>
         </v-row>
-        <v-snackbar
-          v-model="snackbar"
-          :color="snackbarColor"
-          :timeout="snackbarTimeout"
-          content-class="centered-text"
-        >
-          {{ snackbarText }}
-        </v-snackbar>
       </v-container>
 </template>
 
 <script setup>
-  import { ref, defineProps } from 'vue';
+  import { defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
 
@@ -49,30 +41,17 @@
   })
 
   const router = useRouter();
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
 
-  const fetchAislesByStore = async (store_id) => {
-    try {
-        const store = useMainStore();
-        store.store_id = store_id;
-        await store.fetchAislesByStore(store_id);
-        router.push('/aisles')
-    } catch (error) {
-        console.log(error)
-    }
+  const showShoppingList = async (store_id) => {
+    const store = useMainStore()
+    store.store_id = store_id
+    router.push('/lists')
   }
 
-  const fetchListsByStore = async (store_id) => {
-    try {
-        const store = useMainStore();
-        store.store_id=store_id;
-        await store.fetchListsByStore(store_id);
-        router.push('/lists')
-    } catch (error) {
-        console.log(error)
-    }
+  const showAisle = async (store_id) => {
+    const store = useMainStore()
+    store.store_id = store_id
+    router.push('/aisles')
   }
+
 </script>
