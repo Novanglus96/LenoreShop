@@ -1,6 +1,6 @@
 <template>
   <div class="aisles">
-    <AddAisleForm @form-submitted="createAisle"/>
+    <AddAisleForm @form-submitted="createAisle" :stores="stores"/>
     <AisleCard :aisles="aisles" :isLoading="isLoading"/>
     <v-snackbar
       v-model="snackbar"
@@ -18,7 +18,8 @@ import { ref } from 'vue'
 import AisleCard from '@/components/AisleCard.vue'
 import AddAisleForm from '@/components/AddAisleForm.vue'
 import { useAisles } from '@/composables/aislesComposable'
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/main'
+import { useStores } from '@/composables/storesComposable'
 
 const store = useMainStore();
 const snackbar = ref(false);
@@ -27,6 +28,7 @@ const snackbarColor = ref('');
 const snackbarTimeout = ref(1500);
 
 const { aisles, isLoading, addAisle } = useAisles(store.store_id)
+const { stores } = useStores()
 
 const createAisle = (newAisle) => {
   try{

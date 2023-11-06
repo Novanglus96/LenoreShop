@@ -22,7 +22,7 @@
                 <v-select
                     label="Store*"
                     required
-                    :items="getStores"
+                    :items="props.stores"
                     item-title="name"
                     item-value="id"
                     v-model="formData.store_id"  
@@ -68,8 +68,12 @@
     
 </template>
 <script setup>
-  import { ref, defineEmits, computed } from 'vue';
+  import { ref, defineEmits, defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
+
+  const props = defineProps({
+    stores: Array
+  })
 
   const mainstore = useMainStore();
 
@@ -80,9 +84,6 @@
         store_id: mainstore.store_id,
         order: 1,
       })
-  const getStores = computed(() => {
-    return mainstore.getStores;
-  })
   
   const submitForm = async () => {
     emit('formSubmitted', formData.value)
