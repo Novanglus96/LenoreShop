@@ -41,12 +41,6 @@
 
   const router = useRouter();
 
-  const showShoppingList = async (store_id) => {
-    const store = useMainStore()
-    store.store_id = store_id
-    router.push('/lists')
-  }
-
   const showAisle = async (store_id) => {
     const store = useMainStore()
     store.store_id = store_id
