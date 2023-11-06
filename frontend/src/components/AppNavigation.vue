@@ -79,7 +79,7 @@
     const menus = [
         { title: 'Home', url: '/', icon: 'mdi-home-outline' },
         { title: 'Stores', url: '/stores', icon: 'mdi-storefront-outline' },
-        { title: 'Shopping Lists', url: '/alllists', icon: 'mdi-cart-outline' },
+        { title: 'Shopping Lists', url: '/lists', icon: 'mdi-cart-outline' },
         { title: 'Items', url: '/items', icon: 'mdi-food-apple-outline' },
       ]
 

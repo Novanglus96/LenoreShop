@@ -19,7 +19,7 @@ async function createShoppingList(newShoppingList) {
     const createShoppingListMutation = useMutation({
       mutationFn: createShoppingList,
       onSuccess: () => {
-        console.log('Success adding shopping list', storeID)
+        console.log('Success adding shopping list')
         queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
       }
     })

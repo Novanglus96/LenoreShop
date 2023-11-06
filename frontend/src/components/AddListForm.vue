@@ -22,7 +22,7 @@
                 <v-select
                     label="Store*"
                     required
-                    :items="getStores"
+                    :items="props.stores"
                     item-title="name"
                     item-value="id"
                     v-model="formData.store_id"  
@@ -64,49 +64,27 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-snackbar
-        v-model="snackbar"
-        :color="snackbarColor"
-        :timeout="snackbarTimeout"
-        content-class="centered-text"
-      >
-        {{ snackbarText }}
-      </v-snackbar>
     </v-dialog>
     
 </template>
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, defineEmits, defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
   const mainstore = useMainStore();
   const dialog = ref(false)
   const formData = ref({
         name: '',
         store_id: mainstore.store_id,
       })
-  const getStores = computed(() => {
-    return mainstore.getStores;
+  const props = defineProps({
+    stores: Array
   })
   
+
+  const emit = defineEmits(['formSubmitted'])
   const submitForm = async () => {
-    try {
-      mainstore.addList(formData.value);
-      dialog.value = false;
-      showSnackbar('List added successfully!', 'success');
-    } catch (error) {
-      // Handle errors (e.g., show an error message)
-      console.log('Error:', error);
-      showSnackbar('List not added!', 'error');
-    }
-  };
-  const showSnackbar = (text, color) => {
-    snackbarText.value = text;
-    snackbarColor.value = color;
-    snackbar.value = true;
+    emit('formSubmitted', formData.value)
+    dialog.value = false;
   }
 </script>
