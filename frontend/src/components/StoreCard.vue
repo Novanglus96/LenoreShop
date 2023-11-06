@@ -14,7 +14,6 @@
                   </v-card-title>
                   
                   <v-card-actions>
-                    <v-btn icon="mdi-cart"  @click="showShoppingList(store.id)" />
                     <v-btn icon="mdi-land-rows-vertical" @click="showAisle(store.id)" />
                     <v-btn icon="mdi-pencil"/>
                     <v-btn icon="mdi-delete"/>

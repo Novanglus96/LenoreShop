@@ -9,13 +9,13 @@ async function createAisle(newAisle) {
   
   export function useAisles(storeID) {
     const queryClient = useQueryClient()
-  
+
     const { data: aisles, isLoading } = useQuery({
       queryKey: ['aisles', storeID],
       queryFn: () => axios.call("get", "https://shopping.danielleandjohn.love/api/aislesbystore/" + storeID),
       select: (response) => response.data
     })
-  
+    
     const createAisleMutation = useMutation({
       mutationFn: createAisle,
       onSuccess: () => {
