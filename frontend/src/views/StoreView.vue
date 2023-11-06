@@ -26,9 +26,9 @@ const snackbarTimeout = ref(1500);
 
 const { stores, isLoading, addStore } = useStores()
 
-const createStore = (newStore) => {
+const createStore = async (newStore) => {
   try{
-    addStore(newStore)
+    await addStore(newStore)
     showSnackbar('Store added', 'success')
   } catch (error) {
     showSnackbar('Store not added', 'error')
