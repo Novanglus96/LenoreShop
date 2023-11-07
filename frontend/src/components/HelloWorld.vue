@@ -5,20 +5,21 @@
       A simple shopping list app!  To get started, setup your <router-link to="/stores">Stores</router-link> here.
     </p>
     <h3>Shopping Lists</h3>
-    <v-chip v-for="list in getShoppingLists" :key="list.id" @click="fetchShoppingListFull(list.id)" variant="outlined" prepend-icon="mdi-cart">{{ list.store.name }} &bull; {{ list.name }}</v-chip>
+    <v-chip v-for="list in localshoppinglists" :key="list.id" @click="fetchShoppingListFull(list.id)" variant="outlined" prepend-icon="mdi-cart">{{ list.store.name }} &bull; {{ list.name }}</v-chip>
+    <v-chip v-if="isLoading" variant="outlined" prepend-icon="mdi-loading">Loading...</v-chip>
   </div>
 </template>
 
 <script setup>
-  import { computed } from 'vue';
+  import { ref } from 'vue';
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
+  import { useShoppingLists } from '@/composables/listsComposable'
+
+  const { shoppinglists, isLoading } = useShoppingLists()
+  const localshoppinglists = ref(shoppinglists)
 
   const router = useRouter();
-  const mainstore = useMainStore();
-  const getShoppingLists = computed(() => {
-    return mainstore.getShoppingLists;
-  }) 
 
   const fetchShoppingListFull = async (list) => {
     try {

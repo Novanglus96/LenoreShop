@@ -21,15 +21,18 @@
                 </v-list-item>
                 <v-divider></v-divider>
                 <v-list-item
-                    v-for="list in getShoppingLists"
+                    v-for="list in localshoppinglists"
                     :key="list.id"
                     @click="fetchShoppingListFull(list.id)"
                     prepend-icon="mdi-cart"
                 >
                     <v-list-item-title>{{ list.store.name }} &bull; {{ list.name }}</v-list-item-title>
                 </v-list-item>
-                <v-list-item v-if="getShoppingLists.length === 0">
+                <v-list-item v-if="localshoppinglists.length === 0">
                     <v-list-item-title>No Lists</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-if="isLoading">
+                    <v-list-item-title>Loading...</v-list-item-title>
                 </v-list-item>
             </v-list>
         </v-menu>
@@ -69,12 +72,14 @@
 </template>
 
 <script setup>
-    import { ref, computed } from 'vue';
+    import { ref } from 'vue';
     import { useMainStore } from '@/stores/main';
     import { useRouter } from 'vue-router';
+    import { useShoppingLists } from '@/composables/listsComposable'
 
-    const router = useRouter();
-    const mainstore = useMainStore();
+    const { shoppinglists, isLoading } = useShoppingLists()
+    const localshoppinglists = ref(shoppinglists)
+    const router = useRouter()
 
     const menus = [
         { title: 'Home', url: '/', icon: 'mdi-home-outline' },
@@ -84,10 +89,6 @@
       ]
 
     const menu = ref(false);
-
-    const getShoppingLists = computed(() => {
-        return mainstore.getShoppingLists;
-    }) 
 
     const fetchShoppingListFull = async (list) => {
         try {

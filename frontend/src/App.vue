@@ -9,14 +9,6 @@
     </v-app>
 </template>
 <script setup>
-import { onMounted } from 'vue';
-import { useMainStore } from '@/stores/main';
 import AppNavigation from "@/components/AppNavigation.vue";
-
-const mainstore = useMainStore();
-
-onMounted(() => {
-    mainstore.fetchAll();
-})
 
 </script>
