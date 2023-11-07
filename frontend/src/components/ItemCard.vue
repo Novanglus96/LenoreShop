@@ -1,7 +1,7 @@
 <template>
       <v-container>
         <v-row dense>
-          <v-col cols="12" v-for="item in getItems" :key="item.id">
+          <v-col cols="12" v-for="item in props.items" :key="item.id">
             <v-card
               color="primary"
             >
@@ -20,28 +20,15 @@
             </v-card>
           </v-col>
         </v-row>
-        <v-snackbar
-          v-model="snackbar"
-          :color="snackbarColor"
-          :timeout="snackbarTimeout"
-          content-class="centered-text"
-        >
-          {{ snackbarText }}
-        </v-snackbar>
       </v-container>
 </template>
 
 <script setup>
-  import { computed, ref } from 'vue';
-  import { useMainStore } from '@/stores/main';
+  import { defineProps } from 'vue';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
-  
-  const mainstore = useMainStore();
-  const getItems = computed(() => {
-    return mainstore.getItems;
+  const props = defineProps({
+    items: Array,
+    isLoading: Boolean
   })
+
 </script>

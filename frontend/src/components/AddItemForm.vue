@@ -47,46 +47,22 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-snackbar
-        v-model="snackbar"
-        :color="snackbarColor"
-        :timeout="snackbarTimeout"
-        content-class="centered-text"
-      >
-        {{ snackbarText }}
-      </v-snackbar>
     </v-dialog>
     
 </template>
 <script setup>
-  import { ref } from 'vue';
-  import { useMainStore } from '@/stores/main';
+  import { ref, defineEmits } from 'vue';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
-  const mainstore = useMainStore();
   const dialog = ref(false)
   const formData = ref({
         name: '',
         matches: '',
       })
 
+  const emit = defineEmits(['formSubmitted'])
   const submitForm = async () => {
-    try {
-      mainstore.addItem(formData.value);
-      dialog.value = false;
-      showSnackbar('Item added successfully!', 'success');
-    } catch (error) {
-      // Handle errors (e.g., show an error message)
-      console.log('Error:', error);
-      showSnackbar('Item not added!', 'error');
+    emit('formSubmitted', formData.value)
+    dialog.value = false;
     }
-  };
-  const showSnackbar = (text, color) => {
-    snackbarText.value = text;
-    snackbarColor.value = color;
-    snackbar.value = true;
-  }
+  
 </script>
