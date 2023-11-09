@@ -32,7 +32,7 @@
                 <v-select
                     label="Item*"
                     required
-                    :items="getItems"
+                    :items="props.items"
                     item-title="name"
                     item-value="id"
                     v-model="formData.item_id"  
@@ -45,7 +45,7 @@
                 <v-select
                     label="Aisle*"
                     required
-                    :items="getAislesByStore"
+                    :items="props.aisles"
                     item-title="name"
                     item-value="id"
                     v-model="formData.aisle_id"  
@@ -87,60 +87,34 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-snackbar
-        v-model="snackbar"
-        :color="snackbarColor"
-        :timeout="snackbarTimeout"
-        content-class="centered-text"
-      >
-        {{ snackbarText }}
-      </v-snackbar>
     </v-dialog>
     
 </template>
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, defineEmits, defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
 
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
-  const mainstore = useMainStore();
-  const dialog = ref(false)
-  const getItems = computed(() => {
-    return mainstore.getItems;
-  })
-  const getAislesByStore = computed(() => {
-    return mainstore.getAislesByStore;
-  })
-  const getShoppingListFull = computed(() => {
-    return mainstore.getShoppingListFull;
+  const store = useMainStore()
+
+  const props = defineProps({
+    items: Array,
+    aisles: Array
   })
 
+  const dialog = ref(false)
+  const emit = defineEmits(['formSubmitted'])
   const formData = ref({
         qty: 1,
         purchased: false,
         notes: '',
         item_id: null,
         aisle_id: 0,
-        shopping_list_id: getShoppingListFull.value.id,
+        shopping_list_id: store.list_id,
       })
 
   const submitForm = async () => {
-    try {
-      mainstore.addListItem(formData.value);
-      dialog.value = false;
-      showSnackbar('Item added successfully!', 'success');
-    } catch (error) {
-      // Handle errors (e.g., show an error message)
-      console.log('Error:', error);
-      showSnackbar('Item not added!', 'error');
-    }
-  };
-  const showSnackbar = (text, color) => {
-    snackbarText.value = text;
-    snackbarColor.value = color;
-    snackbar.value = true;
+    emit('formSubmitted', formData.value)
+    dialog.value = false;
   }
+
 </script>

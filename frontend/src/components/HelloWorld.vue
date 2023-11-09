@@ -5,7 +5,7 @@
       A simple shopping list app!  To get started, setup your <router-link to="/stores">Stores</router-link> here.
     </p>
     <h3>Shopping Lists</h3>
-    <v-chip v-for="list in localshoppinglists" :key="list.id" @click="fetchShoppingListFull(list.id)" variant="outlined" prepend-icon="mdi-cart">{{ list.store.name }} &bull; {{ list.name }}</v-chip>
+    <v-chip v-for="list in localshoppinglists" :key="list.id" @click="fetchShoppingListFull(list.id, list.store_id)" variant="outlined" prepend-icon="mdi-cart">{{ list.store.name }} &bull; {{ list.name }}</v-chip>
     <v-chip v-if="isLoading" variant="outlined" prepend-icon="mdi-loading">Loading...</v-chip>
   </div>
 </template>
@@ -21,10 +21,11 @@
 
   const router = useRouter();
 
-  const fetchShoppingListFull = async (list) => {
+  const fetchShoppingListFull = async (list_id, store_id) => {
     try {
         const store = useMainStore();
-        await store.fetchShoppingListFull(list);
+        store.list_id = list_id
+        store.store_id = store_id
         router.push('/list')
     } catch (error) {
         console.log(error)

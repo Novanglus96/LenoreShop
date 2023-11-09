@@ -6,6 +6,12 @@ async function createShoppingList(newShoppingList) {
     
     return shoppingList.data
   }
+
+  async function createListItem(newListItem) {
+    const listitem = await axios.post('https://shopping.danielleandjohn.love/api/listitems', newListItem)
+    
+    return listitem.data
+  }
   
   export function useShoppingLists() {
     const queryClient = useQueryClient()
@@ -45,7 +51,7 @@ async function createShoppingList(newShoppingList) {
     })
 
     const addListItemMutation = useMutation({
-      mutationFn: addListItem,
+      mutationFn: createListItem,
       onSuccess: () => {
         console.log('Success adding list item', listID)
         queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})

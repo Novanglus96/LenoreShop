@@ -12,6 +12,7 @@ export const useMainStore = defineStore('main', {
         aislesbystore: [],
         listsbystore: [],
         store_id: 0,
+        list_id: 0
     }),
     getters: {
       getStores(state){

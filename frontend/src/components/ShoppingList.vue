@@ -2,15 +2,15 @@
       <v-container>
         <v-row dense>
             <v-col cols="12">
-                <span class="text-h4">{{ getShoppingListFull.name }}</span> <v-btn icon="mdi-pencil" flat @click="editMode = !editMode" v-if="!editMode"></v-btn><v-btn icon="mdi-cancel" flat @click="editMode = !editMode" v-if="editMode"></v-btn><br/>
-                <span class="text-caption font-italic">{{ getShoppingListFull.store.name }}</span>
+                <span class="text-h4">{{ props.list.name }}</span> <v-btn icon="mdi-pencil" flat @click="editMode = !editMode" v-if="!editMode"></v-btn><v-btn icon="mdi-cancel" flat @click="editMode = !editMode" v-if="editMode"></v-btn><br/>
+                <span class="text-caption font-italic">{{ props.list.store.name }}</span>
             </v-col>
         </v-row>
          <v-row dense>
               <v-col cols="12">
                 <v-card 
                   density="compact"
-                  v-for="aisle in getShoppingListFull.aisles"
+                  v-for="aisle in props.list.aisles"
                   :key="aisle.id"
                   >
                   <v-card-item>
@@ -33,30 +33,16 @@
                 </v-card>
               </v-col>
             </v-row>
-        <v-snackbar
-          v-model="snackbar"
-          :color="snackbarColor"
-          :timeout="snackbarTimeout"
-          content-class="centered-text"
-        >
-          {{ snackbarText }}
-        </v-snackbar>
       </v-container>
 </template>
 
 <script setup>
-  import { computed, ref } from 'vue';
-  import { useMainStore } from '@/stores/main';
+  import { defineProps, ref } from 'vue';
 
   const editMode = ref(false);
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('');
-  const snackbarTimeout = ref(1500);
-  
-  const mainstore = useMainStore();
-  const getShoppingListFull = computed(() => {
-    return mainstore.getShoppingListFull;
+  const props = defineProps({
+    list: Object,
+    isLoading: Boolean
   })
 
 </script>

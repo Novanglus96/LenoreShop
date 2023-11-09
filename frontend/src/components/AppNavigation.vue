@@ -23,7 +23,7 @@
                 <v-list-item
                     v-for="list in localshoppinglists"
                     :key="list.id"
-                    @click="fetchShoppingListFull(list.id)"
+                    @click="fetchShoppingListFull(list.id, list.store_id)"
                     prepend-icon="mdi-cart"
                 >
                     <v-list-item-title>{{ list.store.name }} &bull; {{ list.name }}</v-list-item-title>
@@ -90,10 +90,11 @@
 
     const menu = ref(false);
 
-    const fetchShoppingListFull = async (list) => {
+    const fetchShoppingListFull = async (list_id, store_id) => {
         try {
             const store = useMainStore();
-            await store.fetchShoppingListFull(list);
+            store.list_id = list_id
+            store.store_id = store_id
             router.push('/list')
         } catch (error) {
             console.log(error)
