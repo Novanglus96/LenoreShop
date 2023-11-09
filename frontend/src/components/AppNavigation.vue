@@ -19,21 +19,6 @@
                 </template>
                     <v-list-item-title>{{ menu.title }}</v-list-item-title>
                 </v-list-item>
-                <v-divider></v-divider>
-                <v-list-item
-                    v-for="list in localshoppinglists"
-                    :key="list.id"
-                    @click="fetchShoppingListFull(list.id, list.store_id)"
-                    prepend-icon="mdi-cart"
-                >
-                    <v-list-item-title>{{ list.store.name }} &bull; {{ list.name }}</v-list-item-title>
-                </v-list-item>
-                <v-list-item v-if="localshoppinglists.length === 0">
-                    <v-list-item-title>No Lists</v-list-item-title>
-                </v-list-item>
-                <v-list-item v-if="isLoading">
-                    <v-list-item-title>Loading...</v-list-item-title>
-                </v-list-item>
             </v-list>
         </v-menu>
         <v-app-bar-title>Shopping</v-app-bar-title>
@@ -72,14 +57,7 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
-    import { useMainStore } from '@/stores/main';
-    import { useRouter } from 'vue-router';
-    import { useShoppingLists } from '@/composables/listsComposable'
-
-    const { shoppinglists, isLoading } = useShoppingLists()
-    const localshoppinglists = ref(shoppinglists)
-    const router = useRouter()
+    import { ref } from 'vue'
 
     const menus = [
         { title: 'Home', url: '/', icon: 'mdi-home-outline' },
@@ -89,17 +67,6 @@
       ]
 
     const menu = ref(false);
-
-    const fetchShoppingListFull = async (list_id, store_id) => {
-        try {
-            const store = useMainStore();
-            store.list_id = list_id
-            store.store_id = store_id
-            router.push('/list')
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
 </script>
 
