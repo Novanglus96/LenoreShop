@@ -1,7 +1,23 @@
 <template>
   <div class="lists">
     <AddListItemForm @form-submitted="createListItem" :items="items" :aisles="aisles"/>
-    <ShoppingList :list="fullshoppinglist" :isLoading="isLoading"/>
+    <v-container>
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <ShoppingList :list="fullshoppinglist" :isLoading="isLoading"/>
+        </v-col>
+      </v-row>
+      <v-row dense v-else>
+        <v-col cols="12">
+          <v-skeleton-loader
+            type="list-item-two-line"
+          ></v-skeleton-loader>
+          <v-skeleton-loader
+            type="list-item-avatar-two-line"
+          ></v-skeleton-loader>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"
