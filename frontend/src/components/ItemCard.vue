@@ -1,7 +1,6 @@
 <template>
-      <v-container>
         <v-row dense>
-          <v-col cols="12" v-for="item in props.items" :key="item.id">
+          <v-col cols="12">
             <v-card
               color="primary"
             >
@@ -20,14 +19,13 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-container>
 </template>
 
 <script setup>
   import { defineProps } from 'vue';
 
-  const props = defineProps({
-    items: Array,
+  defineProps({
+    item: Array,
     isLoading: Boolean
   })
 

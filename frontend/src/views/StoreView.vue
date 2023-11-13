@@ -1,7 +1,9 @@
 <template>
   <div class="stores">
     <AddStoreForm @form-submitted="createStore"/>
-    <StoreCard :stores="stores" :isLoading="isLoading"/>
+    <v-container>
+      <StoreCard v-for="store in stores" :key="store.id" :store="store" :isLoading="isLoading"/>
+    </v-container>
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"

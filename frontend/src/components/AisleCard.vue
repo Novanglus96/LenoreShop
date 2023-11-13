@@ -1,14 +1,6 @@
 <template>
-      <v-container>
-          <draggable
-            v-model="localAisles"
-            key="order"
-            @start="dragging = true"
-            @end="dragging = false"
-          >
-            <template #item=" {element: aisle}">
-              <v-row dense v-if="!isLoading">
-              <v-col cols="12">
+      <v-row dense v-if="!isLoading">
+          <v-col cols="12">
             <v-card
               color="primary"
             >
@@ -32,21 +24,14 @@
                 <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
               </v-col>
             </v-row>
-            </template>
-          </draggable>
-      </v-container>
 </template>
 
 <script setup>
-  import { defineProps, ref } from 'vue';
-  import draggable from 'vuedraggable';
+  import { defineProps } from 'vue';
 
-  const props = defineProps({
-    aisles: Array,
+  defineProps({
+    aisle: Array,
     isLoading: Boolean
   })
-
-  const localAisles = ref(props.aisles);
-  const dragging = ref(false);
   
 </script>

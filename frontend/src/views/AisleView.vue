@@ -1,7 +1,9 @@
 <template>
   <div class="aisles">
     <AddAisleForm @form-submitted="createAisle" :stores="stores"/>
-    <AisleCard :aisles="aisles" :isLoading="isLoading"/>
+    <v-container>
+      <AisleCard v-for="aisle in aisles" :aisle="aisle" :isLoading="isLoading" :key="aisle.id"/>
+    </v-container>
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"

@@ -1,7 +1,6 @@
 <template>
-      <v-container>
         <v-row dense>
-          <v-col cols="12" v-for="list in props.lists" :key="list.id">
+          <v-col cols="12">
             <v-card
               color="primary"
             >
@@ -21,7 +20,6 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-container>
 </template>
 
 <script setup>
@@ -29,8 +27,8 @@
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
 
-  const props = defineProps({
-    lists: Array,
+  defineProps({
+    list: Array,
     isLoading: Boolean
   })
 

@@ -1,46 +1,67 @@
 <template>
-      <v-container>
-        <v-row dense>
-            <v-col cols="12">
-                <span class="text-h4">{{ props.list.name }}</span> <v-btn icon="mdi-pencil" flat @click="editMode = !editMode" v-if="!editMode"></v-btn><v-btn icon="mdi-cancel" flat @click="editMode = !editMode" v-if="editMode"></v-btn><br/>
-                <span class="text-caption font-italic">{{ props.list.store.name }}</span>
-            </v-col>
-        </v-row>
-         <v-row dense>
-              <v-col cols="12">
-                <v-card 
-                  density="compact"
-                  v-for="aisle in props.list.aisles"
-                  :key="aisle.id"
-                  >
-                  <v-card-item>
-                    <v-card-title>{{ aisle.name }}</v-card-title>
-                  </v-card-item>
-                  <v-card-text>
-                    <v-table density="compact">
-                      <tbody>
-                        <tr
-                          v-for="item in aisle.listitems"
-                          :key="item.id"
-                        >
-                          <td width="25%"><span v-if="!editMode">{{ item.qty }}</span><v-text-field label="qty" v-if="editMode" v-model="item.qty" variant="outlined" type="number"></v-text-field></td>
-                          <td><span>{{ item.item.name }}</span><br /><span class="text-caption font-italic" v-if="!editMode">{{ item.notes }}</span><v-text-field label="note" v-if="editMode" v-model="item.notes" variant="outlined" type="text"></v-text-field></td>
-                          <td width="25%"><v-btn icon="mdi-check" flat v-if="!editMode"></v-btn><v-btn icon="mdi-content-save" flat v-if="editMode"></v-btn><v-btn icon="mdi-delete" flat v-if="editMode"></v-btn></td>
-                        </tr>
-                      </tbody>
-                    </v-table>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-      </v-container>
+  <v-container>
+    <h2 class="text-h6 text-primary ps-4">{{ list.name }}</h2>
+    <h2 class="text-subtitle-1 text-info ps-4">{{ list.store.name }}</h2>
+    <div
+      v-for="aisle in list.aisles"
+      :key="aisle.id"
+    >
+    <v-divider class="mt-4"></v-divider>
+
+    <v-row class="my-1" align="center">
+      <strong class="mx-4 text-primary-darken-2"> {{ aisle.name }}</strong>
+    </v-row>
+
+    <v-divider class="mb-4"></v-divider>
+
+    <v-card>
+      <v-slide-y-transition class="py-0" group tag="v-list">
+        <template v-for="(item, i) in aisle.listitems" :key="`${i}-${item.item.name}`">
+          <v-divider v-if="i !== 0" :key="`${i}-divider`"></v-divider>
+
+          <v-list-item @click="item.purchased = !item.purchased">
+            <template v-slot:prepend>
+              <v-checkbox-btn v-model="item.purchased" color="grey"></v-checkbox-btn>
+            </template>
+
+            <v-list-item-title>
+              <span :class="item.purchased ? 'text-grey' : 'text-primary'"
+                >({{ item.qty }}) {{ item.item.name }}</span
+              >
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ item.notes }}
+            </v-list-item-subtitle>
+
+            <template v-slot:append>
+              <v-expand-x-transition>
+                <v-icon v-if="item.purchased" color="success"> mdi-check </v-icon>
+              </v-expand-x-transition>
+            </template>
+          </v-list-item>
+        </template>
+      </v-slide-y-transition>
+    </v-card>
+    </div>
+    <v-row dense align="center">
+      <v-col cols="12" align="center">
+        <v-img
+          :width="300"
+          aspect-ratio="16/9"
+          cover
+          src="Simple_shopping_cart.svg"
+          v-ripple
+        >
+        </v-img>
+      </v-col>
+</v-row>
+  </v-container>
 </template>
 
 <script setup>
-  import { defineProps, ref } from 'vue';
+  import { defineProps } from 'vue';
 
-  const editMode = ref(false);
-  const props = defineProps({
+  defineProps({
     list: Object,
     isLoading: Boolean
   })

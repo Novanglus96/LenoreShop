@@ -18,11 +18,11 @@
     "pinia": "^2.1.6",
     "pinia-plugin-persistedstate": "^3.2.0",
     "roboto-fontface": "^0.10.0",
-    "vue": "^3.2.13",
+    "vue": "^3.3.8",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.0.3",
     "vuedraggable": "^4.1.0",
-    "vuetify": "^3.3.22",
+    "vuetify": "^3.4.0",
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {

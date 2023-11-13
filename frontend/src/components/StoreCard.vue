@@ -1,7 +1,6 @@
 <template>
-      <v-container>
         <v-row dense v-if="!isLoading">
-          <v-col cols="12" v-for="store in props.stores" :key="store.id">
+          <v-col cols="12">
             <v-card
               color="primary"
             >
@@ -26,7 +25,6 @@
             <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
           </v-col>
         </v-row>
-      </v-container>
 </template>
 
 <script setup>
@@ -34,8 +32,8 @@
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
 
-  const props = defineProps({
-    stores: Array,
+  defineProps({
+    store: Array,
     isLoading: Boolean
   })
 

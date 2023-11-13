@@ -1,7 +1,9 @@
 <template>
   <div class="items">
     <AddItemForm @form-submitted="createItem" />
-    <ItemCard :items="items" :isLoading="isLoading" />
+    <v-container>
+      <ItemCard v-for="item in items" :key="item.id" :item="item" :isLoading="isLoading" />
+    </v-container>
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"

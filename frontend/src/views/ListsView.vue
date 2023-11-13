@@ -1,8 +1,9 @@
 <template>
   <div class="lists">
     <AddListForm @form-submitted="createShoppingList" :stores="stores"/>
-    <ListCard :lists="shoppinglists" :isLoading="isLoading"/>
-
+    <v-container>
+      <ListCard v-for="shoppinglist in shoppinglists" :key="shoppinglist.id" :list="shoppinglist" :isLoading="isLoading"/>
+    </v-container>
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"
