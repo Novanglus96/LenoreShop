@@ -2,7 +2,16 @@
   <div class="lists">
     <AddListForm @form-submitted="createShoppingList" :stores="stores"/>
     <v-container>
-      <ListCard v-for="shoppinglist in shoppinglists" :key="shoppinglist.id" :list="shoppinglist" :isLoading="isLoading"/>
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <ListCard v-for="shoppinglist in shoppinglists" :key="shoppinglist.id" :list="shoppinglist" />
+        </v-col>
+      </v-row>
+      <v-row dense v-else>
+        <v-col cols="12">
+          <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
+        </v-col>
+      </v-row>
     </v-container>
     <v-snackbar
       v-model="snackbar"

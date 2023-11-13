@@ -2,7 +2,16 @@
   <div class="stores">
     <AddStoreForm @form-submitted="createStore"/>
     <v-container>
-      <StoreCard v-for="store in stores" :key="store.id" :store="store" :isLoading="isLoading"/>
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <StoreCard v-for="store in stores" :key="store.id" :store="store"/>
+        </v-col>
+      </v-row>
+      <v-row dense v-else>
+        <v-col cols="12">
+          <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
+        </v-col>
+      </v-row>
     </v-container>
     <v-snackbar
       v-model="snackbar"

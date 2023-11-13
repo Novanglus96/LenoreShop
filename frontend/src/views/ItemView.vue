@@ -2,7 +2,16 @@
   <div class="items">
     <AddItemForm @form-submitted="createItem" />
     <v-container>
-      <ItemCard v-for="item in items" :key="item.id" :item="item" :isLoading="isLoading" />
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <ItemCard v-for="item in items" :key="item.id" :item="item" />
+        </v-col>
+      </v-row>
+      <v-row dense v-else>
+        <v-col cols="12">
+          <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
+        </v-col>
+      </v-row>
     </v-container>
     <v-snackbar
       v-model="snackbar"

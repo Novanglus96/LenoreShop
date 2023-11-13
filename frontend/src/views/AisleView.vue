@@ -2,7 +2,16 @@
   <div class="aisles">
     <AddAisleForm @form-submitted="createAisle" :stores="stores"/>
     <v-container>
-      <AisleCard v-for="aisle in aisles" :aisle="aisle" :isLoading="isLoading" :key="aisle.id"/>
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <AisleCard v-for="aisle in aisles" :aisle="aisle" :key="aisle.id"/>
+        </v-col>
+      </v-row>
+      <v-row dense v-else>
+        <v-col cols="12">
+          <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
+        </v-col>
+      </v-row>
     </v-container>
     <v-snackbar
       v-model="snackbar"

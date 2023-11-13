@@ -1,30 +1,21 @@
 <template>
-        <v-row dense v-if="!isLoading">
-          <v-col cols="12">
-            <v-card
-              color="primary"
-            >
-                  <v-card-title class="text-h5">
-                    <v-icon
-                  icon="mdi-storefront"
-                  size="25"
-                  class="me-1 pb-1"
-                ></v-icon>{{store.name}}
-                  </v-card-title>
-                  
-                  <v-card-actions>
-                    <v-btn icon="mdi-land-rows-vertical" @click="showAisle(store.id)" />
-                    <v-btn icon="mdi-pencil"/>
-                    <v-btn icon="mdi-delete"/>
-                  </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row dense v-else>
-          <v-col cols="12">
-            <v-skeleton-loader type="card" color="primary"></v-skeleton-loader>
-          </v-col>
-        </v-row>
+  <v-card
+    color="primary"
+  >
+        <v-card-title class="text-h5">
+          <v-icon
+        icon="mdi-storefront"
+        size="25"
+        class="me-1 pb-1"
+      ></v-icon>{{store.name}}
+        </v-card-title>
+        
+        <v-card-actions>
+          <v-btn icon="mdi-land-rows-vertical" @click="showAisle(store.id)" />
+          <v-btn icon="mdi-pencil"/>
+          <v-btn icon="mdi-delete"/>
+        </v-card-actions>
+  </v-card>
 </template>
 
 <script setup>
@@ -33,8 +24,7 @@
   import { useRouter } from 'vue-router';
 
   defineProps({
-    store: Array,
-    isLoading: Boolean
+    store: Array
   })
 
   const router = useRouter();
