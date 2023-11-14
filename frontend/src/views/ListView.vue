@@ -4,7 +4,7 @@
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <ShoppingList :list="fullshoppinglist" :isLoading="isLoading"/>
+          <ShoppingList @item-purchased="purchaseItem" :list="fullshoppinglist" :isLoading="isLoading"/>
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -46,7 +46,7 @@ const snackbarTimeout = ref(1500);
 
 const { aisles } = useAisles(store.store_id)
 const { items } = useItems()
-const { fullshoppinglist, isLoading, addListItem } = useFullShoppingList(store.list_id)
+const { fullshoppinglist, isLoading, addListItem, updateListItem } = useFullShoppingList(store.list_id)
 
 const createListItem = async (newListItem) => {
   try{
@@ -54,6 +54,14 @@ const createListItem = async (newListItem) => {
     showSnackbar('Item added', 'success')
   } catch (error) {
     showSnackbar('Item not added', 'error')
+  }
+}
+
+const purchaseItem = async (listItem) => {
+  try{
+    await updateListItem(listItem)
+  } catch {
+    showSnackbar('Item not purchased', 'error')
   }
 }
 

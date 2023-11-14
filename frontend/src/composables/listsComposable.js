@@ -12,6 +12,13 @@ async function createShoppingList(newShoppingList) {
     
     return listitem.data
   }
+
+  async function updateListItemFunction(updatedListItem) {
+    console.log('updatedlistitem:', updatedListItem)
+    const listitem = await axios.put('https://shopping.danielleandjohn.love/api/listitems/' + updatedListItem.id, updatedListItem)
+    
+    return listitem.data
+  }
   
   export function useShoppingLists() {
     const queryClient = useQueryClient()
@@ -58,13 +65,26 @@ async function createShoppingList(newShoppingList) {
       }
     })
 
+    const updateListItemMutation = useMutation({
+      mutationFn: updateListItemFunction,
+      onSuccess: () => {
+        console.log('Success updating list item')
+        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+      }
+    })
+
     async function addListItem(listItem) {
       addListItemMutation.mutate(listItem);
+    }
+
+    async function updateListItem(listItem) {
+      updateListItemMutation.mutate(listItem);
     }
 
     return {
       fullshoppinglist,
       isLoading,
-      addListItem
+      addListItem,
+      updateListItem
     }
   }
