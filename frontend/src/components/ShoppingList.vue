@@ -12,7 +12,7 @@
           <v-list-item-title><span :class="item.purchased ? 'text-grey text-decoration-line-through' : 'text-black'">{{ item.qty }} {{ item.item.name }}</span></v-list-item-title>
           <v-list-item-subtitle><span :class="item.purchased ? 'text-grey text-decoration-line-through' : 'text-black'">{{ item.notes }}</span></v-list-item-subtitle>
           <template v-slot:prepend>
-            <v-btn variant="plain" :ripple="false" @click="purchaseItem(item)"><v-icon :icon="item.purchased ? 'mdi-checkbox-marked-outline' : 'mdi-checkbox-blank-outline' " :color="!item.purchased ? 'grey' : 'success'" flat></v-icon></v-btn>
+            <v-btn variant="plain" :ripple="false" @click="purchaseItem(item)"><v-icon :icon="item.purchased ? 'mdi-checkbox-marked-outline' : 'mdi-checkbox-blank-outline' " :color="!item.purchased ? 'grey' : 'success'" flat size="x-large"></v-icon></v-btn>
           </template>
           <template v-slot:append>
             <v-btn icon="mdi-pencil" variant="plain" :ripple="false"></v-btn>
