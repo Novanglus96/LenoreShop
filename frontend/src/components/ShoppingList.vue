@@ -35,7 +35,7 @@
 
               <template v-slot:append>
                 <v-expand-x-transition>
-                  <v-icon v-if="item.purchased" color="success"> mdi-check </v-icon>
+                  <v-icon color="success"> mdi-check </v-icon>
                 </v-expand-x-transition>
               </template>
             </v-list-item>
