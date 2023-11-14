@@ -158,7 +158,7 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
     store = shoppinglist.store
     aisles = Aisle.objects.filter(store=store, listitem__shopping_list=shoppinglist).order_by('order')
     aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
-    listitems = ListItem.objects.filter(shopping_list=shoppinglist)
+    listitems = ListItem.objects.filter(shopping_list=shoppinglist).order_by('purchased', 'item__name')
     for listitem in listitems:
         aisles_dict[listitem.aisle.id].listitems.append(
             ListItemOut(
@@ -197,7 +197,7 @@ def list_aislesbystore(request, store_id: int):
 
 @api.get("/items", response=List[ItemOut])
 def list_items(request):
-    qs = Item.objects.all()
+    qs = Item.objects.all().order_by('name')
     return qs
 
 
