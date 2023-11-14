@@ -15,8 +15,6 @@
           <v-container>
             <v-row>
               <v-col
-                sm="6"
-                md="4"
               >
                 <v-text-field
                   label="qty"
@@ -25,9 +23,9 @@
                   type="number"
                 ></v-text-field>
               </v-col>
+            </v-row>
+            <v-row>
               <v-col
-                sm="6"
-                md="4"
               >
                 <v-select
                     label="Item*"
@@ -38,9 +36,9 @@
                     v-model="formData.item_id"  
                 ></v-select>
               </v-col>
+            </v-row>
+            <v-row>
               <v-col
-                sm="6"
-                md="4"
               >
                 <v-select
                     label="Aisle*"
@@ -54,9 +52,6 @@
             </v-row>
             <v-row>
               <v-col
-                cols="12"
-                sm="6"
-                md="4"
               >
                 <v-text-field
                   label="notes"
