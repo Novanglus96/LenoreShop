@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Store(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     
     def __str__(self):
         return self.name
@@ -17,8 +17,9 @@ class Aisle(models.Model):
         return f"{self.store.name} | {self.name}"
     
 class Item(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     matches = models.CharField(max_length=254, null=True, blank=True)
+    plural = models.CharField(max_length=50, null=True, blank=True)
     
     def __str__(self):
         return self.name
