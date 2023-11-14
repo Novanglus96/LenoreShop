@@ -97,6 +97,8 @@ class ShoppingListFull(Schema):
     store_id: int
     store: StoreOut
     aisles: List[AislesWithItems]
+    totalitems: int
+    totalpurchased: int
 
 
 @api.get("/me", response=UserSchema)
@@ -159,6 +161,9 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
     aisles = Aisle.objects.filter(store=store, listitem__shopping_list=shoppinglist).order_by('order')
     aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
     listitems = ListItem.objects.filter(shopping_list=shoppinglist).order_by('purchased', 'item__name')
+    total_purchased_count = ListItem.objects.filter(shopping_list=shoppinglist, purchased=True).count()
+    total_items_count = ListItem.objects.filter(shopping_list=shoppinglist).order_by('purchased', 'item__name').count()
+
     for listitem in listitems:
         aisles_dict[listitem.aisle.id].listitems.append(
             ListItemOut(
@@ -173,12 +178,15 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
                 item=ItemOut(id=listitem.item.id, name=listitem.item.name, matches=listitem.item.matches)
             )
         )
+
     response_data = ShoppingListFull(
         id=shoppinglist.id,
         name=shoppinglist.name,
         store_id=store.id,
         store=StoreOut(id=store.id, name=store.name),
-        aisles=list(aisles_dict.values())
+        aisles=list(aisles_dict.values()),
+        totalitems=total_items_count,
+        totalpurchased=total_purchased_count
     )
     return response_data
 
