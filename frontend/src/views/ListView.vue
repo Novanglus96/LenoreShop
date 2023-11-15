@@ -4,7 +4,34 @@
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <ShoppingList @item-purchased="purchaseItem" :list="fullshoppinglist" :isLoading="isLoading"/>
+          <h2 class="text-h6 text-primary ps-4">{{ fullshoppinglist.name }}</h2>
+          <h2 class="text-subtitle-1 text-info ps-4">{{ fullshoppinglist.store.name }}</h2>
+          <h2 class="text-subtitle-2 text-grey ps-4">{{ fullshoppinglist.totalpurchased }} of {{ fullshoppinglist.totalitems }} purchased</h2>
+        </v-col>
+      </v-row>
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <ShoppingList @item-purchased="purchaseItem" :listitems="fullshoppinglist.aisles" :purchased="false"/>
+        </v-col>
+      </v-row>
+      <v-row dense v-else>
+        <v-col cols="12">
+          <v-skeleton-loader
+            type="list-item-two-line"
+          ></v-skeleton-loader>
+          <v-skeleton-loader
+            type="list-item-avatar-two-line"
+          ></v-skeleton-loader>
+        </v-col>
+      </v-row>
+      <v-row dense>
+        <v-col cols="12">
+          <h2 class="text-subtitle-1 text-info ps-4">Purchased Items</h2>
+        </v-col>
+      </v-row>
+      <v-row dense v-if="!isLoading">
+        <v-col cols="12">
+          <ShoppingList @item-purchased="purchaseItem" :listitems="fullshoppinglist.purchased_aisles" :purchased="true"/>
         </v-col>
       </v-row>
       <v-row dense v-else>
