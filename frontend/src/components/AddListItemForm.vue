@@ -5,7 +5,7 @@
       width="1024"
     >
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props">Add Item</v-btn>
+        <v-btn v-bind="props" density="compact">Add Item</v-btn>
       </template>
       <v-card>
         <v-card-title>

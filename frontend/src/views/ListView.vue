@@ -9,6 +9,11 @@
           <h2 class="text-subtitle-2 text-grey ps-4">{{ fullshoppinglist.totalpurchased }} of {{ fullshoppinglist.totalitems }} purchased</h2>
         </v-col>
       </v-row>
+      <v-row dense>
+        <v-col class="d-flex justify-center">
+          <v-btn density="compact" variant="outlined" prepend-icon="mdi-delete-sweep-outline">Clear Purchased</v-btn><v-btn density="compact" variant="outlined" prepend-icon="mdi-delete-sweep-outline">Clear All</v-btn>
+        </v-col>
+      </v-row>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
           <ShoppingList @item-purchased="purchaseItem" :listitems="fullshoppinglist.aisles" :purchased="false"/>
