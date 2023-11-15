@@ -309,6 +309,20 @@ def delete_listitem(request, listitem_id: int):
     return {"success": True}
 
 
+@api.delete("/listitems/deleteall/{shoppinglist_id}")
+def delete_listitems_by_shoppinglist(request, shoppinglist_id: int):
+    listitems = ListItem.objects.filter(shopping_list_id=shoppinglist_id)
+    listitems.delete()
+    return {"success": True}
+
+
+@api.delete("/listitems/deletepurchased/{shoppinglist_id}")
+def delete_purchased_listitems_by_shoppinglist(request, shoppinglist_id: int):
+    listitems = ListItem.objects.filter(shopping_list_id=shoppinglist_id, purchased=True)
+    listitems.delete()
+    return {"success": True}
+
+
 @api.delete("/shoppinglists/{shoppinglist_id}")
 def delete_shoppinglist(request, shoppinglist_id: int):
     shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
