@@ -11,7 +11,7 @@
       </v-row>
       <v-row dense>
         <v-col class="d-flex justify-center">
-          <v-btn density="compact" variant="outlined" prepend-icon="mdi-delete-sweep-outline">Clear Purchased</v-btn><v-btn density="compact" variant="outlined" prepend-icon="mdi-delete-sweep-outline">Clear All</v-btn>
+          <v-btn density="compact" variant="outlined" prepend-icon="mdi-delete-sweep-outline" @click="clearPurchasedListFunction(fullshoppinglist.id)">Clear Purchased</v-btn><v-btn density="compact" variant="outlined" prepend-icon="mdi-delete-sweep-outline" @click="clearListFunction(fullshoppinglist.id)">Clear All</v-btn>
         </v-col>
       </v-row>
       <v-row dense v-if="!isLoading">
@@ -78,7 +78,7 @@ const snackbarTimeout = ref(1500);
 
 const { aisles } = useAisles(store.store_id)
 const { items } = useItems()
-const { fullshoppinglist, isLoading, addListItem, updateListItem } = useFullShoppingList(store.list_id)
+const { fullshoppinglist, isLoading, addListItem, updateListItem, clearList, clearPurchasedList } = useFullShoppingList(store.list_id)
 
 const createListItem = async (newListItem) => {
   try{
@@ -94,6 +94,24 @@ const purchaseItem = async (listItem) => {
     await updateListItem(listItem)
   } catch {
     showSnackbar('Item not purchased', 'error')
+  }
+}
+
+const clearListFunction = async (shoppinglistID) => {
+  try{
+    await clearList(shoppinglistID)
+    showSnackbar('List cleared', 'success')
+  } catch {
+    showSnackbar('List not cleared', 'error')
+  }
+}
+
+const clearPurchasedListFunction = async (shoppinglistID) => {
+  try{
+    await clearPurchasedList(shoppinglistID)
+    showSnackbar('Purchased list cleared', 'success')
+  } catch {
+    showSnackbar('Purchased list not cleared', 'error')
   }
 }
 

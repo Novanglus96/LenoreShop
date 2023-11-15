@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import axios from "axios";
 
-async function createShoppingList(newShoppingList) {
+  async function createShoppingList(newShoppingList) {
     const shoppingList = await axios.post('https://shopping.danielleandjohn.love/api/shoppinglists', newShoppingList)
     
     return shoppingList.data
@@ -17,6 +17,18 @@ async function createShoppingList(newShoppingList) {
     const listitem = await axios.put('https://shopping.danielleandjohn.love/api/listitems/' + updatedListItem.id, updatedListItem)
     
     return listitem.data
+  }
+
+  async function clearListFunction(shoppinglistID) {
+    const shoppinglist = await axios.delete('https://shopping.danielleandjohn.love/api/listitems/deleteall/' + shoppinglistID)
+
+    return shoppinglist
+  }
+
+  async function clearPurchasedListFunction(shoppinglistID) {
+    const shoppinglist = await axios.delete('https://shopping.danielleandjohn.love/api/listitems/deletepurchased/' + shoppinglistID)
+
+    return shoppinglist
   }
   
   export function useShoppingLists() {
@@ -72,6 +84,22 @@ async function createShoppingList(newShoppingList) {
       }
     })
 
+    const clearListMutation = useMutation({
+      mutationFn: clearListFunction,
+      onSuccess: () => {
+        console.log('Sucess clearing list')
+        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+      }
+    })
+
+    const clearPurchasedListMutation = useMutation({
+      mutationFn: clearPurchasedListFunction,
+      onSuccess: () => {
+        console.log('Success clearing purchased list')
+        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+      }
+    })
+
     async function addListItem(listItem) {
       addListItemMutation.mutate(listItem);
     }
@@ -80,10 +108,20 @@ async function createShoppingList(newShoppingList) {
       updateListItemMutation.mutate(listItem);
     }
 
+    async function clearList(shoppinglistID) {
+      clearListMutation.mutate(shoppinglistID);
+    }
+
+    async function clearPurchasedList(shoppinglistID) {
+      clearPurchasedListMutation.mutate(shoppinglistID);
+    }
+
     return {
       fullshoppinglist,
       isLoading,
       addListItem,
-      updateListItem
+      updateListItem,
+      clearList,
+      clearPurchasedList
     }
   }
