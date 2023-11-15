@@ -14,7 +14,6 @@ async function createShoppingList(newShoppingList) {
   }
 
   async function updateListItemFunction(updatedListItem) {
-    console.log('updatedlistitem:', updatedListItem)
     const listitem = await axios.put('https://shopping.danielleandjohn.love/api/listitems/' + updatedListItem.id, updatedListItem)
     
     return listitem.data
