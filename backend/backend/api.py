@@ -97,6 +97,7 @@ class ShoppingListFull(Schema):
     store_id: int
     store: StoreOut
     aisles: List[AislesWithItems]
+    purchased_aisles: List[AislesWithItems]
     totalitems: int
     totalpurchased: int
 
@@ -160,12 +161,29 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
     store = shoppinglist.store
     aisles = Aisle.objects.filter(store=store, listitem__shopping_list=shoppinglist).order_by('order')
     aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
-    listitems = ListItem.objects.filter(shopping_list=shoppinglist).order_by('purchased', 'item__name')
+    purchased_aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
+    listitems = ListItem.objects.filter(shopping_list=shoppinglist, purchased=False).order_by('purchased', 'item__name')
+    purchasedlistitems = ListItem.objects.filter(shopping_list=shoppinglist, purchased=True).order_by('purchased', 'item__name')
     total_purchased_count = ListItem.objects.filter(shopping_list=shoppinglist, purchased=True).count()
     total_items_count = ListItem.objects.filter(shopping_list=shoppinglist).order_by('purchased', 'item__name').count()
 
     for listitem in listitems:
         aisles_dict[listitem.aisle.id].listitems.append(
+            ListItemOut(
+                id=listitem.id,
+                qty=listitem.qty,
+                purchased=listitem.purchased,
+                notes=listitem.notes,
+                purch_date=listitem.purch_date,
+                item_id=listitem.item.id,
+                aisle_id=listitem.aisle_id,
+                shopping_list_id=listitem.shopping_list.id,
+                item=ItemOut(id=listitem.item.id, name=listitem.item.name, matches=listitem.item.matches)
+            )
+        )
+
+    for listitem in purchasedlistitems:
+        purchased_aisles_dict[listitem.aisle.id].listitems.append(
             ListItemOut(
                 id=listitem.id,
                 qty=listitem.qty,
@@ -185,6 +203,7 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
         store_id=store.id,
         store=StoreOut(id=store.id, name=store.name),
         aisles=list(aisles_dict.values()),
+        purchased_aisles=list(purchased_aisles_dict.values()),
         totalitems=total_items_count,
         totalpurchased=total_purchased_count
     )
