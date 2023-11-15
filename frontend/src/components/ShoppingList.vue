@@ -2,6 +2,7 @@
   <div>
     <h2 class="text-h6 text-primary ps-4">{{ list.name }}</h2>
     <h2 class="text-subtitle-1 text-info ps-4">{{ list.store.name }}</h2>
+    <h2 class="text-subtitle-2 text-grey ps-4">{{ list.totalpurchased }} of {{ list.totalitems }} purchased</h2>
     <v-list density="compact" elevation="1">
       <div
         v-for="aisle in list.aisles"
