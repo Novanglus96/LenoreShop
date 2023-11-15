@@ -27,14 +27,17 @@
             <v-row>
               <v-col
               >
-                <v-select
+                <v-combobox
                     label="Item*"
                     required
                     :items="props.items"
                     item-title="name"
                     item-value="id"
-                    v-model="formData.item_id"  
-                ></v-select>
+                    v-model="formData.item_id"
+                    chips
+                    @change="itemChanged"
+                    :return-object="false"
+                ></v-combobox>
               </v-col>
             </v-row>
             <v-row>
@@ -88,6 +91,18 @@
 <script setup>
   import { ref, defineEmits, defineProps } from 'vue';
   import { useMainStore } from '@/stores/main';
+  import { useItems } from '@/composables/itemsComposable'
+
+  const { addItem } = useItems()
+
+  const createItem = async (newItem) => {
+    try{
+      const data = await addItem(newItem)
+      return data
+    } catch (error) {
+      console.log('Item not added', error)
+    }
+  }
 
   const store = useMainStore()
 
@@ -110,6 +125,14 @@
   const submitForm = async () => {
     emit('formSubmitted', formData.value)
     dialog.value = false;
+  }
+
+  const itemChanged = async () => {
+    const newItem = {
+      name: formData.value.item_id
+    }
+    const newItemID = await createItem(newItem)
+    formData.value.item_id = newItemID.id
   }
 
 </script>

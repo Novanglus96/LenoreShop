@@ -3,7 +3,6 @@ import axios from "axios";
 
 async function createItem(newItem) {
     const item = await axios.post('https://shopping.danielleandjohn.love/api/items', newItem)
-    
     return item.data
   }
   
@@ -18,14 +17,16 @@ async function createItem(newItem) {
     
     const createItemMutation = useMutation({
       mutationFn: createItem,
-      onSuccess: () => {
-        console.log('Success adding item')
+      onSuccess: (data) => {
+        console.log('Success adding item', data)
         queryClient.invalidateQueries({ queryKey: ['items'] })
+        return data
       }
     })
   
     async function addItem(newItem) {
-      createItemMutation.mutate(newItem);
+      const item = await createItemMutation.mutateAsync(newItem)
+      return item
     }
   
     return {
