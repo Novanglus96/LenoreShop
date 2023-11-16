@@ -106,13 +106,13 @@
   const props = defineProps({
     items: Array,
     aisles: Array,
-    dialog: {
+    listItemFormDialog: {
       type: Boolean,
       default: false
     }
   })
 
-  const show = ref(props.dialog)
+  const show = ref(props.listItemFormDialog)
   const emit = defineEmits(['formSubmitted', 'updateDialog'])
   const formData = ref({
         qty: 1,
