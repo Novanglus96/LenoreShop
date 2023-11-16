@@ -1,7 +1,7 @@
 <template>
   <div class="lists">
     <v-btn density="compact" @click="listItemFormDialog = true">Add Item</v-btn>
-    <ListItemForm v-model="listItemFormDialog" @form-submitted="createListItem" :items="items" :aisles="aisles" @update-dialog="updateDialog"/>
+    <ListItemForm v-model="listItemFormDialog" @add-list-item="createListItem" @update-dialog="updateDialog" :isEdit="false"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -17,7 +17,7 @@
       </v-row>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <ShoppingList @item-purchased="purchaseItem" :listitems="fullshoppinglist.aisles" :purchased="false"/>
+          <ShoppingList @edit-list-item="editListItem" @item-purchased="purchaseItem" :listitems="fullshoppinglist.aisles" :purchased="false"/>
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -37,7 +37,7 @@
       </v-row>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <ShoppingList @item-purchased="purchaseItem" :listitems="fullshoppinglist.purchased_aisles" :purchased="true"/>
+          <ShoppingList @edit-list-item="editListItem" @item-purchased="purchaseItem" :listitems="fullshoppinglist.purchased_aisles" :purchased="true"/>
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -67,12 +67,10 @@ import { ref } from 'vue'
 import ShoppingList from '@/components/ShoppingList.vue'
 import ListItemForm from '@/components/ListItemForm.vue'
 import { useFullShoppingList } from '@/composables/listsComposable'
-import { useItems } from '@/composables/itemsComposable'
-import { useAisles } from '@/composables/aislesComposable'
-import { useMainStore } from '@/stores/main'
+import { useMainStore } from '@/stores/main';
 
+const store = useMainStore()
 const listItemFormDialog = ref(false);
-const store = useMainStore();
 const snackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
@@ -81,9 +79,16 @@ const updateDialog = () => {
   listItemFormDialog.value = false
 }
 
-const { aisles } = useAisles(store.store_id)
-const { items } = useItems()
 const { fullshoppinglist, isLoading, addListItem, updateListItem, clearList, clearPurchasedList } = useFullShoppingList(store.list_id)
+
+const editListItem = async (listItem) => {
+  try{
+    await updateListItem(listItem)
+    showSnackbar('Item updated', 'success')
+  } catch {
+    showSnackbar('Item not updated', 'error')
+  }
+}
 
 const createListItem = async (newListItem) => {
   try{

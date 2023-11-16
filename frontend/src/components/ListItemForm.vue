@@ -6,7 +6,8 @@
     >
       <v-card>
         <v-card-title>
-          <span class="text-h5">Add Item</span>
+          <span class="text-h5" v-if="props.isEdit == false">Add Item</span>
+          <span class="text-h5" v-else>Edit Item</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -27,7 +28,7 @@
                 <v-combobox
                     label="Item*"
                     required
-                    :items="props.items"
+                    :items="items"
                     item-title="name"
                     item-value="id"
                     v-model="formData.item_id"
@@ -43,7 +44,7 @@
                 <v-select
                     label="Aisle*"
                     required
-                    :items="props.aisles"
+                    :items="aisles"
                     item-title="name"
                     item-value="id"
                     v-model="formData.aisle_id"  
@@ -86,11 +87,25 @@
     
 </template>
 <script setup>
-  import { ref, defineEmits, defineProps } from 'vue';
+  import { ref, defineEmits, defineProps, onMounted, watchEffect } from 'vue';
   import { useMainStore } from '@/stores/main';
   import { useItems } from '@/composables/itemsComposable'
+  import { useAisles } from '@/composables/aislesComposable'
 
-  const { addItem } = useItems()
+  const store = useMainStore()
+  const { aisles } = useAisles(store.store_id)
+  const { addItem, items } = useItems()
+  const props = defineProps({
+    listItemFormDialog: {
+      type: Boolean,
+      default: false
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    passedFormData: Array
+  })
 
   const createItem = async (newItem) => {
     try{
@@ -100,31 +115,42 @@
       console.log('Item not added', error)
     }
   }
-
-  const store = useMainStore()
-
-  const props = defineProps({
-    items: Array,
-    aisles: Array,
-    listItemFormDialog: {
-      type: Boolean,
-      default: false
-    }
-  })
-
+  
   const show = ref(props.listItemFormDialog)
-  const emit = defineEmits(['formSubmitted', 'updateDialog'])
+  const emit = defineEmits(['addListItem', 'editListItem', 'updateDialog'])
   const formData = ref({
+        id: null,
         qty: 1,
         purchased: false,
         notes: '',
         item_id: null,
-        aisle_id: 0,
+        aisle_id: null,
         shopping_list_id: store.list_id,
       })
 
+  const watchPassedFormData = () => {
+    watchEffect(() => {
+      formData.value.id = props.passedFormData.id;
+      formData.value.qty = props.passedFormData.qty;
+      formData.value.purchased = props.passedFormData.purchased;
+      formData.value.notes = props.passedFormData.notes;
+      formData.value.item_id = props.passedFormData.item_id;
+      formData.value.aisle_id = props.passedFormData.aisle_id;
+      formData.value.shopping_list_id = props.passedFormData.shopping_list_id;
+    })
+  }
+
+  onMounted(() => {
+    watchPassedFormData();
+  })
+
   const submitForm = async () => {
-    emit('formSubmitted', formData.value)
+    if (props.isEdit == false) {
+      emit('addListItem', formData.value)
+    } else {
+      emit('editListItem', formData.value)
+    }
+    
     closeDialog()
   }
 
