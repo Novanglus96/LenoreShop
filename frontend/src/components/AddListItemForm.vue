@@ -1,12 +1,9 @@
 <template>
     <v-dialog
-      v-model="dialog"
+      v-model="show"
       persistent
       width="1024"
     >
-      <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" density="compact">Add Item</v-btn>
-      </template>
       <v-card>
         <v-card-title>
           <span class="text-h5">Add Item</span>
@@ -72,7 +69,7 @@
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="dialog = false"
+            @click="closeDialog()"
           >
             Close
           </v-btn>
@@ -108,11 +105,15 @@
 
   const props = defineProps({
     items: Array,
-    aisles: Array
+    aisles: Array,
+    dialog: {
+      type: Boolean,
+      default: false
+    }
   })
 
-  const dialog = ref(false)
-  const emit = defineEmits(['formSubmitted'])
+  const show = ref(props.dialog)
+  const emit = defineEmits(['formSubmitted', 'updateDialog'])
   const formData = ref({
         qty: 1,
         purchased: false,
@@ -124,8 +125,12 @@
 
   const submitForm = async () => {
     emit('formSubmitted', formData.value)
-    dialog.value = false;
+    closeDialog()
   }
+
+  const closeDialog = () => {
+    emit('updateDialog', false);
+  };
 
   const itemChanged = async () => {
     const newItem = {

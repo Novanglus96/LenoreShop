@@ -1,6 +1,7 @@
 <template>
   <div class="lists">
-    <AddListItemForm @form-submitted="createListItem" :items="items" :aisles="aisles"/>
+    <v-btn density="compact" @click="dialog = true">Add Item</v-btn>
+    <AddListItemForm v-model="dialog" @form-submitted="createListItem" :items="items" :aisles="aisles" @update-dialog="updateDialog"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -70,11 +71,15 @@ import { useItems } from '@/composables/itemsComposable'
 import { useAisles } from '@/composables/aislesComposable'
 import { useMainStore } from '@/stores/main'
 
+const dialog = ref(false);
 const store = useMainStore();
 const snackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
 const snackbarTimeout = ref(1500);
+const updateDialog = () => {
+  dialog.value = false
+}
 
 const { aisles } = useAisles(store.store_id)
 const { items } = useItems()
