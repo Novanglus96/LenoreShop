@@ -1,6 +1,6 @@
 <template>
   <div class="lists">
-    <AddListForm @form-submitted="createShoppingList" :stores="stores"/>
+    <ListForm @form-submitted="createShoppingList" :stores="stores"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -27,7 +27,7 @@
 <script setup>
 import { ref } from 'vue'
 import ListCard from '@/components/ListCard.vue'
-import AddListForm from '@/components/AddListForm.vue'
+import ListForm from '@/components/ListForm.vue'
 import { useShoppingLists } from '@/composables/listsComposable'
 import { useStores } from '@/composables/storesComposable'
 
