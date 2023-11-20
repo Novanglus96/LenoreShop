@@ -6,7 +6,8 @@
   >
     <v-card>
       <v-card-title>
-        <span class="text-h5">Add Item</span>
+        <span class="text-h5" v-if="props.isEdit == false">Add Item</span>
+        <span class="text-h5" v-else>Edit Item</span>
       </v-card-title>
       <v-card-text>
         <v-container>
