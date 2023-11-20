@@ -12,7 +12,7 @@
         
         <v-card-actions>
           <v-btn icon="mdi-pencil" @click="selectedItem(item)"/>
-          <AddItemForm v-model="itemFormDialog" @edit-item="updateItem" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData"/>
+          <ItemForm v-model="itemFormDialog" @edit-item="updateItem" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData"/>
           <v-btn icon="mdi-delete" @click="deleteDialog = true"/>
             <v-dialog
               v-model="deleteDialog"
@@ -34,7 +34,7 @@
 
 <script setup>
   import { defineProps, defineEmits, ref } from 'vue';
-  import AddItemForm from '@/components/AddItemForm.vue'
+  import ItemForm from '@/components/ItemForm.vue'
 
   const emit = defineEmits(['editItem', 'removeItem'])
   const itemFormDialog = ref(false)

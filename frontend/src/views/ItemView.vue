@@ -1,7 +1,7 @@
 <template>
   <div class="items">
     <v-btn density="compact" @click="itemFormDialog = true">Add Item</v-btn>
-    <AddItemForm v-model="itemFormDialog" @add-item="createItem" @edit-item="updateItem" :isEdit="false" @update-dialog="updateDialog"/>
+    <ItemForm v-model="itemFormDialog" @add-item="createItem" @edit-item="updateItem" :isEdit="false" @update-dialog="updateDialog"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -28,7 +28,7 @@
 <script setup>
 import { ref } from 'vue'
 import ItemCard from '@/components/ItemCard.vue'
-import AddItemForm from '@/components/AddItemForm.vue'
+import ItemForm from '@/components/ItemForm.vue'
 import { useItems } from '@/composables/itemsComposable'
 
 const itemFormDialog = ref(false);
