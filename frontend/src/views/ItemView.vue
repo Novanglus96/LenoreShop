@@ -1,6 +1,7 @@
 <template>
   <div class="items">
-    <AddItemForm @form-submitted="createItem" />
+    <v-btn density="compact" @click="itemFormDialog = true">Add Item</v-btn>
+    <AddItemForm v-model="itemFormDialog" @add-item="createItem" @edit-item="updateItem" :isEdit="false" @update-dialog="updateDialog"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -30,6 +31,7 @@ import ItemCard from '@/components/ItemCard.vue'
 import AddItemForm from '@/components/AddItemForm.vue'
 import { useItems } from '@/composables/itemsComposable'
 
+const itemFormDialog = ref(false);
 const snackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
@@ -50,6 +52,10 @@ const showSnackbar = (text, color) => {
   snackbarText.value = text;
   snackbarColor.value = color;
   snackbar.value = true;
+}
+
+const updateDialog = () => {
+  itemFormDialog.value = false
 }
 
 </script>
