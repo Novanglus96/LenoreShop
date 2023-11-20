@@ -1,15 +1,13 @@
 <template>
     <v-dialog
-      v-model="dialog"
+      v-model="show"
       persistent
       width="1024"
     >
-      <template v-slot:activator="{ props }">
-        <v-btn v-bind="props">Add Aisle</v-btn>
-      </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">Add Aisle</span>
+          <span class="text-h5" v-if="props.isEdit == false">Add Aisle</span>
+          <span class="text-h5" v-else>Edit Aisle</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -22,7 +20,7 @@
                 <v-select
                     label="Store*"
                     required
-                    :items="props.stores"
+                    :items="stores"
                     item-title="name"
                     item-value="id"
                     v-model="formData.store_id"  
@@ -43,6 +41,19 @@
                 ></v-text-field>
               </v-col>
             </v-row>
+            <v-row v-if="props.isEdit == true">
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  label="Order*"
+                  v-model="formData.order"
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
@@ -51,7 +62,7 @@
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="dialog = false"
+            @click="closeDialog"
           >
             Close
           </v-btn>
@@ -68,26 +79,57 @@
     
 </template>
 <script setup>
-  import { ref, defineEmits, defineProps } from 'vue';
+  import { ref, defineEmits, defineProps, onMounted, watchEffect } from 'vue';
   import { useMainStore } from '@/stores/main';
+  import { useStores } from '@/composables/storesComposable'
 
+  const { stores } = useStores()
   const props = defineProps({
-    stores: Array
+    aisleFormDialog: {
+      type: Boolean,
+      default: false
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    passedFormData: Array
   })
 
   const mainstore = useMainStore();
-
-  const emit = defineEmits(['formSubmitted'])
-  const dialog = ref(false)
+  const show = ref(props.aisleFormDialog)
+  const emit = defineEmits(['addAisle', 'editAisle', 'updateDialog'])
   const formData = ref({
+        id: 0,
         name: '',
         store_id: mainstore.store_id,
         order: 1,
       })
-  
-  const submitForm = async () => {
-    emit('formSubmitted', formData.value)
-    dialog.value = false;
+
+  const watchPassedFormData = () => {
+    watchEffect(() => {
+      formData.value.id = props.passedFormData.id;
+      formData.value.name = props.passedFormData.name;
+      formData.value.store_id = props.passedFormData.store_id;
+      formData.value.order = props.passedFormData.order;
+    })
   }
 
+  onMounted(() => {
+    watchPassedFormData();
+  })
+
+  const submitForm = async () => {
+    if (props.isEdit == false) {
+      emit('addAisle', formData.value)
+    } else {
+      emit('editAisle', formData.value)
+    }
+    
+    closeDialog()
+  }
+
+  const closeDialog = () => {
+    emit('updateDialog', false);
+  };
 </script>

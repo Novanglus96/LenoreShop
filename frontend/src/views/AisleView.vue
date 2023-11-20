@@ -1,10 +1,11 @@
 <template>
   <div class="aisles">
-    <AddAisleForm @form-submitted="createAisle" :stores="stores"/>
+    <v-btn density="compact" @click="aisleFormDialog = true">Add Aisle</v-btn>
+    <AddAisleForm v-model="aisleFormDialog" @add-aisle="createAisle" :isEdit="false" @update-dialog="updateDialog"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <AisleCard v-for="aisle in aisles" :aisle="aisle" :key="aisle.id"/>
+          <AisleCard v-for="aisle in aisles" :aisle="aisle" :key="aisle.id" @edit-aisle="updateAisle"/>
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -30,16 +31,18 @@ import AisleCard from '@/components/AisleCard.vue'
 import AddAisleForm from '@/components/AddAisleForm.vue'
 import { useAisles } from '@/composables/aislesComposable'
 import { useMainStore } from '@/stores/main'
-import { useStores } from '@/composables/storesComposable'
 
+const aisleFormDialog = ref(false);
 const store = useMainStore();
 const snackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
 const snackbarTimeout = ref(1500);
+const updateDialog = () => {
+  aisleFormDialog.value = false
+}
 
-const { aisles, isLoading, addAisle } = useAisles(store.store_id)
-const { stores } = useStores()
+const { aisles, isLoading, addAisle, editAisle } = useAisles(store.store_id)
 
 const createAisle = async (newAisle) => {
   try{
@@ -47,6 +50,15 @@ const createAisle = async (newAisle) => {
     showSnackbar('Aisle added', 'success')
   } catch (error) {
     showSnackbar('Aisle not added', 'error')
+  }
+}
+
+const updateAisle = async (updatedAisle) => {
+  try{
+    await editAisle(updatedAisle)
+    showSnackbar('Aisle updated', 'success')
+  } catch {
+    showSnackbar('Aisle not updated', 'error')
   }
 }
 
