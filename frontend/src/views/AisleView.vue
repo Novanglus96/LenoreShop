@@ -1,7 +1,7 @@
 <template>
   <div class="aisles">
     <v-btn density="compact" @click="aisleFormDialog = true">Add Aisle</v-btn>
-    <AddAisleForm v-model="aisleFormDialog" @add-aisle="createAisle" :isEdit="false" @update-dialog="updateDialog"/>
+    <AisleForm v-model="aisleFormDialog" @add-aisle="createAisle" :isEdit="false" @update-dialog="updateDialog"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -28,7 +28,7 @@
 <script setup>
 import { ref } from 'vue'
 import AisleCard from '@/components/AisleCard.vue'
-import AddAisleForm from '@/components/AddAisleForm.vue'
+import AisleForm from '@/components/AisleForm.vue'
 import { useAisles } from '@/composables/aislesComposable'
 import { useMainStore } from '@/stores/main'
 

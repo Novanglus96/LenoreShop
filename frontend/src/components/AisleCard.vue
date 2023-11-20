@@ -12,7 +12,7 @@
     <v-card-subtitle>{{aisle.store.name}}</v-card-subtitle>
     <v-card-actions>
       <v-btn icon="mdi-pencil" :disabled="aisle.order === 0 ? true : false" @click="selectedAisle(aisle)"/>
-      <AddAisleForm v-model="aisleFormDialog" @edit-aisle="updateAisle" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData" :key="aisle.id"/>
+      <AisleForm v-model="aisleFormDialog" @edit-aisle="updateAisle" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData" :key="aisle.id"/>
       <v-btn icon="mdi-delete" :disabled="aisle.order === 0 ? true : false" @click="deleteDialog = true"/>
       <v-dialog
         v-model="deleteDialog"
@@ -34,7 +34,7 @@
 
 <script setup>
   import { defineProps, defineEmits, ref } from 'vue';
-  import AddAisleForm from '@/components/AddAisleForm.vue'
+  import AisleForm from '@/components/AisleForm.vue'
 
   const emit = defineEmits(['editAisle', 'removeAisle'])
   const aisleFormDialog = ref(false)
