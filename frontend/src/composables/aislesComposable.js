@@ -12,6 +12,12 @@ import axios from "axios";
     
     return aisle.data
   }
+
+  async function deleteAisleFunction(deletedAisle) {
+    const aisle = await axios.delete('https://shopping.danielleandjohn.love/api/aisles/' + deletedAisle.id)
+    
+    return aisle.data
+  }
   
   export function useAisles(storeID) {
     const queryClient = useQueryClient()
@@ -37,6 +43,14 @@ import axios from "axios";
         queryClient.invalidateQueries({ queryKey: ['aisles', storeID]})
       }
     })
+
+    const deleteAisleMutation = useMutation({
+      mutationFn: deleteAisleFunction,
+      onSuccess: () => {
+        console.log('Success deleting aisle')
+        queryClient.invalidateQueries({ queryKey: ['aisles', storeID]})
+      }
+    })
   
     async function addAisle(newAisle) {
       createAisleMutation.mutate(newAisle);
@@ -45,11 +59,16 @@ import axios from "axios";
     async function editAisle(updatedAisle) {
       updateAisleMutation.mutate(updatedAisle);
     }
+
+    async function removeAisle(deletedAisle) {
+      deleteAisleMutation.mutate(deletedAisle);
+    }
   
     return {
       aisles,
       isLoading,
       addAisle,
-      editAisle
+      editAisle,
+      removeAisle
     }
   }

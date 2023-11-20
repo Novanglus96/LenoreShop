@@ -5,7 +5,7 @@
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <AisleCard v-for="aisle in aisles" :aisle="aisle" :key="aisle.id" @edit-aisle="updateAisle"/>
+          <AisleCard v-for="aisle in aisles" :aisle="aisle" :key="aisle.id" @edit-aisle="updateAisle" @remove-aisle="deleteAisle"/>
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -42,7 +42,7 @@ const updateDialog = () => {
   aisleFormDialog.value = false
 }
 
-const { aisles, isLoading, addAisle, editAisle } = useAisles(store.store_id)
+const { aisles, isLoading, addAisle, editAisle, removeAisle } = useAisles(store.store_id)
 
 const createAisle = async (newAisle) => {
   try{
@@ -59,6 +59,15 @@ const updateAisle = async (updatedAisle) => {
     showSnackbar('Aisle updated', 'success')
   } catch {
     showSnackbar('Aisle not updated', 'error')
+  }
+}
+
+const deleteAisle = async (deletedAisle) => {
+  try{
+    await removeAisle(deletedAisle)
+    showSnackbar('Aisle deleted', 'success')
+  } catch {
+    showSnackbar('Aisle not deleted', 'error')
   }
 }
 
