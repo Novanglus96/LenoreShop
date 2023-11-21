@@ -1,6 +1,6 @@
 <template>
   <div class="stores">
-    <AddStoreForm @form-submitted="createStore"/>
+    <StoreForm @form-submitted="createStore"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
@@ -27,7 +27,7 @@
 <script setup>
 import { ref } from 'vue'
 import StoreCard from '@/components/StoreCard.vue'
-import AddStoreForm from '@/components/AddStoreForm.vue'
+import StoreForm from '@/components/StoreForm.vue'
 import { useStores } from '@/composables/storesComposable'
 
 const snackbar = ref(false);
