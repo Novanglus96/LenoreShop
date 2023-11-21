@@ -1,10 +1,11 @@
 <template>
   <div class="lists">
-    <ListForm @form-submitted="createShoppingList" :stores="stores"/>
+    <v-btn density="compact" @click="listFormDialog = true">Add List</v-btn>
+    <ListForm v-model="listFormDialog" @add-list="createShoppingList" :isEdit="false" @update-dialog="updateDialog"/>
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <ListCard v-for="shoppinglist in shoppinglists" :key="shoppinglist.id" :list="shoppinglist" />
+          <ListCard v-for="shoppinglist in shoppinglists" :key="shoppinglist.id" :list="shoppinglist" @edit-list="updateList" @remove-list="deleteList" />
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -29,15 +30,14 @@ import { ref } from 'vue'
 import ListCard from '@/components/ListCard.vue'
 import ListForm from '@/components/ListForm.vue'
 import { useShoppingLists } from '@/composables/listsComposable'
-import { useStores } from '@/composables/storesComposable'
 
+const listFormDialog = ref(false);
 const snackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('');
 const snackbarTimeout = ref(1500);
 
-const { shoppinglists, isLoading, addShoppingList } = useShoppingLists()
-const { stores } = useStores()
+const { shoppinglists, isLoading, addShoppingList, editList, removeList } = useShoppingLists()
 
 const createShoppingList = async (newList) => {
   try{
@@ -48,10 +48,33 @@ const createShoppingList = async (newList) => {
   }
 }
 
+const updateList = async (updatedList) => {
+  try{
+    await editList(updatedList)
+    showSnackbar('List updated','success')
+  } catch (error) {
+    showSnackbar('List not updated','error')
+  }
+}
+
+const deleteList = async (deletedList) => {
+  try{
+    await removeList(deletedList)
+    showSnackbar('List deleted','success')
+  } catch (error) {
+    showSnackbar('List not deleted','error')
+  }
+}
+
 const showSnackbar = (text, color) => {
   snackbarText.value = text;
   snackbarColor.value = color;
   snackbar.value = true;
 }
+
+const updateDialog = () => {
+  listFormDialog.value = false
+}
+
 
 </script>

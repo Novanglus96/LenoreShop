@@ -30,6 +30,18 @@ import axios from "axios";
 
     return shoppinglist
   }
+
+  async function updateListFunction(updatedList) {
+    const list = await axios.put('https://shopping.danielleandjohn.love/api/shoppinglists/' + updatedList.id, updatedList)
+    
+    return list.data
+  }
+
+  async function deleteListFunction(deletedList) {
+    const list = await axios.delete('https://shopping.danielleandjohn.love/api/shoppinglists/' + deletedList.id)
+    
+    return list.data
+  }
   
   export function useShoppingLists() {
     const queryClient = useQueryClient()
@@ -47,15 +59,41 @@ import axios from "axios";
         queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
       }
     })
+
+    const updateListMutation = useMutation({
+      mutationFn: updateListFunction,
+      onSuccess: () => {
+        console.log('Success updating shopping list')
+        queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
+      }
+    })
+
+    const deleteListMutation = useMutation({
+      mutationFn: deleteListFunction,
+      onSuccess: () => {
+        console.log('Success deleting shopping list')
+        queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
+      }
+    })
   
     async function addShoppingList(newList) {
       createShoppingListMutation.mutate(newList);
+    }
+
+    async function editList(updatedList) {
+      updateListMutation.mutate(updatedList);
+    }
+
+    async function removeList(deletedList) {
+      deleteListMutation.mutate(deletedList);
     }
   
     return {
       shoppinglists,
       isLoading,
-      addShoppingList
+      addShoppingList,
+      editList,
+      removeList
     }
   }
 

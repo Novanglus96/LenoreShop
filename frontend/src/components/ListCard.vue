@@ -12,16 +12,64 @@
         <v-card-subtitle>{{list.store.name}}</v-card-subtitle>
         
         <v-card-actions>
-          <v-btn icon="mdi-pencil" @click="fetchShoppingListFull(list.id, list.store_id)" />
-          <v-btn icon="mdi-delete"/>
+          <v-btn icon="mdi-cart" @click="fetchShoppingListFull(list.id, list.store_id)" />
+          <v-btn icon="mdi-pencil" @click="selectedList(list)"/>
+          <ListForm v-model="listFormDialog" @edit-list="updateList" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData"/>
+          <v-btn icon="mdi-delete" @click="deleteDialog = true"/>
+          <v-dialog
+            v-model="deleteDialog"
+            width="auto"
+          >
+            <v-card>
+              <v-card-text>
+                Delete list {{ list.name }}?
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="primary" @click="deleteList(list)">Yes</v-btn>
+                <v-btn color="primary" @click="deleteDialog = false">No</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-card-actions>
   </v-card>
 </template>
 
 <script setup>
-  import { defineProps } from 'vue';
+  import { defineProps, defineEmits, ref } from 'vue';
   import { useMainStore } from '@/stores/main';
   import { useRouter } from 'vue-router';
+  import ListForm from '@/components/ListForm.vue'
+
+  const emit = defineEmits(['editList', 'removeList'])
+  const listFormDialog = ref(false)
+  const deleteDialog = ref(false)
+  const passedFormData = ref({
+    id: 0,
+    name: '',
+    store_id: 0
+  })
+
+  const selectedList = (list) => {
+    passedFormData.value.id = list.id
+    passedFormData.value.name = list.name
+    passedFormData.value.store_id = list.store_id
+
+    listFormDialog.value = true
+  }
+
+  const updateList = async (list) => {
+    emit('editList', list)
+  }
+
+  const deleteList = async (list) => {
+    emit('removeList', list)
+
+    updateDialog()
+  }
+
+  const updateDialog = () => {
+    listFormDialog.value = false
+  }
 
   defineProps({
     list: Array
