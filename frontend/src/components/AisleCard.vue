@@ -4,7 +4,7 @@
     variant="outlined"
   >
     <v-card-title class="text-h6">
-      {{aisle.name}}
+      ({{aisle.order}}) {{aisle.name}}
     </v-card-title>
     <v-card-subtitle>{{aisle.store.name}}</v-card-subtitle>
     <v-card-actions>
