@@ -16,6 +16,18 @@ async function createStore(newStore) {
   }
 }
 
+async function updateStoreFunction(updatedStore) {
+  const store = await axios.put('https://shopping.danielleandjohn.love/api/stores/' + updatedStore.id, updatedStore)
+
+  return store.data
+}
+
+async function deleteStoreFunction(deletedStore) {
+  const store = await axios.delete('https://shopping.danielleandjohn.love/api/stores/' + deletedStore.id)
+
+  return store.data
+}
+
 export function useStores() {
   const queryClient = useQueryClient()
 
@@ -32,13 +44,39 @@ export function useStores() {
     }
   })
 
+  const updateStoreMutation = useMutation({
+    mutationFn: updateStoreFunction,
+    onSuccess: () => {
+      console.log('Success updating store')
+      queryClient.invalidateQueries({ queryKey: ['stores']})
+    }
+  })
+
+  const deleteStoreMutation = useMutation({
+    mutationFn: deleteStoreFunction,
+    onSuccess: () => {
+      console.log('Success deleting store')
+      queryClient.invalidateQueries({ queryKey: ['stores']})
+    }
+  })
+
   async function addStore(newStore) {
     createStoreMutation.mutate(newStore);
+  }
+
+  async function editStore(updatedStore) {
+    updateStoreMutation.mutate(updatedStore)
+  }
+
+  async function removeStore(deletedStore) {
+    deleteStoreMutation.mutate(deletedStore)
   }
 
   return {
     stores,
     isLoading,
-    addStore
+    addStore,
+    editStore,
+    removeStore
   }
 }
