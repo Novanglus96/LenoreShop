@@ -1,20 +1,17 @@
 <template>
   <v-card
     color="primary"
+    variant="outlined"
   >
-        <v-card-title class="text-h5">
-          <v-icon
-        icon="mdi-storefront"
-        size="25"
-        class="me-1 pb-1"
-      ></v-icon>{{store.name}}
+        <v-card-title class="text-h6">
+          {{store.name}}
         </v-card-title>
         
         <v-card-actions>
-          <v-btn icon="mdi-land-rows-vertical" @click="showAisle(store.id)" />
-          <v-btn icon="mdi-pencil" @click="selectedStore(store)"/>
+          <v-btn size="x-small" variant="outlined" @click="showAisle(store.id)">aisles</v-btn>
+          <v-btn size="x-small" variant="outlined" @click="selectedStore(store)">edit</v-btn>
           <StoreForm v-model="storeFormDialog" @edit-store="updateStore" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData"/>
-          <v-btn icon="mdi-delete" @click="deleteDialog = true"/>
+          <v-btn size="x-small" variant="outlined" @click="deleteDialog = true">delete</v-btn>
           <v-dialog
             v-model="deleteDialog"
             width="auto"

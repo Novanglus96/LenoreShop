@@ -1,19 +1,16 @@
 <template>
   <v-card
     color="primary"
+    variant="outlined"
   >
-        <v-card-title class="text-h5">
-          <v-icon
-        icon="mdi-food-apple"
-        size="25"
-        class="me-1 pb-1"
-      ></v-icon>{{item.name}}
+        <v-card-title class="text-subtitle-2">
+          {{item.name}}
         </v-card-title>
         
         <v-card-actions>
-          <v-btn icon="mdi-pencil" @click="selectedItem(item)"/>
+          <v-btn size="x-small" variant="outlined" @click="selectedItem(item)">edit</v-btn>
           <ItemForm v-model="itemFormDialog" @edit-item="updateItem" :isEdit="true" @update-dialog="updateDialog" :passedFormData="passedFormData"/>
-          <v-btn icon="mdi-delete" @click="deleteDialog = true"/>
+          <v-btn size="x-small" variant="outlined" @click="deleteDialog = true">delete</v-btn>
             <v-dialog
               v-model="deleteDialog"
               width="auto"
