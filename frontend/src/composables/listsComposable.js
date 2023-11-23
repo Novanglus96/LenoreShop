@@ -2,43 +2,43 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import axios from "axios";
 
   async function createShoppingList(newShoppingList) {
-    const shoppingList = await axios.post('https://shopping.danielleandjohn.love/api/shoppinglists', newShoppingList)
+    const shoppingList = await axios.post('/api/shoppinglists', newShoppingList)
     
     return shoppingList.data
   }
 
   async function createListItem(newListItem) {
-    const listitem = await axios.post('https://shopping.danielleandjohn.love/api/listitems', newListItem)
+    const listitem = await axios.post('/api/listitems', newListItem)
     
     return listitem.data
   }
 
   async function updateListItemFunction(updatedListItem) {
-    const listitem = await axios.put('https://shopping.danielleandjohn.love/api/listitems/' + updatedListItem.id, updatedListItem)
+    const listitem = await axios.put('/api/listitems/' + updatedListItem.id, updatedListItem)
     
     return listitem.data
   }
 
   async function clearListFunction(shoppinglistID) {
-    const shoppinglist = await axios.delete('https://shopping.danielleandjohn.love/api/listitems/deleteall/' + shoppinglistID)
+    const shoppinglist = await axios.delete('/api/listitems/deleteall/' + shoppinglistID)
 
     return shoppinglist
   }
 
   async function clearPurchasedListFunction(shoppinglistID) {
-    const shoppinglist = await axios.delete('https://shopping.danielleandjohn.love/api/listitems/deletepurchased/' + shoppinglistID)
+    const shoppinglist = await axios.delete('/api/listitems/deletepurchased/' + shoppinglistID)
 
     return shoppinglist
   }
 
   async function updateListFunction(updatedList) {
-    const list = await axios.put('https://shopping.danielleandjohn.love/api/shoppinglists/' + updatedList.id, updatedList)
+    const list = await axios.put('/api/shoppinglists/' + updatedList.id, updatedList)
     
     return list.data
   }
 
   async function deleteListFunction(deletedList) {
-    const list = await axios.delete('https://shopping.danielleandjohn.love/api/shoppinglists/' + deletedList.id)
+    const list = await axios.delete('/api/shoppinglists/' + deletedList.id)
     
     return list.data
   }
@@ -48,7 +48,7 @@ import axios from "axios";
 
     const { data: shoppinglists, isLoading } = useQuery({
       queryKey: ['shoppinglists'],
-      queryFn: () => axios.call("get", "https://shopping.danielleandjohn.love/api/shoppinglists"),
+      queryFn: () => axios.call("get", "/api/shoppinglists"),
       select: (response) => response.data
     })
     
@@ -102,7 +102,7 @@ import axios from "axios";
 
     const { data: fullshoppinglist, isLoading } = useQuery({
       queryKey: ['fullshoppinglist', listID],
-      queryFn: () => axios.call("get", "https://shopping.danielleandjohn.love/api/shoppinglistfull/" + listID),
+      queryFn: () => axios.call("get", "/api/shoppinglistfull/" + listID),
       select: (response) => response.data
     })
 

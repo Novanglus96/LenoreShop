@@ -2,19 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import axios from "axios";
 
   async function createAisle(newAisle) {
-    const aisle = await axios.post('https://shopping.danielleandjohn.love/api/aisles', newAisle)
+    const aisle = await axios.post('/api/aisles', newAisle)
     
     return aisle.data
   }
 
   async function updateAisleFunction(updatedAisle) {
-    const aisle = await axios.put('https://shopping.danielleandjohn.love/api/aisles/' + updatedAisle.id, updatedAisle)
+    const aisle = await axios.put('/api/aisles/' + updatedAisle.id, updatedAisle)
     
     return aisle.data
   }
 
   async function deleteAisleFunction(deletedAisle) {
-    const aisle = await axios.delete('https://shopping.danielleandjohn.love/api/aisles/' + deletedAisle.id)
+    const aisle = await axios.delete('/api/aisles/' + deletedAisle.id)
     
     return aisle.data
   }
@@ -24,7 +24,7 @@ import axios from "axios";
 
     const { data: aisles, isLoading } = useQuery({
       queryKey: ['aisles', storeID],
-      queryFn: () => axios.call("get", "https://shopping.danielleandjohn.love/api/aislesbystore/" + storeID),
+      queryFn: () => axios.call("get", "/api/aislesbystore/" + storeID),
       select: (response) => response.data
     })
     

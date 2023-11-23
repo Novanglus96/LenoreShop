@@ -2,14 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import axios from "axios";
 
 async function createStore(newStore) {
-  const response = await axios.post('https://shopping.danielleandjohn.love/api/stores', newStore)
+  const response = await axios.post('/api/stores', newStore)
   const newAisle = {
     "name": "Uncategorized",
     "order": 0,
     "store_id": response.data.id
   }
 
-  const aisle = await axios.post('https://shopping.danielleandjohn.love/api/aisles', newAisle)
+  const aisle = await axios.post('/api/aisles', newAisle)
   return {
     storeData: response.data,
     aisleData: aisle.data
@@ -17,13 +17,13 @@ async function createStore(newStore) {
 }
 
 async function updateStoreFunction(updatedStore) {
-  const store = await axios.put('https://shopping.danielleandjohn.love/api/stores/' + updatedStore.id, updatedStore)
+  const store = await axios.put('/api/stores/' + updatedStore.id, updatedStore)
 
   return store.data
 }
 
 async function deleteStoreFunction(deletedStore) {
-  const store = await axios.delete('https://shopping.danielleandjohn.love/api/stores/' + deletedStore.id)
+  const store = await axios.delete('/api/stores/' + deletedStore.id)
 
   return store.data
 }
@@ -33,7 +33,7 @@ export function useStores() {
 
   const { data: stores, isLoading } = useQuery({
     queryKey: ['stores'],
-    queryFn: () => axios.call("get", "https://shopping.danielleandjohn.love/api/stores"),
+    queryFn: () => axios.call("get", "/api/stores"),
     select: (response) => response.data
   })
 
