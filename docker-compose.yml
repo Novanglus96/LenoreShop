@@ -10,6 +10,8 @@ services:
     restart: unless-stopped
     expose:
       - 80
+    image: shopping_frontend:development
+    container_name: shopping_frontend_dev
   backend:
     build:
       context: ./backend
@@ -28,6 +30,8 @@ services:
       - "traefik.enable=false"
     env_file:
       - ./.env
+    image: shopping_backend:development
+    container_name: shopping_backend_dev
   db:
     image: postgres:15
     volumes:
@@ -38,6 +42,7 @@ services:
       - default
     labels:
       - "traefik.enable=false"
+    container_name: shopping_db_dev
   nginx:
     build: ./nginx
     volumes:
@@ -51,13 +56,15 @@ services:
       - default
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shopping.rule=Host(`shopping.danielleandjohn.love`)"
-      - "traefik.http.routers.shopping.entrypoints=websecure"
-      - "traefik.http.services.shopping.loadbalancer.server.port=80"
-      - "traefik.http.routers.shopping.service=shopping"
-      - "traefik.http.routers.shopping.tls.certresolver=myresolver"
-      - "traefik.http.routers.shopping.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
+      - "traefik.http.routers.shopping-dev.rule=Host(`shopping-dev.danielleandjohn.love`)"
+      - "traefik.http.routers.shopping-dev.entrypoints=websecure"
+      - "traefik.http.services.shopping-dev.loadbalancer.server.port=80"
+      - "traefik.http.routers.shopping-dev.service=shopping-dev"
+      - "traefik.http.routers.shopping-dev.tls.certresolver=myresolver"
+      - "traefik.http.routers.shopping-dev.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
       - "traefik.docker.network=web"
+    image: django_vue_proxy:development
+    container_name: shopping_nginx_dev
 
 networks:
   web:
