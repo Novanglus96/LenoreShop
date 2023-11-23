@@ -21,7 +21,7 @@
                 </v-list-item>
             </v-list>
         </v-menu>
-        <v-app-bar-title>Shopping <span class="text-subtitle-2 font-italic text-grey-lighten-1">v1.1:dev</span></v-app-bar-title>
+        <v-app-bar-title>Shopping <span class="text-subtitle-2 font-italic text-grey-lighten-1">v1.1: dev</span></v-app-bar-title>
         <v-menu
             v-model="menu"
             :close-on-content-click="false"
