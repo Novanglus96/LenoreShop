@@ -44,7 +44,7 @@ services:
       - "traefik.enable=false"
     container_name: shopping_db_dev
   nginx:
-    build: ./nginx
+    image: registry.danielleandjohn.love/django_vue_proxy:latest
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
@@ -63,7 +63,6 @@ services:
       - "traefik.http.routers.shopping-dev.tls.certresolver=myresolver"
       - "traefik.http.routers.shopping-dev.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
       - "traefik.docker.network=web"
-    image: django_vue_proxy:development
     container_name: shopping_nginx_dev
 
 networks:
