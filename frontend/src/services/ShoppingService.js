@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: 'https://shopping-dev.danielleandjohn.love',
+  baseURL: 'https://dev.danielleandjohn.love',
   withCredentials: false,
   headers: {
     Accept: 'application/json',

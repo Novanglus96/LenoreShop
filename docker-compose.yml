@@ -25,7 +25,6 @@ services:
       - db
     networks:
       - default
-      - web
     labels:
       - "traefik.enable=false"
     env_file:
@@ -52,23 +51,10 @@ services:
       - backend
       - frontend
     networks:
-      - web
       - default
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.shopping-dev.rule=Host(`shopping-dev.danielleandjohn.love`)"
-      - "traefik.http.routers.shopping-dev.entrypoints=websecure"
-      - "traefik.http.services.shopping-dev.loadbalancer.server.port=80"
-      - "traefik.http.routers.shopping-dev.service=shopping-dev"
-      - "traefik.http.routers.shopping-dev.tls.certresolver=myresolver"
-      - "traefik.http.routers.shopping-dev.middlewares=authelia,secure-headers@file,rate-limit@file,geo-block@file"
-      - "traefik.docker.network=web"
+    ports:
+      - 7000:80
     container_name: shopping_nginx_dev
-
-networks:
-  web:
-    name: web
-    external: true
 
 volumes:
   postgres_data:
