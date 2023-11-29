@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: 'https://dev.danielleandjohn.love',
+  baseURL: '/api',
   withCredentials: false,
   headers: {
     Accept: 'application/json',
@@ -11,15 +11,15 @@ const apiClient = axios.create({
 
 export default {
     createItem(newItem) {
-        return apiClient.post('/api/items', newItem)
+        return apiClient.post('/items', newItem)
     },
     updateItem(updatedItem) {
-        return apiClient.put('/api/items/' + updatedItem.id, updatedItem)
+        return apiClient.put('/items/' + updatedItem.id, updatedItem)
     },
     deleteItem(deletedItem) {
-        return apiClient.delete('/api/items/' + deletedItem.id)
+        return apiClient.delete('/items/' + deletedItem.id)
     },
     getItems() {
-        return apiClient.call("get", "/api/items")
+        return apiClient.call("get", "/items")
     }
 }
