@@ -5,6 +5,9 @@ from django.shortcuts import get_object_or_404
 from datetime import date
 
 api = NinjaAPI()
+api.title = "Shopping API"
+api.version = "1.2.0"
+api.description = "API documentation for Shopping"
 
 
 class UserSchema(Schema):
