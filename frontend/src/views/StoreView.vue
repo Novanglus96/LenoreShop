@@ -14,14 +14,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-snackbar
-      v-model="snackbar"
-      :color="snackbarColor"
-      :timeout="snackbarTimeout"
-      content-class="centered-text"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </div>
 </template>
 
@@ -32,44 +24,18 @@ import StoreForm from '@/components/StoreForm.vue'
 import { useStores } from '@/composables/storesComposable'
 
 const storeFormDialog = ref(false);
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('');
-const snackbarTimeout = ref(1500);
 
 const { stores, isLoading, addStore, editStore, removeStore } = useStores()
-
 const createStore = async (newStore) => {
-  try{
-    await addStore(newStore)
-    showSnackbar('Store added', 'success')
-  } catch (error) {
-    showSnackbar('Store not added', 'error')
-  }
+  await addStore(newStore)
 }
 
 const updateStore = async (updatedStore) => {
-  try{
-    await editStore(updatedStore)
-    showSnackbar('Store updated','success')
-  } catch (error) {
-    showSnackbar('Store not updated','error')
-  }
+  await editStore(updatedStore)
 }
 
 const deleteStore = async (deletedStore) => {
-  try{
-    await removeStore(deletedStore)
-    showSnackbar('Store deleted','success')
-  } catch (error) {
-    showSnackbar('Store not deleted','error')
-  }
-}
-
-const showSnackbar = (text, color) => {
-  snackbarText.value = text;
-  snackbarColor.value = color;
-  snackbar.value = true;
+  await removeStore(deletedStore)
 }
 
 const updateDialog = () => {

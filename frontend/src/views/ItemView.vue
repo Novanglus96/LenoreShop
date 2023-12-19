@@ -14,14 +14,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-snackbar
-      v-model="snackbar"
-      :color="snackbarColor"
-      :timeout="snackbarTimeout"
-      content-class="centered-text"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </div>
 </template>
 
@@ -32,44 +24,19 @@ import ItemForm from '@/components/ItemForm.vue'
 import { useItems } from '@/composables/itemsComposable'
 
 const itemFormDialog = ref(false);
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('');
-const snackbarTimeout = ref(1500);
 
 const { items, isLoading, addItem, editItem, removeItem } = useItems()
 
 const createItem = async (newItem) => {
-  try{
-    await addItem(newItem)
-    showSnackbar('Item added','success')
-  } catch (error) {
-    showSnackbar('Item not added','error')
-  }
+  await addItem(newItem)
 }
 
 const updateItem = async (updatedItem) => {
-  try{
-    await editItem(updatedItem)
-    showSnackbar('Item updated','success')
-  } catch (error) {
-    showSnackbar('Item not updated','error')
-  }
+  await editItem(updatedItem)
 }
 
 const deleteItem = async (deletedItem) => {
-  try{
-    await removeItem(deletedItem)
-    showSnackbar('Item deleted','success')
-  } catch (error) {
-    showSnackbar('Item not deleted','error')
-  }
-}
-
-const showSnackbar = (text, color) => {
-  snackbarText.value = text;
-  snackbarColor.value = color;
-  snackbar.value = true;
+  await removeItem(deletedItem)
 }
 
 const updateDialog = () => {

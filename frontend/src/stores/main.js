@@ -2,7 +2,11 @@ import { defineStore } from 'pinia'
 import axios from "axios"
 
 export const useMainStore = defineStore('main', {
-    state: () => ({ 
+    state: () => ({
+        snackbarText: '',
+        snackbarColor: '',
+        snackbar: false,
+        snackbarTimeout: 1500,
         stores: [],
         aisles: [],
         items: [],
@@ -41,6 +45,11 @@ export const useMainStore = defineStore('main', {
       }
     },
     actions: {
+        async showSnackbar(text, color) {
+            this.snackbarText = text;
+            this.snackbarColor = color;
+            this.snackbar = true;
+        },
         async fetchAll() {
             try {
                 this.fetchStores()

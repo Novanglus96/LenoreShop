@@ -14,14 +14,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-snackbar
-      v-model="snackbar"
-      :color="snackbarColor"
-      :timeout="snackbarTimeout"
-      content-class="centered-text"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </div>
 </template>
 
@@ -32,49 +24,23 @@ import AisleForm from '@/components/AisleForm.vue'
 import { useAisles } from '@/composables/aislesComposable'
 import { useMainStore } from '@/stores/main'
 
-const aisleFormDialog = ref(false);
 const store = useMainStore();
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('');
-const snackbarTimeout = ref(1500);
+const aisleFormDialog = ref(false);
 const updateDialog = () => {
   aisleFormDialog.value = false
 }
 
 const { aisles, isLoading, addAisle, editAisle, removeAisle } = useAisles(store.store_id)
-
 const createAisle = async (newAisle) => {
-  try{
-    await addAisle(newAisle)
-    showSnackbar('Aisle added', 'success')
-  } catch (error) {
-    showSnackbar('Aisle not added', 'error')
-  }
+  await addAisle(newAisle)
 }
 
 const updateAisle = async (updatedAisle) => {
-  try{
-    await editAisle(updatedAisle)
-    showSnackbar('Aisle updated', 'success')
-  } catch {
-    showSnackbar('Aisle not updated', 'error')
-  }
+  await editAisle(updatedAisle)
 }
 
 const deleteAisle = async (deletedAisle) => {
-  try{
-    await removeAisle(deletedAisle)
-    showSnackbar('Aisle deleted', 'success')
-  } catch {
-    showSnackbar('Aisle not deleted', 'error')
-  }
-}
-
-const showSnackbar = (text, color) => {
-  snackbarText.value = text;
-  snackbarColor.value = color;
-  snackbar.value = true;
+  await removeAisle(deletedAisle)
 }
 
 </script>

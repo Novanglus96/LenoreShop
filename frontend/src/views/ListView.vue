@@ -51,14 +51,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-snackbar
-      v-model="snackbar"
-      :color="snackbarColor"
-      :timeout="snackbarTimeout"
-      content-class="centered-text"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </div>
 </template>
 
@@ -67,14 +59,10 @@ import { ref } from 'vue'
 import ShoppingList from '@/components/ShoppingList.vue'
 import ListItemForm from '@/components/ListItemForm.vue'
 import { useFullShoppingList } from '@/composables/listsComposable'
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/main'
 
-const store = useMainStore()
+const store = useMainStore();
 const listItemFormDialog = ref(false);
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('');
-const snackbarTimeout = ref(1500);
 const updateDialog = () => {
   listItemFormDialog.value = false
 }
@@ -82,53 +70,23 @@ const updateDialog = () => {
 const { fullshoppinglist, isLoading, addListItem, updateListItem, clearList, clearPurchasedList } = useFullShoppingList(store.list_id)
 
 const editListItem = async (listItem) => {
-  try{
-    await updateListItem(listItem)
-    showSnackbar('Item updated', 'success')
-  } catch {
-    showSnackbar('Item not updated', 'error')
-  }
+  await updateListItem(listItem)
 }
 
 const createListItem = async (newListItem) => {
-  try{
-    await addListItem(newListItem)
-    showSnackbar('Item added', 'success')
-  } catch (error) {
-    showSnackbar('Item not added', 'error')
-  }
+  await addListItem(newListItem)
 }
 
 const purchaseItem = async (listItem) => {
-  try{
-    await updateListItem(listItem)
-  } catch {
-    showSnackbar('Item not purchased', 'error')
-  }
+  await updateListItem(listItem)
 }
 
 const clearListFunction = async (shoppinglistID) => {
-  try{
-    await clearList(shoppinglistID)
-    showSnackbar('List cleared', 'success')
-  } catch {
-    showSnackbar('List not cleared', 'error')
-  }
+  await clearList(shoppinglistID)
 }
 
 const clearPurchasedListFunction = async (shoppinglistID) => {
-  try{
-    await clearPurchasedList(shoppinglistID)
-    showSnackbar('Purchased list cleared', 'success')
-  } catch {
-    showSnackbar('Purchased list not cleared', 'error')
-  }
-}
-
-const showSnackbar = (text, color) => {
-  snackbarText.value = text;
-  snackbarColor.value = color;
-  snackbar.value = true;
+  await clearPurchasedList(shoppinglistID)
 }
 
 </script>

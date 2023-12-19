@@ -14,14 +14,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-snackbar
-      v-model="snackbar"
-      :color="snackbarColor"
-      :timeout="snackbarTimeout"
-      content-class="centered-text"
-    >
-      {{ snackbarText }}
-    </v-snackbar>
   </div>
 </template>
 
@@ -32,44 +24,19 @@ import ListForm from '@/components/ListForm.vue'
 import { useShoppingLists } from '@/composables/listsComposable'
 
 const listFormDialog = ref(false);
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('');
-const snackbarTimeout = ref(1500);
 
 const { shoppinglists, isLoading, addShoppingList, editList, removeList } = useShoppingLists()
 
 const createShoppingList = async (newList) => {
-  try{
-    await addShoppingList(newList)
-    showSnackbar('List added', 'success')
-  } catch {
-    showSnackbar('List not added','error')
-  }
+  await addShoppingList(newList)
 }
 
 const updateList = async (updatedList) => {
-  try{
-    await editList(updatedList)
-    showSnackbar('List updated','success')
-  } catch (error) {
-    showSnackbar('List not updated','error')
-  }
+  await editList(updatedList)
 }
 
 const deleteList = async (deletedList) => {
-  try{
-    await removeList(deletedList)
-    showSnackbar('List deleted','success')
-  } catch (error) {
-    showSnackbar('List not deleted','error')
-  }
-}
-
-const showSnackbar = (text, color) => {
-  snackbarText.value = text;
-  snackbarColor.value = color;
-  snackbar.value = true;
+  await removeList(deletedList)
 }
 
 const updateDialog = () => {
