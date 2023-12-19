@@ -23,9 +23,21 @@
               </v-col>
             </v-row>
             <v-row>
+              <v-col>
+                <v-text-field
+                  label="new item"
+                  variant="outlined"
+                  v-model="newItemField"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="1">
+                <v-btn icon="mdi-plus" variant="plain" @click="itemChanged"></v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
               <v-col
               >
-                <v-combobox
+                <v-select
                     label="Item*"
                     required
                     :items="items"
@@ -33,9 +45,9 @@
                     item-value="id"
                     v-model="formData.item_id"
                     chips
-                    @change="itemChanged"
+                    clearable
                     :return-object="false"
-                ></v-combobox>
+                ></v-select>
               </v-col>
             </v-row>
             <v-row>
@@ -92,6 +104,7 @@
   import { useItems } from '@/composables/itemsComposable'
   import { useAisles } from '@/composables/aislesComposable'
 
+  const newItemField = ref('')
   const store = useMainStore()
   const { aisles } = useAisles(store.store_id)
   const { addItem, items } = useItems()
@@ -144,8 +157,18 @@
 
   onMounted(() => {
     watchPassedFormData();
+    clearFormData();
   })
 
+const clearFormData = () => {
+  formData.value.id = null
+  formData.value.qty = 1
+  formData.value.purchased = false
+  formData.value.notes = ''
+  formData.value.item_id = null
+  formData.value.aisle_id = null
+  formData.value.shopping_list_id = store.list_id
+}
   const submitForm = async () => {
     if (props.isEdit == false) {
       emit('addListItem', formData.value)
@@ -162,10 +185,11 @@
 
   const itemChanged = async () => {
     const newItem = {
-      name: formData.value.item_id
+     name: newItemField.value
     }
     const newItemID = await createItem(newItem)
     formData.value.item_id = newItemID.id
+    newItemField.value = ''
   }
 
 </script>
