@@ -72,10 +72,12 @@
   const emit = defineEmits(['addItem', 'editItem', 'updateDialog'])
  
   const watchPassedFormData = () => {
-      watchEffect(() => {
+    watchEffect(() => {
+      if (props.passedFormData) {
         formData.value.id = props.passedFormData.id;
         formData.value.name = props.passedFormData.name;
         formData.value.matches = props.passedFormData.matches;
+      }
       })
     }
 

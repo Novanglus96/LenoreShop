@@ -94,10 +94,12 @@
   const emit = defineEmits(['addList', 'editList', 'updateDialog'])
  
   const watchPassedFormData = () => {
-      watchEffect(() => {
+    watchEffect(() => {
+      if (props.passedFormData) {
         formData.value.id = props.passedFormData.id;
         formData.value.name = props.passedFormData.name;
         formData.value.store_id = props.passedFormData.store_id;
+      }
       })
     }
 

@@ -130,13 +130,15 @@
 
   const watchPassedFormData = () => {
     watchEffect(() => {
-      formData.value.id = props.passedFormData.id;
-      formData.value.qty = props.passedFormData.qty;
-      formData.value.purchased = props.passedFormData.purchased;
-      formData.value.notes = props.passedFormData.notes;
-      formData.value.item_id = props.passedFormData.item_id;
-      formData.value.aisle_id = props.passedFormData.aisle_id;
-      formData.value.shopping_list_id = props.passedFormData.shopping_list_id;
+      if (props.passedFormData) {
+        formData.value.id = props.passedFormData.id;
+        formData.value.qty = props.passedFormData.qty;
+        formData.value.purchased = props.passedFormData.purchased;
+        formData.value.notes = props.passedFormData.notes;
+        formData.value.item_id = props.passedFormData.item_id;
+        formData.value.aisle_id = props.passedFormData.aisle_id;
+        formData.value.shopping_list_id = props.passedFormData.shopping_list_id;
+      }
     })
   }
 

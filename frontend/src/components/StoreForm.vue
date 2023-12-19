@@ -71,8 +71,10 @@
  
   const watchPassedFormData = () => {
       watchEffect(() => {
-        formData.value.id = props.passedFormData.id;
-        formData.value.name = props.passedFormData.name;
+        if (props.passedFormData) {
+          formData.value.id = props.passedFormData.id;
+          formData.value.name = props.passedFormData.name;
+        }
       })
     }
 

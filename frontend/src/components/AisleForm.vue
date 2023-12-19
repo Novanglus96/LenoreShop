@@ -108,10 +108,12 @@
 
   const watchPassedFormData = () => {
     watchEffect(() => {
-      formData.value.id = props.passedFormData.id;
-      formData.value.name = props.passedFormData.name;
-      formData.value.store_id = props.passedFormData.store_id;
-      formData.value.order = props.passedFormData.order;
+      if (props.passedFormData) {
+        formData.value.id = props.passedFormData.id;
+        formData.value.name = props.passedFormData.name;
+        formData.value.store_id = props.passedFormData.store_id;
+        formData.value.order = props.passedFormData.order;
+      }
     })
   }
 
