@@ -1,165 +1,246 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import axios from "axios";
+import { useMainStore } from "@/stores/main";
 
-  async function createShoppingList(newShoppingList) {
-    const shoppingList = await axios.post('/api/shoppinglists', newShoppingList)
-    
-    return shoppingList.data
+const apiClient = axios.create({
+  baseURL: '/api',
+  withCredentials: false,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
   }
+})
 
-  async function createListItem(newListItem) {
-    const listitem = await axios.post('/api/listitems', newListItem)
-    
-    return listitem.data
+function handleApiError(error, message) {
+  const mainstore = useMainStore();
+  if (error.response) {
+    console.error('Response error:', error.response.data)
+    console.error('Status code:', error.response.status)
+    console.error('Headers', error.response.headers)
+  } else if (error.request){
+    console.error('No response received:', error.request)
+  } else {
+    console.error('Error during request setup:', error.message)
   }
+  mainstore.showSnackbar(message + 'Error #' + error.response.status, 'error')
+  throw error
+}
 
-  async function updateListItemFunction(updatedListItem) {
-    const listitem = await axios.put('/api/listitems/' + updatedListItem.id, updatedListItem)
-    
-    return listitem.data
+async function createShoppingList(newShoppingList) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post('/shoppinglists', newShoppingList)
+    mainstore.showSnackbar('List created successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'List not created: ')
   }
+}
 
-  async function clearListFunction(shoppinglistID) {
-    const shoppinglist = await axios.delete('/api/listitems/deleteall/' + shoppinglistID)
-
-    return shoppinglist
+async function updateListFunction(updatedList) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.put('/shoppinglists/' + updatedList.id, updatedList)
+    mainstore.showSnackbar('List updated successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'List not updated: ')
   }
+}
 
-  async function clearPurchasedListFunction(shoppinglistID) {
-    const shoppinglist = await axios.delete('/api/listitems/deletepurchased/' + shoppinglistID)
-
-    return shoppinglist
+async function deleteListFunction(deletedList) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete('/shoppinglists/' + deletedList.id)
+    mainstore.showSnackbar('List deleted successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'List not deleted: ')
   }
+}
 
-  async function updateListFunction(updatedList) {
-    const list = await axios.put('/api/shoppinglists/' + updatedList.id, updatedList)
-    
-    return list.data
+async function getShoppingListsFunction() {
+  try {
+    const response = await apiClient.get('/shoppinglists')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'Lists not fetched: ')
   }
+}
 
-  async function deleteListFunction(deletedList) {
-    const list = await axios.delete('/api/shoppinglists/' + deletedList.id)
-    
-    return list.data
+async function createListItem(newListItem) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post('/listitems', newListItem)
+    mainstore.showSnackbar('List Item created successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'List Item not created: ')
   }
+}
+
+async function updateListItemFunction(updatedListItem) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.put('/listitems/' + updatedListItem.id, updatedListItem)
+    mainstore.showSnackbar('List Item updated successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'List Item not updated: ')
+  }
+}
+
+async function clearListFunction(shoppinglistID) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete('/listitems/deleteall/' + shoppinglistID)
+    mainstore.showSnackbar('List cleared successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'List not cleared: ')
+  }
+}
+
+async function clearPurchasedListFunction(shoppinglistID) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete('/listitems/deletepurchased/' + shoppinglistID)
+    mainstore.showSnackbar('Purchased Items cleared successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'Purchased Items not cleared: ')
+  }
+}
+
+async function getFullListFunction() {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.get("/shoppinglistfull/" + mainstore.list_id)
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'Full List not fetched: ')
+  }
+}
+
+export function useShoppingLists() {
+  const queryClient = useQueryClient()
+
+  const { data: shoppinglists, isLoading } = useQuery({
+    queryKey: ['shoppinglists'],
+    queryFn: getShoppingListsFunction,
+    select: (response) => response,
+    client: queryClient
+  })
   
-  export function useShoppingLists() {
-    const queryClient = useQueryClient()
-
-    const { data: shoppinglists, isLoading } = useQuery({
-      queryKey: ['shoppinglists'],
-      queryFn: () => axios.call("get", "/api/shoppinglists"),
-      select: (response) => response.data
-    })
-    
-    const createShoppingListMutation = useMutation({
-      mutationFn: createShoppingList,
-      onSuccess: () => {
-        console.log('Success adding shopping list')
-        queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
-      }
-    })
-
-    const updateListMutation = useMutation({
-      mutationFn: updateListFunction,
-      onSuccess: () => {
-        console.log('Success updating shopping list')
-        queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
-      }
-    })
-
-    const deleteListMutation = useMutation({
-      mutationFn: deleteListFunction,
-      onSuccess: () => {
-        console.log('Success deleting shopping list')
-        queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
-      }
-    })
-  
-    async function addShoppingList(newList) {
-      createShoppingListMutation.mutate(newList);
+  const createShoppingListMutation = useMutation({
+    mutationFn: createShoppingList,
+    onSuccess: () => {
+      console.log('Success adding shopping list')
+      queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
     }
+  })
 
-    async function editList(updatedList) {
-      updateListMutation.mutate(updatedList);
+  const updateListMutation = useMutation({
+    mutationFn: updateListFunction,
+    onSuccess: () => {
+      console.log('Success updating shopping list')
+      queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
     }
+  })
 
-    async function removeList(deletedList) {
-      deleteListMutation.mutate(deletedList);
+  const deleteListMutation = useMutation({
+    mutationFn: deleteListFunction,
+    onSuccess: () => {
+      console.log('Success deleting shopping list')
+      queryClient.invalidateQueries({ queryKey: ['shoppinglists'] })
     }
-  
-    return {
-      shoppinglists,
-      isLoading,
-      addShoppingList,
-      editList,
-      removeList
-    }
+  })
+
+  async function addShoppingList(newList) {
+    createShoppingListMutation.mutate(newList);
   }
 
-  export function useFullShoppingList(listID) {
-    const queryClient = useQueryClient()
-
-    const { data: fullshoppinglist, isLoading } = useQuery({
-      queryKey: ['fullshoppinglist', listID],
-      queryFn: () => axios.call("get", "/api/shoppinglistfull/" + listID),
-      select: (response) => response.data
-    })
-
-    const addListItemMutation = useMutation({
-      mutationFn: createListItem,
-      onSuccess: () => {
-        console.log('Success adding list item', listID)
-        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
-      }
-    })
-
-    const updateListItemMutation = useMutation({
-      mutationFn: updateListItemFunction,
-      onSuccess: () => {
-        console.log('Success updating list item')
-        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
-      }
-    })
-
-    const clearListMutation = useMutation({
-      mutationFn: clearListFunction,
-      onSuccess: () => {
-        console.log('Sucess clearing list')
-        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
-      }
-    })
-
-    const clearPurchasedListMutation = useMutation({
-      mutationFn: clearPurchasedListFunction,
-      onSuccess: () => {
-        console.log('Success clearing purchased list')
-        queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
-      }
-    })
-
-    async function addListItem(listItem) {
-      addListItemMutation.mutate(listItem);
-    }
-
-    async function updateListItem(listItem) {
-      updateListItemMutation.mutate(listItem);
-    }
-
-    async function clearList(shoppinglistID) {
-      clearListMutation.mutate(shoppinglistID);
-    }
-
-    async function clearPurchasedList(shoppinglistID) {
-      clearPurchasedListMutation.mutate(shoppinglistID);
-    }
-
-    return {
-      fullshoppinglist,
-      isLoading,
-      addListItem,
-      updateListItem,
-      clearList,
-      clearPurchasedList
-    }
+  async function editList(updatedList) {
+    updateListMutation.mutate(updatedList);
   }
+
+  async function removeList(deletedList) {
+    deleteListMutation.mutate(deletedList);
+  }
+
+  return {
+    shoppinglists,
+    isLoading,
+    addShoppingList,
+    editList,
+    removeList
+  }
+}
+
+export function useFullShoppingList(listID) {
+  const queryClient = useQueryClient()
+
+  const { data: fullshoppinglist, isLoading } = useQuery({
+    queryKey: ['fullshoppinglist', listID],
+    queryFn: getFullListFunction,
+    select: (response) => response,
+    client: queryClient
+  })
+
+  const addListItemMutation = useMutation({
+    mutationFn: createListItem,
+    onSuccess: () => {
+      console.log('Success adding list item', listID)
+      queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+    }
+  })
+
+  const updateListItemMutation = useMutation({
+    mutationFn: updateListItemFunction,
+    onSuccess: () => {
+      console.log('Success updating list item')
+      queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+    }
+  })
+
+  const clearListMutation = useMutation({
+    mutationFn: clearListFunction,
+    onSuccess: () => {
+      console.log('Sucess clearing list')
+      queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+    }
+  })
+
+  const clearPurchasedListMutation = useMutation({
+    mutationFn: clearPurchasedListFunction,
+    onSuccess: () => {
+      console.log('Success clearing purchased list')
+      queryClient.invalidateQueries({ queryKey: ['fullshoppinglist', listID]})
+    }
+  })
+
+  async function addListItem(listItem) {
+    addListItemMutation.mutate(listItem);
+  }
+
+  async function updateListItem(listItem) {
+    updateListItemMutation.mutate(listItem);
+  }
+
+  async function clearList(shoppinglistID) {
+    clearListMutation.mutate(shoppinglistID);
+  }
+
+  async function clearPurchasedList(shoppinglistID) {
+    clearPurchasedListMutation.mutate(shoppinglistID);
+  }
+
+  return {
+    fullshoppinglist,
+    isLoading,
+    addListItem,
+    updateListItem,
+    clearList,
+    clearPurchasedList
+  }
+}

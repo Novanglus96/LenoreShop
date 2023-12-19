@@ -1,31 +1,80 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import axios from "axios";
+import { useMainStore } from "@/stores/main";
+
+const apiClient = axios.create({
+  baseURL: '/api',
+  withCredentials: false,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
+})
+
+function handleApiError(error, message) {
+  const mainstore = useMainStore();
+  if (error.response) {
+    console.error('Response error:', error.response.data)
+    console.error('Status code:', error.response.status)
+    console.error('Headers', error.response.headers)
+  } else if (error.request){
+    console.error('No response received:', error.request)
+  } else {
+    console.error('Error during request setup:', error.message)
+  }
+  mainstore.showSnackbar(message + 'Error #' + error.response.status, 'error')
+  throw error
+}
 
 async function createStore(newStore) {
-  const response = await axios.post('/api/stores', newStore)
-  const newAisle = {
-    "name": "Uncategorized",
-    "order": 0,
-    "store_id": response.data.id
-  }
-
-  const aisle = await axios.post('/api/aisles', newAisle)
-  return {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post('/stores', newStore)
+    mainstore.showSnackbar('Store created successfully!', 'success')
+    const newAisle = {
+      "name": "Uncategorized",
+      "order": 0,
+      "store_id": response.data.id
+    }
+    const aisle = await apiClient.post('/aisles', newAisle)
+    return {
     storeData: response.data,
     aisleData: aisle.data
+    }
+  } catch (error) {
+    handleApiError(error, 'Store not created: ')
   }
 }
 
 async function updateStoreFunction(updatedStore) {
-  const store = await axios.put('/api/stores/' + updatedStore.id, updatedStore)
-
-  return store.data
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.put('/stores/' + updatedStore.id, updatedStore)
+    mainstore.showSnackbar('Store updated successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'Store not updated: ')
+  }
 }
 
 async function deleteStoreFunction(deletedStore) {
-  const store = await axios.delete('/api/stores/' + deletedStore.id)
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete('/stores/' + deletedStore.id)
+    mainstore.showSnackbar('Store deleted successfully!', 'success')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'Store not deleted: ')
+  }
+}
 
-  return store.data
+async function getStoresFunction() {
+  try {
+    const response = await apiClient.get('/stores')
+    return response.data
+  } catch (error) {
+    handleApiError(error, 'Stores not fetched: ')
+  }
 }
 
 export function useStores() {
@@ -33,8 +82,9 @@ export function useStores() {
 
   const { data: stores, isLoading } = useQuery({
     queryKey: ['stores'],
-    queryFn: () => axios.call("get", "/api/stores"),
-    select: (response) => response.data
+    queryFn: getStoresFunction,
+    select: (response) => response,
+    client: queryClient
   })
 
   const createStoreMutation = useMutation({
