@@ -1,6 +1,6 @@
 from ninja import NinjaAPI, Schema
 from api.models import Store, Aisle, Item, ListItem, ShoppingList
-from typing import List
+from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from datetime import date
 
@@ -44,12 +44,14 @@ class AisleOut(Schema):
 class ItemIn(Schema):
     name: str
     matches: str = None
+    aisle: Optional[AisleOut]
 
 
 class ItemOut(Schema):
     id: int
     name: str
     matches: str = None
+    aisle: Optional[AisleOut]
 
 
 class ListItemIn(Schema):
