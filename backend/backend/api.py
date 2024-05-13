@@ -6,7 +6,7 @@ from datetime import date
 
 api = NinjaAPI()
 api.title = "Shopping API"
-api.version = "1.3.0"
+api.version = "1.4.0"
 api.description = "API documentation for Shopping"
 
 
@@ -162,14 +162,50 @@ def get_shoppinglist(request, shoppinglist_id: int):
 def get_shoppinglistfull(request, shoppinglist_id: int):
     shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
     store = shoppinglist.store
-    aisles = Aisle.objects.filter(store=store, listitem__shopping_list=shoppinglist, listitem__purchased=False).order_by('order', 'name')
-    purchasedaisles = Aisle.objects.filter(store=store, listitem__shopping_list=shoppinglist, listitem__purchased=True).order_by('order', 'name')
-    aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in aisles}
-    purchased_aisles_dict = {aisle.id: AislesWithItems(id=aisle.id, name=aisle.name, order=aisle.order, store_id=store.id, listitems=[]) for aisle in purchasedaisles}
-    listitems = ListItem.objects.filter(shopping_list=shoppinglist, purchased=False).order_by('purchased', 'item__name')
-    purchasedlistitems = ListItem.objects.filter(shopping_list=shoppinglist, purchased=True).order_by('purchased', 'item__name')
-    total_purchased_count = ListItem.objects.filter(shopping_list=shoppinglist, purchased=True).count()
-    total_items_count = ListItem.objects.filter(shopping_list=shoppinglist).order_by('purchased', 'item__name').count()
+    aisles = Aisle.objects.filter(
+        store=store,
+        listitem__shopping_list=shoppinglist,
+        listitem__purchased=False,
+    ).order_by("order", "name")
+    purchasedaisles = Aisle.objects.filter(
+        store=store,
+        listitem__shopping_list=shoppinglist,
+        listitem__purchased=True,
+    ).order_by("order", "name")
+    aisles_dict = {
+        aisle.id: AislesWithItems(
+            id=aisle.id,
+            name=aisle.name,
+            order=aisle.order,
+            store_id=store.id,
+            listitems=[],
+        )
+        for aisle in aisles
+    }
+    purchased_aisles_dict = {
+        aisle.id: AislesWithItems(
+            id=aisle.id,
+            name=aisle.name,
+            order=aisle.order,
+            store_id=store.id,
+            listitems=[],
+        )
+        for aisle in purchasedaisles
+    }
+    listitems = ListItem.objects.filter(
+        shopping_list=shoppinglist, purchased=False
+    ).order_by("purchased", "item__name")
+    purchasedlistitems = ListItem.objects.filter(
+        shopping_list=shoppinglist, purchased=True
+    ).order_by("purchased", "item__name")
+    total_purchased_count = ListItem.objects.filter(
+        shopping_list=shoppinglist, purchased=True
+    ).count()
+    total_items_count = (
+        ListItem.objects.filter(shopping_list=shoppinglist)
+        .order_by("purchased", "item__name")
+        .count()
+    )
 
     for listitem in listitems:
         aisles_dict[listitem.aisle.id].listitems.append(
@@ -182,7 +218,11 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
                 item_id=listitem.item.id,
                 aisle_id=listitem.aisle_id,
                 shopping_list_id=listitem.shopping_list.id,
-                item=ItemOut(id=listitem.item.id, name=listitem.item.name, matches=listitem.item.matches)
+                item=ItemOut(
+                    id=listitem.item.id,
+                    name=listitem.item.name,
+                    matches=listitem.item.matches,
+                ),
             )
         )
 
@@ -197,7 +237,11 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
                 item_id=listitem.item.id,
                 aisle_id=listitem.aisle_id,
                 shopping_list_id=listitem.shopping_list.id,
-                item=ItemOut(id=listitem.item.id, name=listitem.item.name, matches=listitem.item.matches)
+                item=ItemOut(
+                    id=listitem.item.id,
+                    name=listitem.item.name,
+                    matches=listitem.item.matches,
+                ),
             )
         )
 
@@ -209,7 +253,7 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
         aisles=list(aisles_dict.values()),
         purchased_aisles=list(purchased_aisles_dict.values()),
         totalitems=total_items_count,
-        totalpurchased=total_purchased_count
+        totalpurchased=total_purchased_count,
     )
     return response_data
 
@@ -222,13 +266,13 @@ def list_aisles(request):
 
 @api.get("/aislesbystore/{store_id}", response=List[AisleOut])
 def list_aislesbystore(request, store_id: int):
-    qs = Aisle.objects.all().filter(store__id=store_id).order_by('order')
+    qs = Aisle.objects.all().filter(store__id=store_id).order_by("order")
     return qs
 
 
 @api.get("/items", response=List[ItemOut])
 def list_items(request):
-    qs = Item.objects.all().order_by('name')
+    qs = Item.objects.all().order_by("name")
     return qs
 
 
@@ -322,7 +366,9 @@ def delete_listitems_by_shoppinglist(request, shoppinglist_id: int):
 
 @api.delete("/listitems/deletepurchased/{shoppinglist_id}")
 def delete_purchased_listitems_by_shoppinglist(request, shoppinglist_id: int):
-    listitems = ListItem.objects.filter(shopping_list_id=shoppinglist_id, purchased=True)
+    listitems = ListItem.objects.filter(
+        shopping_list_id=shoppinglist_id, purchased=True
+    )
     listitems.delete()
     return {"success": True}
 
