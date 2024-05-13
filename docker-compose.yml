@@ -12,6 +12,11 @@ services:
       - 8081:8080
     image: shopping_frontend:development
     container_name: shopping_frontend_dev
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+      - TZ=America/New_York
   backend:
     build:
       context: ./backend
@@ -19,6 +24,9 @@ services:
     command: /usr/src/app/start.dev.sh
     volumes:
       - ./backend:/usr/src/app
+    environment:
+      - DEBUG=1
+      - TZ=America/New_York
     ports:
       - 8001:8001
     depends_on:
@@ -38,6 +46,8 @@ services:
     networks:
       - default
     container_name: shopping_db_dev
+    environment:
+      - TZ=America/New_York
 
 volumes:
   postgres_data:
