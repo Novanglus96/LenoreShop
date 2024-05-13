@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+    restart: unless-stopped
+    expose:
+      - 80
+    image: shopping_frontend:development
+    container_name: shopping_frontend_dev
+  backend:
+    build:
+      context: ./backend
+    command: /home/app/web/start.sh
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    expose:
+      - 8000
+    depends_on:
+      - db
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+    env_file:
+      - ./.env
+    image: shopping_backend:development
+    container_name: shopping_backend_dev
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+    networks:
+      - default
+    labels:
+      - "traefik.enable=false"
+    container_name: shopping_db_dev
+  nginx:
+    image: registry.danielleandjohn.love/django_vue_proxy:latest
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - default
+    ports:
+      - 7000:80
+    container_name: shopping_nginx_dev
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

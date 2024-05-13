@@ -1,0 +1,27 @@
+# pull official base image
+FROM python:3.11.4-slim-buster as develop-stage
+
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
+
+# install python dependencies
+COPY ./requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy entrypoint script
+COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# Copy the whole project
+COPY . /usr/src/app
+
+# command to run the development server
+CMD ["./entrypoint.sh"]
