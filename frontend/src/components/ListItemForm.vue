@@ -50,14 +50,14 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-select
+              <v-autocomplete
                 label="Aisle*"
                 required
                 :items="aisles"
                 item-title="name"
                 item-value="id"
                 v-model="formData.aisle_id"
-              ></v-select>
+              ></v-autocomplete>
             </v-col>
           </v-row>
           <v-row>
