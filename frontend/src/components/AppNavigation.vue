@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="primary" density="compact" app>
+  <v-app-bar color="secondary" density="compact" app>
     <v-menu>
       <template v-slot:activator="{ props }">
         <v-btn icon="mdi-menu" v-bind="props"></v-btn>
@@ -13,12 +13,9 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-app-bar-title
-      >LenoreShop
-      <span class="text-subtitle-2 font-italic text-grey-lighten-1"
-        >v1.4</span
-      ></v-app-bar-title
-    >
+    <v-img :width="201" aspect-ratio="1/1" src="logov2.png" inline></v-img>
+    <span class="text-subtitle-2 font-italic text-grey-darken-1">v1.4</span
+    ><v-spacer></v-spacer>
     <v-menu v-model="menu" :close-on-content-click="false" location="end">
       <template v-slot:activator="{ props }">
         <v-btn icon="mdi-dots-vertical" v-bind="props"></v-btn>

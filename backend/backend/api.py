@@ -127,6 +127,9 @@ def create_item(request, payload: ItemIn):
 @api.post("/listitems")
 def create_listitem(request, payload: ListItemIn):
     listitem = ListItem.objects.create(**payload.dict())
+    item = Item.objects.get(id=payload.item_id)
+    item.aisle_id = payload.aisle_id
+    item.save()
     return {"id": listitem.id}
 
 

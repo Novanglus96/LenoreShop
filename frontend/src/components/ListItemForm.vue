@@ -42,9 +42,10 @@
                 :items="items"
                 item-title="name"
                 item-value="id"
-                v-model="formData.item_id"
-                :return-object="false"
+                v-model="formData.item"
+                :return-object="true"
                 chips
+                @update:model-value="itemSelected()"
               ></v-autocomplete>
             </v-col>
           </v-row>
@@ -123,7 +124,7 @@ const formData = ref({
   qty: 1,
   purchased: false,
   notes: "",
-  item_id: null,
+  item: null,
   aisle_id: null,
   shopping_list_id: store.list_id,
 });
@@ -135,7 +136,7 @@ const watchPassedFormData = () => {
       formData.value.qty = props.passedFormData.qty;
       formData.value.purchased = props.passedFormData.purchased;
       formData.value.notes = props.passedFormData.notes;
-      formData.value.item_id = props.passedFormData.item_id;
+      formData.value.item = props.passedFormData.item;
       formData.value.aisle_id = props.passedFormData.aisle_id;
       formData.value.shopping_list_id = props.passedFormData.shopping_list_id;
     }
@@ -152,7 +153,7 @@ const clearFormData = () => {
   formData.value.qty = 1;
   formData.value.purchased = false;
   formData.value.notes = "";
-  formData.value.item_id = null;
+  formData.value.item = null;
   formData.value.aisle_id = null;
   formData.value.shopping_list_id = store.list_id;
 };
@@ -166,6 +167,14 @@ const submitForm = async () => {
   closeDialog();
 };
 
+const itemSelected = () => {
+  if (formData.value.item && formData.value.item.aisle) {
+    if (formData.value.item.aisle.store.id === store.store_id) {
+      formData.value.aisle_id = formData.value.item.aisle.id;
+    }
+  }
+};
+
 const closeDialog = () => {
   emit("updateDialog", false);
 };
@@ -175,7 +184,7 @@ const itemChanged = async () => {
     name: newItemField.value,
   };
   const newItemID = await createItem(newItem);
-  formData.value.item_id = newItemID.id;
+  formData.value.item = newItemID.id;
   newItemField.value = "";
 };
 </script>
