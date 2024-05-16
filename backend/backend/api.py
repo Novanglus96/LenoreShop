@@ -126,11 +126,19 @@ def create_item(request, payload: ItemIn):
 
 @api.post("/listitems")
 def create_listitem(request, payload: ListItemIn):
-    listitem = ListItem.objects.create(**payload.dict())
-    item = Item.objects.get(id=payload.item_id)
-    item.aisle_id = payload.aisle_id
-    item.save()
-    return {"id": listitem.id}
+    existing_item = ListItem.objects.filter(
+        shopping_list_id=payload.shopping_list_id, item_id=payload.item_id
+    ).first()
+    if existing_item is None:
+        listitem = ListItem.objects.create(**payload.dict())
+        item = Item.objects.get(id=payload.item_id)
+        item.aisle_id = payload.aisle_id
+        item.save()
+        return {"id": listitem.id}
+    else:
+        existing_item.qty += payload.qty
+        existing_item.save()
+        return {"id": existing_item.id}
 
 
 @api.post("/shoppinglists")
