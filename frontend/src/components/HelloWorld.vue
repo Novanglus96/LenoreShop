@@ -1,9 +1,11 @@
 <template>
   <div class="hello">
-    <h1>LenoreShop</h1>
     <p>
       A simple shopping list app! To get started, setup your
-      <router-link to="/stores">Stores</router-link> here.
+      <router-link to="/stores" :style="{ color: '#002255' }"
+        >Stores</router-link
+      >
+      here.
     </p>
     <h3>Shopping Lists</h3>
     <v-chip

@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Shopping logo" src="/android-chrome-192x192.png" />
+    <img alt="LenoreShop logo" src="/logov2.png" />
     <HelloWorld />
   </div>
 </template>
