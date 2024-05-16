@@ -129,7 +129,7 @@ const purchaseItem = async item => {
     purchased: !item.purchased,
     notes: item.notes,
     purch_date: null,
-    item_id: item.item_id,
+    item: item.item_id,
     aisle_id: item.aisle_id,
     shopping_list_id: item.shopping_list_id,
   };

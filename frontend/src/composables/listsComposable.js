@@ -93,9 +93,19 @@ async function createListItem(newListItem) {
 async function updateListItemFunction(updatedListItem) {
   const mainstore = useMainStore();
   try {
+    console.log("listitem:", updatedListItem);
+    const data = {
+      id: updatedListItem.id,
+      qty: updatedListItem.qty,
+      purchased: updatedListItem.purchased,
+      notes: updatedListItem.notes,
+      item_id: updatedListItem.item,
+      aisle_id: updatedListItem.aisle_id,
+      shopping_list_id: updatedListItem.shopping_list_id,
+    };
     const response = await apiClient.put(
       "/listitems/" + updatedListItem.id,
-      updatedListItem,
+      data,
     );
     mainstore.showSnackbar("List Item updated successfully!", "success");
     return response.data;
