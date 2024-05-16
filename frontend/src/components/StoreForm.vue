@@ -1,9 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    persistent
-    width="1024"
-  >
+  <v-dialog v-model="show" persistent width="1024">
     <v-card>
       <v-card-title>
         <span class="text-h5" v-if="props.isEdit == false">Add Store</span>
@@ -12,11 +8,7 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-            >
+            <v-col cols="12" sm="6" md="4">
               <v-text-field
                 label="Store Name*"
                 required
@@ -29,18 +21,10 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="blue-darken-1"
-          variant="text"
-          @click="closeDialog"
-        >
+        <v-btn color="blue-darken-1" variant="text" @click="closeDialog">
           Close
         </v-btn>
-        <v-btn
-          color="blue-darken-1"
-          variant="text"
-          @click="submitForm"
-        >
+        <v-btn color="blue-darken-1" variant="text" @click="submitForm">
           Save
         </v-btn>
       </v-card-actions>
@@ -48,52 +32,50 @@
   </v-dialog>
 </template>
 <script setup>
-  import { ref, defineEmits, defineProps, onMounted, watchEffect } from 'vue';
+import { ref, defineEmits, defineProps, onMounted, watchEffect } from "vue";
 
-  const formData = ref({
-    name: '',
-  })
+const formData = ref({
+  name: "",
+});
 
-  const props = defineProps({
-    storeFormDialog: {
-      type: Boolean,
-      default: false
-    },
-    isEdit: {
-      type: Boolean,
-      default: false
-    },
-    passedFormData: Array
-  })
+const props = defineProps({
+  storeFormDialog: {
+    type: Boolean,
+    default: false,
+  },
+  isEdit: {
+    type: Boolean,
+    default: false,
+  },
+  passedFormData: Array,
+});
 
-  const show = ref(props.storeFormDialog)
-  const emit = defineEmits(['addStore', 'editStore', 'updateDialog'])
- 
-  const watchPassedFormData = () => {
-      watchEffect(() => {
-        if (props.passedFormData) {
-          formData.value.id = props.passedFormData.id;
-          formData.value.name = props.passedFormData.name;
-        }
-      })
+const show = ref(props.storeFormDialog);
+const emit = defineEmits(["addStore", "editStore", "updateDialog"]);
+
+const watchPassedFormData = () => {
+  watchEffect(() => {
+    if (props.passedFormData) {
+      formData.value.id = props.passedFormData.id;
+      formData.value.name = props.passedFormData.name;
     }
+  });
+};
 
-    onMounted(() => {
-      watchPassedFormData();
-    })
+onMounted(() => {
+  watchPassedFormData();
+});
 
-    const submitForm = async () => {
-      if (props.isEdit == false) {
-        emit('addStore', formData.value)
-      } else {
-        emit('editStore', formData.value)
-      }
-      
-      closeDialog()
-    }
+const submitForm = async () => {
+  if (props.isEdit == false) {
+    emit("addStore", formData.value);
+  } else {
+    emit("editStore", formData.value);
+  }
+  closeDialog();
+};
 
-    const closeDialog = () => {
-      emit('updateDialog', false);
-    };
-
+const closeDialog = () => {
+  emit("updateDialog", false);
+};
 </script>
