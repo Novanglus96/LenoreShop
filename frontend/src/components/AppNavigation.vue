@@ -13,8 +13,8 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-img :width="201" aspect-ratio="1/1" src="logov2.png" inline></v-img>
-    <span class="text-subtitle-2 font-italic text-grey-darken-1">v1.5.1</span
+    <v-img :width="201" aspect-ratio="1/1" src="logov1.5.2png" inline></v-img>
+    <span class="text-subtitle-2 font-italic text-grey-darken-1">v1.5.2</span
     ><v-spacer></v-spacer>
     <v-menu v-model="menu" :close-on-content-click="false" location="end">
       <template v-slot:activator="{ props }">

@@ -1,3 +1,4 @@
+ver_change.sh
 publish.sh
 migrations/
 *.DS_Store

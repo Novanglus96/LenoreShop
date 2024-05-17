@@ -6,7 +6,7 @@ from datetime import date
 
 api = NinjaAPI()
 api.title = "Shopping API"
-api.version = "1.5.1"
+api.version = "1.5.2"
 api.description = "API documentation for Shopping"
 
 
