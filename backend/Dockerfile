@@ -49,6 +49,9 @@ RUN mkdir $APP_HOME/staticfiles
 RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
+# copy media files
+COPY mediafiles APP_HOME/mediafiles
+
 # install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends netcat
 COPY --from=builder /usr/src/app/wheels /wheels
