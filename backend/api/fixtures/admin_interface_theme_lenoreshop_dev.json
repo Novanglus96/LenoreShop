@@ -13,7 +13,7 @@
         "logo_max_height": 100,
         "logo_visible": true,
         "favicon": "",
-        "env_name": "1.6 (Development)",
+        "env_name": "1.5.1 (Development)",
         "env_color": "#E74C3C",
         "env_visible_in_header": true,
         "env_visible_in_favicon": true,
