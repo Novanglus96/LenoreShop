@@ -49,8 +49,9 @@ RUN mkdir $APP_HOME/staticfiles
 RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
-# copy media files
-COPY mediafiles APP_HOME/mediafiles
+# copy logo files
+COPY ./logos/favicon.ico APP_HOME/staticfiles/favicon.ico
+COPY ./logos/logov2.png APP_HOME/staticfiles/logov2.png
 
 # install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends netcat

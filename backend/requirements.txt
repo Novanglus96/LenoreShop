@@ -8,4 +8,4 @@ django-ninja==0.22.2
 channels==4.0.0
 daphne==4.0.0
 channels-redis==4.1.0
-django-admin-interface==0.28.6
+django-jazzmin==3.0.0

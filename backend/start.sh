@@ -13,6 +13,4 @@ if [ "$DJANGO_SUPERUSER_USERNAME" ]; then
         true
 fi
 
-python manage.py loaddata admin_interface_theme_lenoreshop
-
 gunicorn backend.wsgi:application --bind 0.0.0.0:8000

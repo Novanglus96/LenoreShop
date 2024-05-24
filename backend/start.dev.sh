@@ -2,7 +2,7 @@
 
 python manage.py makemigrations --no-input
 python manage.py migrate --no-input
-#python manage.py collectstatic --no-input
+python manage.py collectstatic --no-input
 #python manage.py createcachetable
 
 if [ "$DJANGO_SUPERUSER_USERNAME" ]; then
@@ -12,7 +12,5 @@ if [ "$DJANGO_SUPERUSER_USERNAME" ]; then
         --email $DJANGO_SUPERUSER_EMAIL) ||
         true
 fi
-
-python manage.py loaddata admin_interface_theme_lenoreshop_dev
 
 python manage.py runserver 0.0.0.0:8001

@@ -3,6 +3,9 @@ publish.sh
 migrations/
 *.DS_Store
 static
+media
+mediafiles
+staticfiles
 *.code-workspace
 
 # ---> Python
