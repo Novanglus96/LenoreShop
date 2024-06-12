@@ -154,7 +154,7 @@ CHANNEL_LAYERS = {
 }
 
 JAZZMIN_SETTINGS = {
-    "show_ui_builder": True,
+    "show_ui_builder": bool(int(os.environ.get("DEBUG"))),
     # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "Admin",
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
@@ -175,6 +175,18 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Please log in",
     # Copyright on the footer
     "copyright": "John Adams",
+    ############
+    # Top Menu #
+    ############
+    # Links to put along the top menu
+    "topmenu_links": [
+        # external url that opens in a new window (Permissions can be added)
+        {
+            "name": "Back to Site",
+            "url": "/",
+            "new_window": False,
+        },
+    ],
 }
 
 JAZZMIN_UI_TWEAKS = {
