@@ -184,7 +184,7 @@ const itemChanged = async () => {
     name: newItemField.value,
   };
   const newItemID = await createItem(newItem);
-  formData.value.item = newItemID.id;
+  formData.value.item = newItemID;
   newItemField.value = "";
 };
 </script>

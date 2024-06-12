@@ -22,9 +22,6 @@
       </template>
 
       <v-list>
-        <v-list-item to="/profile" prepend-icon="mdi-account">
-          <v-list-item-title>Profile</v-list-item-title>
-        </v-list-item>
         <v-list-item as="a" href="/admin" prepend-icon="mdi-security">
           <v-list-item-title>Admin</v-list-item-title>
         </v-list-item>

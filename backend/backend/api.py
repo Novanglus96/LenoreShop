@@ -118,10 +118,10 @@ def create_aisle(request, payload: AisleIn):
     return {"id": aisle.id}
 
 
-@api.post("/items")
+@api.post("/items", response=ItemOut)
 def create_item(request, payload: ItemIn):
     item = Item.objects.create(**payload.dict())
-    return {"id": item.id}
+    return item
 
 
 @api.post("/listitems")
