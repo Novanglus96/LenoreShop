@@ -1,8 +1,9 @@
-from ninja import NinjaAPI, Schema
+from ninja import NinjaAPI, Schema, Query
 from api.models import Store, Aisle, Item, ListItem, ShoppingList
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from datetime import date
+from django.core.paginator import Paginator
 
 api = NinjaAPI()
 api.title = "Shopping API"
@@ -52,6 +53,13 @@ class ItemOut(Schema):
     name: str
     matches: str = None
     aisle: Optional[AisleOut]
+
+
+class PaginatedItems(Schema):
+    items: List[ItemOut]
+    current_page: int
+    total_pages: int
+    total_records: int
 
 
 class ListItemIn(Schema):
@@ -283,10 +291,28 @@ def list_aislesbystore(request, store_id: int):
     return qs
 
 
-@api.get("/items", response=List[ItemOut])
-def list_items(request):
+@api.get("/items", response=PaginatedItems)
+def list_items(
+    request,
+    page: Optional[int] = Query(1),
+    page_size: Optional[int] = Query(15),
+):
     qs = Item.objects.all().order_by("name")
-    return qs
+    total_pages = 0
+    item_list = []
+    if len(qs) > 0:
+        paginator = Paginator(qs, page_size)
+        page_obj = paginator.page(page)
+        item_list = list(page_obj.object_list)
+        total_pages = paginator.num_pages
+    total_records = len(qs)
+    paginated_items = PaginatedItems(
+        items=item_list,
+        current_page=page,
+        total_pages=total_pages,
+        total_records=total_records,
+    )
+    return paginated_items
 
 
 @api.get("/listitems", response=List[ListItemOut])
