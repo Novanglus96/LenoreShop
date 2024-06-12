@@ -49,7 +49,7 @@ const itemstore = useItemStore();
 const itemFormDialog = ref(false);
 
 const { items, isLoading, addItem, editItem, removeItem } = useItems();
-const currentPage = items.page;
+const currentPage = ref(items.page);
 
 const createItem = async newItem => {
   await addItem(newItem);
