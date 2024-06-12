@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import ItemCard from "@/components/ItemCard.vue";
 import ItemForm from "@/components/ItemForm.vue";
 import { useItems } from "@/composables/itemsComposable";
