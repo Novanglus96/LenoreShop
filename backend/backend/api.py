@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 
 api = NinjaAPI()
 api.title = "Shopping API"
-api.version = "1.5.4"
+api.version = "1.5.5"
 api.description = "API documentation for Shopping"
 
 
