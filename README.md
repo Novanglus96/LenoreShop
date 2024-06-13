@@ -88,6 +88,21 @@
 A bit aboout this project.
 Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `Gamunda`, `LenoreShop`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `LenoreShop`, `project_description`
 
+Introducing LenoreShop, the ultimate shopping list app designed to streamline your grocery shopping experience. Whether you're managing a single shopping trip or juggling multiple stores, LenoreShop has you covered with its intuitive features and user-friendly interface.
+
+<b>Key Features:</b>
+<ul>
+<li><b>Multiple Stores:</b> Easily add as many stores as you frequent, ensuring all your favorite shopping destinations are covered.</li>
+<li><b>Unlimited Shopping Lists:</b> Create and manage multiple shopping lists for each store, helping you stay organized and efficient.</li>
+<li><b>Customizable Aisles:</b> Add aisles specific to each store and arrange them in the order you typically shop, making your trips faster and more convenient.</li>
+<li><b>Item Organization:</b> Add items to your lists by aisle, so you never miss a thing and can quickly find what you need.</li>
+</ul>
+
+<b>Why Choose LenoreShop?</b>
+LenoreShop is perfect for anyone who needs to shop, offering a tailored shopping experience that adapts to your personal preferences. With its seamless integration of Django for a robust backend and Vue for a sleek, responsive frontend, LenoreShop ensures a smooth and reliable user experience.
+
+Simplify your shopping routine with LenoreShop and enjoy the convenience of a perfectly organized shopping trip every time.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
