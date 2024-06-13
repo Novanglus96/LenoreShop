@@ -48,7 +48,7 @@ import { useItemStore } from "@/stores/item";
 const itemstore = useItemStore();
 const itemFormDialog = ref(false);
 
-const { items, isLoading, addItem, editItem, removeItem } = useItems();
+const { items, isLoading, addItem, editItem, removeItem } = useItems(false);
 const currentPage = ref(items.page);
 
 const createItem = async newItem => {

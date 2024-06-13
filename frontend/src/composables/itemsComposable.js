@@ -63,9 +63,15 @@ async function deleteItemFunction(deletedItem) {
   }
 }
 
-async function getItemsFunction(pageinfo) {
+async function getItemsFunction(pageinfo, full) {
   try {
-    let params = "?page=" + pageinfo.page + "&page_size=" + pageinfo.page_size;
+    let params =
+      "?page=" +
+      pageinfo.page +
+      "&page_size=" +
+      pageinfo.page_size +
+      "&full=" +
+      full;
     const response = await apiClient.get("/items" + params);
     return response.data;
   } catch (error) {
@@ -73,12 +79,12 @@ async function getItemsFunction(pageinfo) {
   }
 }
 
-export function useItems() {
+export function useItems(full) {
   const queryClient = useQueryClient();
   const itemstore = useItemStore();
   const { data: items, isLoading } = useQuery({
-    queryKey: ["items", itemstore.pageinfo],
-    queryFn: () => getItemsFunction(itemstore.pageinfo),
+    queryKey: ["items", itemstore.pageinfo, full],
+    queryFn: () => getItemsFunction(itemstore.pageinfo, full),
     select: response => response,
     client: queryClient,
   });

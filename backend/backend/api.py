@@ -296,15 +296,19 @@ def list_items(
     request,
     page: Optional[int] = Query(1),
     page_size: Optional[int] = Query(15),
+    full: Optional[bool] = Query(False),
 ):
     qs = Item.objects.all().order_by("name")
     total_pages = 0
     item_list = []
-    if len(qs) > 0:
-        paginator = Paginator(qs, page_size)
-        page_obj = paginator.page(page)
-        item_list = list(page_obj.object_list)
-        total_pages = paginator.num_pages
+    if not full:
+        if len(qs) > 0:
+            paginator = Paginator(qs, page_size)
+            page_obj = paginator.page(page)
+            item_list = list(page_obj.object_list)
+            total_pages = paginator.num_pages
+    else:
+        item_list = list(qs)
     total_records = len(qs)
     paginated_items = PaginatedItems(
         items=item_list,

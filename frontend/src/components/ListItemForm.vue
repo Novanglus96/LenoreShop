@@ -39,7 +39,7 @@
                 clearable
                 label="Item*"
                 required
-                :items="items"
+                :items="items.items"
                 item-title="name"
                 item-value="id"
                 v-model="formData.item"
@@ -95,7 +95,7 @@ import { useAisles } from "@/composables/aislesComposable";
 const newItemField = ref("");
 const store = useMainStore();
 const { aisles } = useAisles(store.store_id);
-const { addItem, items } = useItems();
+const { addItem, items } = useItems(true);
 const props = defineProps({
   listItemFormDialog: {
     type: Boolean,
