@@ -1,5 +1,5 @@
 from ninja import NinjaAPI, Schema, Query
-from api.models import Store, Aisle, Item, ListItem, ShoppingList
+from api.models import Store, Aisle, Item, ListItem, ShoppingList, Version
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from datetime import date
@@ -9,6 +9,11 @@ api = NinjaAPI()
 api.title = "Shopping API"
 api.version = "1.5.7"
 api.description = "API documentation for Shopping"
+
+
+class VersionOut(Schema):
+    id: int
+    version_number: str
 
 
 class UserSchema(Schema):
@@ -454,3 +459,23 @@ def delete_store(request, store_id: int):
     store = get_object_or_404(Store, id=store_id)
     store.delete()
     return {"success": True}
+
+
+@api.get("/version/list", response=VersionOut)
+def list_version(request):
+    """
+    The function `list_version` retrieves the app version number
+    from the backend.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        VersionOut: a version object
+    """
+
+    try:
+        qs = get_object_or_404(Version, id=1)
+        return qs
+    except Exception as e:
+        raise HttpError(500, f"Record retrieval error: {str(e)}")

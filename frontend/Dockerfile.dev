@@ -1,5 +1,5 @@
 # Develpoment stage for Vue.js
-FROM node:lts-alpine as vue-develop-stage
+FROM node:lts-alpine AS vue-develop-stage
 
 # Set working directory
 WORKDIR /app

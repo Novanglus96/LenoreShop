@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Store, Aisle, Item, ShoppingList, ListItem
+from .models import Store, Aisle, Item, ShoppingList, ListItem, Version
 
 # Register your models here.
 
@@ -53,8 +53,29 @@ class ListItemAdmin(admin.ModelAdmin):
     ordering = ["shopping_list", "aisle", "item"]
 
 
+class VersionAdmin(admin.ModelAdmin):
+    list_display = ["version_number"]
+
+    list_display_links = ["version_number"]
+
+    ordering = ["version_number"]
+
+    def has_add_permission(self, request):
+        # Return False to disable adding
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        # Return False to disable deleting
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        # Return False to disable editing
+        return False
+
+
 admin.site.register(Store, StoreAdmin)
 admin.site.register(Aisle, AisleAdmin)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(ShoppingList, ShoppingListAdmin)
 admin.site.register(ListItem, ListItemAdmin)
+admin.site.register(Version, VersionAdmin)

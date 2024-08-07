@@ -1,0 +1,9 @@
+[
+  {
+    "model": "api.Version",
+    "pk": 1,
+    "fields": {
+        "version_number": "1.5.7"
+    }
+  }
+]
