@@ -2,6 +2,7 @@ from ninja import NinjaAPI, Schema, Query
 from api.models import Store, Aisle, Item, ListItem, ShoppingList, Version
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
+from ninja.errors import HttpError
 from datetime import date
 from django.core.paginator import Paginator
 
