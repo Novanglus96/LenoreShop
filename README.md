@@ -136,8 +136,8 @@ SECRET_KEY=mysupersecretkey
 DJANGO_ALLOWED_HOSTS=localhost
 CSRF_TRUSTED_ORIGINS=http://localhost
 SQL_ENGINE=django.db.backends.postgresql
-SQL_DATABASE=lenorecraft
-SQL_USER=lenorecraftuser
+SQL_DATABASE=lenoreshop
+SQL_USER=lenoreshopuser
 SQL_PASSWORD=somepassword
 SQL_HOST=db
 SQL_PORT=5432
@@ -145,8 +145,6 @@ DATABASE=postgres
 DJANGO_SUPERUSER_PASSWORD=suepervisorpassword
 DJANGO_SUPERUSER_EMAIL=someone@somewhere.com
 DJANGO_SUPERUSER_USERNAME=supervisor
-VITE_API_KEY=someapikey
-TIMEZONE=America/New_York
 ```
 
 Adjust these values according to your environment and application requirements.
@@ -156,9 +154,9 @@ Adjust these values according to your environment and application requirements.
 Create a `.env.db` file in the root directory of the project. This file will store environment variables required to run the application. Below is an example of the variables you need to define:
 
 ```env
-POSTGRES_USER=lenorecraftuser
+POSTGRES_USER=lenoreshopuser
 POSTGRES_PASSWORD=somepassword
-POSTGRES_DB=lenorecraft
+POSTGRES_DB=lenoreshop
 ```
 
 Make sure these match the settings in .env file!
@@ -170,62 +168,62 @@ Create a `docker-compose.yml` file in the root directory of the project. Below i
 ```yaml
 services:
   frontend:
-    image: novanglus96/lenorecraft_frontend:latest
-    container_name: lenorecraft_frontend
+    image: novanglus96/lenoreshop_frontend:latest
+    container_name: lenoreshop_frontend
     networks:
-      - lenorecraft
+      - lenoreshop
     restart: unless-stopped
     expose:
       - 80
     env_file:
       - ./.env
   backend:
-    image: novanglus96/lenorecraft_backend:latest
-    container_name: lenorecraft_backend
+    image: novanglus96/lenoreshop_backend:latest
+    container_name: lenoreshop_backend
     command: /home/app/web/start.sh
     volumes:
-      - lenorecraft_static_volume:/home/app/web/staticfiles
-      - lenorecraft_media_volume:/home/app/web/mediafiles
+      - lenoreshop_static_volume:/home/app/web/staticfiles
+      - lenoreshop_media_volume:/home/app/web/mediafiles
     expose:
       - 8000
     depends_on:
       - db
     networks:
-      - lenorecraft
+      - lenoreshop
     env_file:
       - ./.env
   db:
     image: postgres:15
-    container_name: lenorecraft_db
+    container_name: lenoreshop_db
     volumes:
-      - lenorecraft_postgres_data:/var/lib/postgresql/data/
+      - lenoreshop_postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.db
     networks:
-      - lenorecraft
+      - lenoreshop
   nginx:
     image: novanglus96/lenoreapps_proxy:latest
-    container_name: lenorecraft_nginx
+    container_name: lenoreshop_nginx
     ports:
       - "8080:80"
     volumes:
-      - lenorecraft_static_volume:/home/app/web/staticfiles
-      - lenorecraft_media_volume:/home/app/web/mediafiles
+      - lenoreshop_static_volume:/home/app/web/staticfiles
+      - lenoreshop_media_volume:/home/app/web/mediafiles
     depends_on:
       - backend
       - frontend
     networks:
-      - lenorecraft
+      - lenoreshop
 
 networks:
-  lenorecraft:
+  lenoreshop:
 
 volumes:
-  lenorecraft_postgres_data:
+  lenoreshop_postgres_data:
     external: true
-  lenorecraft_static_volume:
+  lenoreshop_static_volume:
     external: true
-  lenorecraft_media_volume:
+  lenoreshop_media_volume:
     external: true
 ```
 
