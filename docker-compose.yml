@@ -10,8 +10,8 @@ services:
     restart: unless-stopped
     ports:
       - 8081:8080
-    image: shopping_frontend:development
-    container_name: shopping_frontend_dev
+    image: lenoreshop_frontend:development
+    container_name: lenoreshop_frontend_dev
     volumes:
       - ./frontend:/app
     environment:
@@ -35,8 +35,8 @@ services:
       - default
     env_file:
       - ./.env.dev
-    image: shopping_backend:development
-    container_name: shopping_backend_dev
+    image: lenoreshop_backend:development
+    container_name: lenoreshop_backend_dev
   db:
     image: postgres:15
     volumes:
@@ -45,7 +45,7 @@ services:
       - ./.env.dev.db
     networks:
       - default
-    container_name: shopping_db_dev
+    container_name: lenoreshop_db_dev
     environment:
       - TZ=America/New_York
 

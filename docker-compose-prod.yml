@@ -10,8 +10,8 @@ services:
     restart: unless-stopped
     expose:
       - 80
-    image: shopping_frontend:production
-    container_name: shopping_frontend
+    image: lenoreshop_frontend:production
+    container_name: lenoreshop_frontend
   backend:
     build:
       context: ./backend
@@ -29,8 +29,8 @@ services:
       - "traefik.enable=false"
     env_file:
       - ./.env
-    image: shopping_backend:production
-    container_name: shopping_backend
+    image: lenoreshop_backend:production
+    container_name: lenoreshop_backend
   db:
     image: postgres:15
     volumes:
@@ -41,7 +41,7 @@ services:
       - default
     labels:
       - "traefik.enable=false"
-    container_name: shopping_db
+    container_name: lenoreshop_db
   nginx:
     image: registry.danielleandjohn.love/django_vue_proxy:latest
     volumes:
@@ -54,7 +54,7 @@ services:
       - default
     ports:
       - 7000:80
-    container_name: shopping_nginx
+    container_name: lenoreshop_nginx
 
 volumes:
   postgres_data:
