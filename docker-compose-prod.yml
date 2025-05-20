@@ -43,7 +43,7 @@ services:
       - "traefik.enable=false"
     container_name: lenoreshop_db
   nginx:
-    image: registry.danielleandjohn.love/django_vue_proxy:latest
+    image: novanglus96/lenoreapps_proxy:latest
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
