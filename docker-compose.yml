@@ -9,14 +9,17 @@ services:
       - default
     restart: unless-stopped
     ports:
-      - 8081:8080
+      - 8081:5173
     image: lenoreshop_frontend:development
     container_name: lenoreshop_frontend_dev
     volumes:
       - ./frontend:/app
     environment:
       - NODE_ENV=development
-      - TZ=America/New_York
+      - TZ=${TIMEZONE}
+    command: /bin/sh -c "npm run serve"
+    env_file:
+      - ./.env.dev
   backend:
     build:
       context: ./backend
