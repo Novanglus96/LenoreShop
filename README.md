@@ -316,7 +316,7 @@ A heartfelt thanks to our Patrons for their generous support! Your contributions
 
 ### ⭐ Thank You to Our Supporters:
 
-![Gold Supporter Badge](https://img.shields.io/badge/Eleanor-love_red?style=for-the-badge&logo=patreon&logoColor=gray)
+![Red Supporter Badge](https://img.shields.io/badge/Eleanor-E41B17?style=for-the-badge&logo=patreon&logoColor=gray)
 <!--![Silver Supporter Badge](https://img.shields.io/badge/Jane_Smith-silver?style=for-the-badge&logo=patreon&logoColor=gray)-->
 <!--![BuyMeACoffee Supporter Badge](https://img.shields.io/badge/Jane_Smith-white?style=for-the-badge&logo=buymeacoffee&logoColor=black)-->
 
