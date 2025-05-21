@@ -1,4 +1,4 @@
-# Develpoment stage for Vue.js
+# Development stage for Vue.js
 FROM node:lts-alpine AS vue-develop-stage
 
 # Set working directory
@@ -10,8 +10,22 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install TZDATA
+RUN apk add -U tzdata
+
 # Copy the rest of the application
 COPY . .
 
-# Command to run the development server
-CMD ["npm", "run", "serve"]
+# Expose the Vite development server port
+EXPOSE 5173
+
+# Allow external connections to the dev server
+ENV HOST=0.0.0.0
+
+# Copy entrypoint script to set timezone
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Command to run the entrypoint script and start the development server
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["npm", "run", "dev"]
