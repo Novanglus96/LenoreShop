@@ -151,6 +151,7 @@ def create_listitem(request, payload: ListItemIn):
         return {"id": listitem.id}
     else:
         existing_item.qty += payload.qty
+        existing_item.purchased = False
         existing_item.save()
         return {"id": existing_item.id}
 

@@ -5,7 +5,9 @@
       v-model="listItemFormDialog"
       @add-list-item="createListItem"
       @update-dialog="updateDialog"
+      :passedFormData="blankFormData"
       :isEdit="false"
+      :key="-1"
     />
     <v-container>
       <v-row dense v-if="!isLoading">
@@ -131,6 +133,16 @@ const listItemFormDialog = ref(false);
 const updateDialog = () => {
   listItemFormDialog.value = false;
 };
+
+const blankFormData = ref({
+  id: 0,
+  qty: 1,
+  purchased: false,
+  notes: "",
+  item: null,
+  aisle_id: null,
+  shopping_list_id: 0,
+});
 
 const {
   fullshoppinglist,

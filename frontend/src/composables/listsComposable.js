@@ -76,7 +76,7 @@ async function createListItem(newListItem) {
   try {
     const data = {
       qty: newListItem.qty,
-      purchased: newListItem.purchased,
+      purchased: false,
       notes: newListItem.notes,
       item_id: newListItem.item.id,
       aisle_id: newListItem.aisle_id,
