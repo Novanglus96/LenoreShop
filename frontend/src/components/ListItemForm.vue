@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="show" persistent width="1024">
+  <v-dialog
+    v-model="show"
+    persistent
+    :width="isMobile ? undefined : '1024'"
+    :fullscreen="isMobile"
+  >
     <v-card>
       <v-card-title>
         <span class="text-h5" v-if="props.isEdit == false">Add Item</span>
@@ -91,6 +96,10 @@ import { ref, defineEmits, defineProps, onMounted, watchEffect } from "vue";
 import { useMainStore } from "@/stores/main";
 import { useItems } from "@/composables/itemsComposable";
 import { useAisles } from "@/composables/aislesComposable";
+import { useDisplay } from "vuetify";
+
+const { smAndDown } = useDisplay();
+const isMobile = smAndDown;
 
 const newItemField = ref("");
 const store = useMainStore();
