@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import { createHtmlPlugin } from "vite-plugin-html";
 import vueDevTools from "vite-plugin-vue-devtools";
 import { fileURLToPath, URL } from "node:url";
+import eslint from "vite-plugin-eslint";
 
 export default defineConfig({
   plugins: [
@@ -15,6 +16,7 @@ export default defineConfig({
         },
       },
     }),
+    eslint(),
   ],
   server: {
     proxy: {
