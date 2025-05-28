@@ -31,8 +31,9 @@
                 variant="outlined"
                 prepend-icon="mdi-delete-sweep-outline"
                 v-bind="activatorProps"
-                >Clear Purchased</v-btn
               >
+                Clear Purchased
+              </v-btn>
             </template>
             <v-card
               prepend-icon="mdi-alert"
@@ -42,9 +43,9 @@
               <template v-slot:actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="clear_purchased_dialog = false">No</v-btn>
-                <v-btn @click="clearPurchasedListFunction(fullshoppinglist.id)"
-                  >Yes</v-btn
-                >
+                <v-btn @click="clearPurchasedListFunction(fullshoppinglist.id)">
+                  Yes
+                </v-btn>
               </template>
             </v-card>
           </v-dialog>
@@ -55,8 +56,9 @@
                 variant="outlined"
                 prepend-icon="mdi-delete-sweep-outline"
                 v-bind="activatorProps"
-                >Clear All</v-btn
               >
+                Clear All
+              </v-btn>
             </template>
             <v-card
               prepend-icon="mdi-alert"
@@ -66,9 +68,9 @@
               <template v-slot:actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="clear_full_dialog = false">No</v-btn>
-                <v-btn @click="clearListFunction(fullshoppinglist.id)"
-                  >Yes</v-btn
-                >
+                <v-btn @click="clearListFunction(fullshoppinglist.id)">
+                  Yes
+                </v-btn>
               </template>
             </v-card>
           </v-dialog>
@@ -120,58 +122,58 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import ShoppingList from "@/components/ShoppingList.vue";
-import ListItemForm from "@/components/ListItemForm.vue";
-import { useFullShoppingList } from "@/composables/listsComposable";
-import { useMainStore } from "@/stores/main";
+  import { ref } from "vue";
+  import ShoppingList from "@/components/ShoppingList.vue";
+  import ListItemForm from "@/components/ListItemForm.vue";
+  import { useFullShoppingList } from "@/composables/listsComposable";
+  import { useMainStore } from "@/stores/main";
 
-const store = useMainStore();
-const clear_full_dialog = ref(false);
-const clear_purchased_dialog = ref(false);
-const listItemFormDialog = ref(false);
-const updateDialog = () => {
-  listItemFormDialog.value = false;
-};
+  const store = useMainStore();
+  const clear_full_dialog = ref(false);
+  const clear_purchased_dialog = ref(false);
+  const listItemFormDialog = ref(false);
+  const updateDialog = () => {
+    listItemFormDialog.value = false;
+  };
 
-const blankFormData = ref({
-  id: 0,
-  qty: 1,
-  purchased: false,
-  notes: "",
-  item: null,
-  aisle_id: null,
-  shopping_list_id: 0,
-});
+  const blankFormData = ref({
+    id: 0,
+    qty: 1,
+    purchased: false,
+    notes: "",
+    item: null,
+    aisle_id: null,
+    shopping_list_id: 0,
+  });
 
-const {
-  fullshoppinglist,
-  isLoading,
-  addListItem,
-  updateListItem,
-  clearList,
-  clearPurchasedList,
-} = useFullShoppingList(store.list_id);
+  const {
+    fullshoppinglist,
+    isLoading,
+    addListItem,
+    updateListItem,
+    clearList,
+    clearPurchasedList,
+  } = useFullShoppingList(store.list_id);
 
-const editListItem = async listItem => {
-  await updateListItem(listItem);
-};
+  const editListItem = async listItem => {
+    await updateListItem(listItem);
+  };
 
-const createListItem = async newListItem => {
-  await addListItem(newListItem);
-};
+  const createListItem = async newListItem => {
+    await addListItem(newListItem);
+  };
 
-const purchaseItem = async listItem => {
-  await updateListItem(listItem);
-};
+  const purchaseItem = async listItem => {
+    await updateListItem(listItem);
+  };
 
-const clearListFunction = async shoppinglistID => {
-  await clearList(shoppinglistID);
-  clear_full_dialog.value = false;
-};
+  const clearListFunction = async shoppinglistID => {
+    await clearList(shoppinglistID);
+    clear_full_dialog.value = false;
+  };
 
-const clearPurchasedListFunction = async shoppinglistID => {
-  await clearPurchasedList(shoppinglistID);
-  clear_purchased_dialog.value = false;
-};
+  const clearPurchasedListFunction = async shoppinglistID => {
+    await clearPurchasedList(shoppinglistID);
+    clear_purchased_dialog.value = false;
+  };
 </script>
