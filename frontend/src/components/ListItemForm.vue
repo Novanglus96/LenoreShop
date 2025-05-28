@@ -4,8 +4,8 @@
     persistent
     :width="isMobile ? undefined : '1024'"
     :fullscreen="isMobile"
-    ><form @submit.prevent="submit">
-      <v-card>
+    >
+      <v-card><form @submit.prevent="submit">
         <v-card-title>
           <span class="text-h5" v-if="props.isEdit == false">Add Item</span>
           <span class="text-h5" v-else>Edit Item</span>
@@ -89,9 +89,9 @@
           <v-btn color="blue-darken-1" variant="text" type="submit">
             Save
           </v-btn>
-        </v-card-actions>
+        </v-card-actions></form>
       </v-card>
-    </form>
+    
   </v-dialog>
 </template>
 <script setup>
