@@ -1,11 +1,23 @@
 <template>
   <div class="aisles">
     <v-btn density="compact" @click="aisleFormDialog = true">Add Aisle</v-btn>
-    <AisleForm v-model="aisleFormDialog" @add-aisle="createAisle" :isEdit="false" @update-dialog="updateDialog"/>
+    <AisleForm
+      v-model="aisleFormDialog"
+      @add-aisle="createAisle"
+      :isEdit="false"
+      @update-dialog="updateDialog"
+      :passedFormData="blankFormData"
+    />
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <AisleCard v-for="aisle in aisles" :aisle="aisle" :key="aisle.id" @edit-aisle="updateAisle" @remove-aisle="deleteAisle"/>
+          <AisleCard
+            v-for="aisle in aisles"
+            :aisle="aisle"
+            :key="aisle.id"
+            @edit-aisle="updateAisle"
+            @remove-aisle="deleteAisle"
+          />
         </v-col>
       </v-row>
       <v-row dense v-else>
@@ -18,29 +30,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import AisleCard from '@/components/AisleCard.vue'
-import AisleForm from '@/components/AisleForm.vue'
-import { useAisles } from '@/composables/aislesComposable'
-import { useMainStore } from '@/stores/main'
+  import { ref } from "vue";
+  import AisleCard from "@/components/AisleCard.vue";
+  import AisleForm from "@/components/AisleForm.vue";
+  import { useAisles } from "@/composables/aislesComposable";
+  import { useMainStore } from "@/stores/main";
 
-const store = useMainStore();
-const aisleFormDialog = ref(false);
-const updateDialog = () => {
-  aisleFormDialog.value = false
-}
+  const store = useMainStore();
+  const aisleFormDialog = ref(false);
+  const updateDialog = () => {
+    aisleFormDialog.value = false;
+  };
 
-const { aisles, isLoading, addAisle, editAisle, removeAisle } = useAisles(store.store_id)
-const createAisle = async (newAisle) => {
-  await addAisle(newAisle)
-}
+  const { aisles, isLoading, addAisle, editAisle, removeAisle } = useAisles(
+    store.store_id,
+  );
+  const createAisle = async newAisle => {
+    await addAisle(newAisle);
+  };
 
-const updateAisle = async (updatedAisle) => {
-  await editAisle(updatedAisle)
-}
+  const updateAisle = async updatedAisle => {
+    await editAisle(updatedAisle);
+  };
 
-const deleteAisle = async (deletedAisle) => {
-  await removeAisle(deletedAisle)
-}
+  const deleteAisle = async deletedAisle => {
+    await removeAisle(deletedAisle);
+  };
 
+  const blankFormData = ref({
+    id: null,
+    name: null,
+    store_id: store.store_id,
+    order: 1,
+  });
 </script>

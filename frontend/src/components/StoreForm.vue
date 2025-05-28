@@ -66,7 +66,7 @@
       type: Boolean,
       default: false,
     },
-    passedFormData: Array,
+    passedFormData: Object,
   });
 
   const show = ref(props.storeFormDialog);
@@ -96,5 +96,11 @@
 
   const closeDialog = () => {
     emit("updateDialog", false);
+    clearFormData();
+  };
+
+  const clearFormData = () => {
+    id.value.value = null;
+    name.value.value = null;
   };
 </script>

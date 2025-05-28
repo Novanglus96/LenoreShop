@@ -147,7 +147,7 @@
       type: Boolean,
       default: false,
     },
-    passedFormData: Array,
+    passedFormData: Object,
   });
 
   const createItem = async newItem => {
