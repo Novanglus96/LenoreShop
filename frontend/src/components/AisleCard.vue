@@ -29,7 +29,7 @@
       >
         delete
       </v-btn>
-      <v-dialog v-model="deleteDialog" width="auto">
+      <v-dialog v-model="deleteDialog" persistent width="auto">
         <v-card>
           <v-card-text>Delete aisle {{ aisle.name }}?</v-card-text>
           <v-card-actions>

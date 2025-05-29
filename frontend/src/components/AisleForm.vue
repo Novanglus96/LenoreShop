@@ -134,9 +134,9 @@
   };
 
   const clearFormData = () => {
-    id.value.value = null;
-    name.value.value = null;
+    id.value.value = props.passedFormData.id;
+    name.value.value = props.passedFormData.name;
     store_id.value.value = mainstore.store_id;
-    order.value.value = 1;
+    order.value.value = props.passedFormData.order;
   };
 </script>
