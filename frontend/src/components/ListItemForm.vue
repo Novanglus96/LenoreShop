@@ -30,6 +30,7 @@
                   label="new item"
                   variant="outlined"
                   v-model="newItemField"
+                  @update:model-value="newItemTextChanged()"
                 ></v-text-field>
               </v-col>
               <v-col cols="1">
@@ -37,6 +38,7 @@
                   icon="mdi-plus"
                   variant="plain"
                   @click="itemChanged"
+                  :disabled="!newItemEntered"
                 ></v-btn>
               </v-col>
             </v-row>
@@ -134,6 +136,7 @@
   const { smAndDown } = useDisplay();
   const isMobile = smAndDown;
 
+  const newItemEntered = ref(false);
   const newItemField = ref("");
   const store = useMainStore();
   const { aisles } = useAisles(store.store_id);
@@ -182,13 +185,14 @@
   });
 
   const clearFormData = () => {
-    id.value.value = null;
-    qty.value.value = 1;
-    purchased.value.value = false;
-    notes.value.value = "";
-    item.value.value = null;
-    aisle_id.value.value = null;
-    shopping_list_id.value.value = store.list_id;
+    newItemField.value = null;
+    id.value.value = props.passedFormData.id;
+    qty.value.value = props.passedFormData.qty;
+    purchased.value.value = props.passedFormData.purchased;
+    notes.value.value = props.passedFormData.notes;
+    item.value.value = props.passedFormData.item;
+    aisle_id.value.value = props.passedFormData.aisle_id;
+    shopping_list_id.value.value = store ? store.list_id : null;
   };
 
   const submit = handleSubmit(values => {
@@ -212,6 +216,17 @@
 
   const closeDialog = () => {
     emit("updateDialog", false);
+    clearFormData();
+  };
+
+  const newItemTextChanged = () => {
+    if (newItemField.value && newItemField.value != "") {
+      newItemEntered.value = true;
+      console.log("text changed");
+    } else {
+      newItemEntered.value = false;
+      console.log("text not changed");
+    }
   };
 
   const itemChanged = async () => {
@@ -221,5 +236,6 @@
     const newItemID = await createItem(newItem);
     item.value.value = newItemID;
     newItemField.value = "";
+    newItemEntered.value = false;
   };
 </script>
