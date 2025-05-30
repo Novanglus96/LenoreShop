@@ -93,7 +93,6 @@ async function createListItem(newListItem) {
 async function updateListItemFunction(updatedListItem) {
   const mainstore = useMainStore();
   try {
-    console.log("listitem:", updatedListItem);
     const data = {
       id: updatedListItem.id,
       qty: updatedListItem.qty,

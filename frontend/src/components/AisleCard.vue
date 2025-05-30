@@ -63,7 +63,6 @@
     passedFormData.value.order = aisle.order;
 
     aisleFormDialog.value = true;
-    console.log(passedFormData);
   };
 
   const updateAisle = async aisle => {

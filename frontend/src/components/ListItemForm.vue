@@ -222,10 +222,8 @@
   const newItemTextChanged = () => {
     if (newItemField.value && newItemField.value != "") {
       newItemEntered.value = true;
-      console.log("text changed");
     } else {
       newItemEntered.value = false;
-      console.log("text not changed");
     }
   };
 
