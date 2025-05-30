@@ -32,8 +32,6 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
     "@mdi/font": "^7.2.96",
     "@vitejs/plugin-vue": "^5.2.4",
     "autoprefixer": "^10.4.15",
