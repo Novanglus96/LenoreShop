@@ -80,6 +80,7 @@
         <v-col cols="12">
           <ShoppingList
             @edit-list-item="editListItem"
+            @delete-list-item="removeListItem"
             @item-purchased="purchaseItem"
             :listitems="fullshoppinglist.aisles"
             :purchased="false"
@@ -150,6 +151,7 @@
     fullshoppinglist,
     isLoading,
     addListItem,
+    deleteListItem,
     updateListItem,
     clearList,
     clearPurchasedList,
@@ -161,6 +163,10 @@
 
   const createListItem = async newListItem => {
     await addListItem(newListItem);
+  };
+
+  const removeListItem = async deletedListItem => {
+    await deleteListItem(deletedListItem);
   };
 
   const purchaseItem = async listItem => {

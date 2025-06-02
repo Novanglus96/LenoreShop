@@ -90,6 +90,17 @@ async function createListItem(newListItem) {
   }
 }
 
+async function deleteListItemFunction(deleteListItem) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete("/listitems/" + deleteListItem.id);
+    mainstore.showSnackbar("List Item deleted successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "List Item not deleted: ");
+  }
+}
+
 async function updateListItemFunction(updatedListItem) {
   const mainstore = useMainStore();
   try {
@@ -224,6 +235,14 @@ export function useFullShoppingList(listID) {
     },
   });
 
+  const deleteListItemMutation = useMutation({
+    mutationFn: deleteListItemFunction,
+    onSuccess: () => {
+      console.log("Success deleting list item", listID);
+      queryClient.invalidateQueries({ queryKey: ["fullshoppinglist", listID] });
+    },
+  });
+
   const updateListItemMutation = useMutation({
     mutationFn: updateListItemFunction,
     onSuccess: () => {
@@ -252,6 +271,10 @@ export function useFullShoppingList(listID) {
     addListItemMutation.mutate(listItem);
   }
 
+  async function deleteListItem(listItem) {
+    deleteListItemMutation.mutate(listItem);
+  }
+
   async function updateListItem(listItem) {
     updateListItemMutation.mutate(listItem);
   }
@@ -271,5 +294,6 @@ export function useFullShoppingList(listID) {
     updateListItem,
     clearList,
     clearPurchasedList,
+    deleteListItem,
   };
 }
