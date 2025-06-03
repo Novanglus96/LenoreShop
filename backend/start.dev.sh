@@ -14,4 +14,5 @@ if [ "$DJANGO_SUPERUSER_USERNAME" ]; then
         true
 fi
 
-python manage.py runserver 0.0.0.0:8001
+python manage.py runserver 0.0.0.0:8001 &
+mkdocs serve --dev-addr=0.0.0.0:8002
