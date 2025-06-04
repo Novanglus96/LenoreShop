@@ -34,8 +34,6 @@
     <img src="frontend/public/logov2.png" alt="Logo" height="40">
   </a>
 
-<h3 align="center">LenoreShop</h3>
-
   <p align="center">
     A simple shopping app.
     <br />
@@ -81,8 +79,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Screenshots - COMING SOON
-<!--[![Product Name Screen Shot][product-screenshot]](https://example.com)-->
+![LenoreShop Screen Shot][product-screenshot]
 
 Introducing LenoreShop, the ultimate shopping list app designed to streamline your grocery shopping experience. Whether you're managing a single shopping trip or juggling multiple stores, LenoreShop has you covered with its intuitive features and user-friendly interface.
 
@@ -133,8 +130,8 @@ Create a `.env` file in the root directory of the project. This file will store 
 ```env
 DEBUG=0
 SECRET_KEY=mysupersecretkey
-DJANGO_ALLOWED_HOSTS=localhost
-CSRF_TRUSTED_ORIGINS=http://localhost
+DJANGO_ALLOWED_HOSTS=(docker-ip)
+CSRF_TRUSTED_ORIGINS=http://(docker-ip)
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=lenoreshop
 SQL_USER=lenoreshopuser
@@ -147,7 +144,7 @@ DJANGO_SUPERUSER_EMAIL=someone@somewhere.com
 DJANGO_SUPERUSER_USERNAME=supervisor
 ```
 
-Adjust these values according to your environment and application requirements.
+Adjust these values according to your environment and application requirements.  Make sure to modify the DJANGO_ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS sections.
 
 ### Step 2: Create a `.env.db` File
 
@@ -182,8 +179,8 @@ services:
     container_name: lenoreshop_backend
     command: /home/app/web/start.sh
     volumes:
-      - lenoreshop_static_volume:/home/app/web/staticfiles
-      - lenoreshop_media_volume:/home/app/web/mediafiles
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
     expose:
       - 8000
     depends_on:
@@ -196,7 +193,7 @@ services:
     image: postgres:15
     container_name: lenoreshop_db
     volumes:
-      - lenoreshop_postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.db
     networks:
@@ -207,8 +204,8 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - lenoreshop_static_volume:/home/app/web/staticfiles
-      - lenoreshop_media_volume:/home/app/web/mediafiles
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
     depends_on:
       - backend
       - frontend
@@ -219,12 +216,9 @@ networks:
   lenoreshop:
 
 volumes:
-  lenoreshop_postgres_data:
-    external: true
-  lenoreshop_static_volume:
-    external: true
-  lenoreshop_media_volume:
-    external: true
+  postgres_data:
+  static_volume:
+  media_volume:
 ```
 
 ### Step 4: Run the Application
@@ -342,7 +336,7 @@ Want to see your name here? Support us on [Patreon](https://www.patreon.com/nova
 [license-url]: https://github.com/Novanglus96/LenoreShop/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/johnmadamsjr
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: screenshots/LenoreShop_Screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB

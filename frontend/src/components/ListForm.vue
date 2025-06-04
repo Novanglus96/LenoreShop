@@ -50,7 +50,6 @@
 </template>
 <script setup>
   import { ref, defineEmits, defineProps, onMounted, watchEffect } from "vue";
-  import { useMainStore } from "@/stores/main";
   import { useStores } from "@/composables/storesComposable";
   import { useDisplay } from "vuetify";
   import { useField, useForm } from "vee-validate";
@@ -73,7 +72,6 @@
   const isMobile = smAndDown;
 
   const { stores } = useStores();
-  const mainstore = useMainStore();
 
   const props = defineProps({
     listFormDialog: {
@@ -97,7 +95,7 @@
         name.value.value = props.passedFormData.name;
         store_id.value.value = props.passedFormData.store_id
           ? props.passedFormData.store_id
-          : mainstore.store_id;
+          : null;
       }
     });
   };
