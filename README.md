@@ -34,8 +34,6 @@
     <img src="frontend/public/logov2.png" alt="Logo" height="40">
   </a>
 
-<h3 align="center">LenoreShop</h3>
-
   <p align="center">
     A simple shopping app.
     <br />
