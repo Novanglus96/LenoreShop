@@ -8,6 +8,8 @@ mediafiles
 staticfiles
 *.code-workspace
 .vite/
+myenv/
+site/
 
 # ---> Python
 # Byte-compiled / optimized / DLL files
