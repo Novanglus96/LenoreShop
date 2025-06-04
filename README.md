@@ -132,8 +132,8 @@ Create a `.env` file in the root directory of the project. This file will store 
 ```env
 DEBUG=0
 SECRET_KEY=mysupersecretkey
-DJANGO_ALLOWED_HOSTS=localhost
-CSRF_TRUSTED_ORIGINS=http://localhost
+DJANGO_ALLOWED_HOSTS=(docker-ip)
+CSRF_TRUSTED_ORIGINS=http://(docker-ip)
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=lenoreshop
 SQL_USER=lenoreshopuser
@@ -146,7 +146,7 @@ DJANGO_SUPERUSER_EMAIL=someone@somewhere.com
 DJANGO_SUPERUSER_USERNAME=supervisor
 ```
 
-Adjust these values according to your environment and application requirements.
+Adjust these values according to your environment and application requirements.  Make sure to modify the DJANGO_ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS sections.
 
 ### Step 2: Create a `.env.db` File
 
@@ -181,8 +181,8 @@ services:
     container_name: lenoreshop_backend
     command: /home/app/web/start.sh
     volumes:
-      - lenoreshop_static_volume:/home/app/web/staticfiles
-      - lenoreshop_media_volume:/home/app/web/mediafiles
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
     expose:
       - 8000
     depends_on:
@@ -195,7 +195,7 @@ services:
     image: postgres:15
     container_name: lenoreshop_db
     volumes:
-      - lenoreshop_postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.db
     networks:
@@ -206,8 +206,8 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - lenoreshop_static_volume:/home/app/web/staticfiles
-      - lenoreshop_media_volume:/home/app/web/mediafiles
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
     depends_on:
       - backend
       - frontend
@@ -218,12 +218,9 @@ networks:
   lenoreshop:
 
 volumes:
-  lenoreshop_postgres_data:
-    external: true
-  lenoreshop_static_volume:
-    external: true
-  lenoreshop_media_volume:
-    external: true
+  postgres_data:
+  static_volume:
+  media_volume:
 ```
 
 ### Step 4: Run the Application
