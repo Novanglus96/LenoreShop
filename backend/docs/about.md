@@ -31,7 +31,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Novanglus96/LenoreShop">
-    <img src="images/logov2.png" alt="Logo" height="40">
+    <img src="/images/logov2.png" alt="Logo" height="40">
   </a>
 
   <p align="center">
