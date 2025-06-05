@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.11.4-slim-buster AS develop-stage
+FROM python:3.11.4-slim-bookworm AS develop-stage
 
 # set work directory
 WORKDIR /usr/src/app
@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc
 COPY ./requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install MkDocs
+RUN pip install mkdocs 'mkdocstrings[python]' mkdocs-material
 
 # Copy entrypoint script
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh

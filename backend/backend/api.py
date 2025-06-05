@@ -7,9 +7,9 @@ from datetime import date
 from django.core.paginator import Paginator
 
 api = NinjaAPI()
-api.title = "Shopping API"
+api.title = "LenoreShop API"
 api.version = "1.6.0"
-api.description = "API documentation for Shopping"
+api.description = "API documentation for LenoreShop"
 
 
 class VersionOut(Schema):
