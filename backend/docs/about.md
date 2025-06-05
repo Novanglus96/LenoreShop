@@ -30,19 +30,19 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Gamunda/LenoreShop">
+  <a href="https://github.com/Novanglus96/LenoreShop">
     <img src="frontend/public/logov2.png" alt="Logo" height="40">
   </a>
 
   <p align="center">
     A simple shopping app.
     <br />
-    <a href="https://github.com/Gamunda/LenoreShop"><strong>Explore the docs »</strong></a>
+    <a href="https://novanglus96.github.io/LenoreShop/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Gamunda/LenoreShop/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/Novanglus96/LenoreShop/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/Gamunda/LenoreShop/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/Novanglus96/LenoreShop/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -357,3 +357,4 @@ Want to see your name here? Support us on [Patreon](https://www.patreon.com/nova
 [Django-url]: https://www.djangoproject.com/
 [Docker]: https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white
 [Docker-url]: https://www.docker.com/
+[Documentaion-url]: https://novanglus96.github.io/LenoreShop/
