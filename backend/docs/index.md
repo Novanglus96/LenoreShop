@@ -1,1 +1,1 @@
-Coming Soon - LenoreShop
+Coming Soon - LenoreShop documentation
