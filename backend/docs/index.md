@@ -1,1 +1,1 @@
-LenoreShop Home
+Coming Soon
