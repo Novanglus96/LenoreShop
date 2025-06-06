@@ -62,4 +62,4 @@ git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
 git push origin "v$NEW_VERSION"
 
 # Create a GitHub release
-gh release create "v$NEW_VERSION" --title "Release $NEW_VERSION" --notes "Automatically created release for version $NEW_VERSION."
+gh release create "v$NEW_VERSION" --title "Release $NEW_VERSION" --generate-notes
