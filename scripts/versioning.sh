@@ -56,3 +56,10 @@ git config user.email "actions@github.com"
 git add "$VERSION_FILE"
 git commit -m "Bump version to $NEW_VERSION"
 git push
+
+# Create a Git tag
+git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
+git push origin "v$NEW_VERSION"
+
+# Create a GitHub release
+gh release create "v$NEW_VERSION" --title "Release $NEW_VERSION" --notes "Automatically created release for version $NEW_VERSION."
