@@ -4,27 +4,30 @@ VERSION_FILE="scripts/version.txt"
 
 # Ensure the version file exists
 if [ ! -f "$VERSION_FILE" ]; then
-  echo "0.0.0" > $VERSION_FILE
+  echo "0.0.0" > "$VERSION_FILE"
 fi
 
-# Read current version
+# Read the current version
 CURRENT_VERSION=$(cat "$VERSION_FILE")
 IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 
-# Determine version type from commit messages
-VERSION_TYPE="patch" # Default to patch
+# Default version type to "patch"
+VERSION_TYPE="patch"
 
-# Fetch commit messages
-COMMIT_MSGS=$(git log --pretty=format:%s -n 1)
+# Fetch the latest commit message
+COMMIT_MSG=$(git log -1 --pretty=%s)
+echo "Commit Message: $COMMIT_MSG"  # Debugging line
 
-# Determine version type from the commit message
-if echo "$COMMIT_MSG" | grep -Eiq "(\[major\]|major:|^major)"; then
+# Simplify pattern matching
+if [[ "$COMMIT_MSG" == *"[major]"* || "$COMMIT_MSG" == "major:"* || "$COMMIT_MSG" == "major"* ]]; then
   VERSION_TYPE="major"
-elif echo "$COMMIT_MSG" | grep -Eiq "(\[minor\]|minor:|^minor)"; then
+elif [[ "$COMMIT_MSG" == *"[minor]"* || "$COMMIT_MSG" == "minor:"* || "$COMMIT_MSG" == "minor"* ]]; then
   VERSION_TYPE="minor"
 fi
 
-# Increment version based on type
+echo "Detected Version Type: $VERSION_TYPE"  # Debugging line
+
+# Increment the version based on the detected type
 case $VERSION_TYPE in
   major)
     MAJOR=$((MAJOR + 1))
@@ -44,11 +47,12 @@ esac
 NEW_VERSION="$MAJOR.$MINOR.$PATCH"
 echo "$NEW_VERSION" > "$VERSION_FILE"
 
+# Log the version update
 echo "Version bumped to $NEW_VERSION ($VERSION_TYPE update)"
 
-# Commit and push the updated version
+# Commit and push the updated version file
 git config user.name "GitHub Actions Bot"
-git config user.email "<>"
+git config user.email "actions@github.com"
 git add "$VERSION_FILE"
 git commit -m "Bump version to $NEW_VERSION"
 git push
