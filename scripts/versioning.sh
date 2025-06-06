@@ -16,9 +16,11 @@ VERSION_TYPE="patch" # Default to patch
 
 # Fetch commit messages
 COMMIT_MSGS=$(git log --pretty=format:%s -n 1)
-if echo "$COMMIT_MSGS" | grep -iq "\[major\]"; then
+
+# Determine version type from the commit message
+if echo "$COMMIT_MSG" | grep -Eiq "(\[major\]|major:|^major)"; then
   VERSION_TYPE="major"
-elif echo "$COMMIT_MSGS" | grep -iq "\[minor\]"; then
+elif echo "$COMMIT_MSG" | grep -Eiq "(\[minor\]|minor:|^minor)"; then
   VERSION_TYPE="minor"
 fi
 
