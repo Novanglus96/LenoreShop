@@ -1,0 +1,53 @@
+name: Publish Docker Images
+
+on:
+  workflow_run:
+    workflows: ["Versioning"]  # Ensure it runs after the Versioning workflow
+    types:
+      - completed
+
+jobs:
+  publish:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Read Version
+        id: read_version
+        run: echo "VERSION=$(cat scripts/version.txt)" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          echo "Docker Hub login successful."
+
+      - name: Publish Docker Images
+        env:
+          BACKEND_NAME: lenoreshop_backend
+          FRONTEND_NAME: lenoreshop_frontend
+          VERSION: ${{ env.VERSION }}
+          DOCKER_HUB_REPO: ${{ secrets.DOCKER_HUB_REPO }}
+        run: |
+          echo "Publishing Docker images to $DOCKER_HUB_REPO..."
+
+          # Remove latest tags if they exist
+          docker rmi $DOCKER_HUB_REPO/$BACKEND_NAME:latest || true
+          docker rmi $DOCKER_HUB_REPO/$FRONTEND_NAME:latest || true
+
+          # Tag new images
+          docker tag $BACKEND_NAME:production $DOCKER_HUB_REPO/$BACKEND_NAME:${VERSION}
+          docker tag $FRONTEND_NAME:production $DOCKER_HUB_REPO/$FRONTEND_NAME:${VERSION}
+          docker tag $BACKEND_NAME:production $DOCKER_HUB_REPO/$BACKEND_NAME:latest
+          docker tag $FRONTEND_NAME:production $DOCKER_HUB_REPO/$FRONTEND_NAME:latest
+
+          # Push new images
+          docker push $DOCKER_HUB_REPO/$BACKEND_NAME:${VERSION}
+          docker push $DOCKER_HUB_REPO/$FRONTEND_NAME:${VERSION}
+          docker push $DOCKER_HUB_REPO/$BACKEND_NAME:latest
+          docker push $DOCKER_HUB_REPO/$FRONTEND_NAME:latest
+
+          echo "Published Docker images for version ${VERSION}."
