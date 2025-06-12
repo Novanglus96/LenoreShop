@@ -12,12 +12,32 @@ api.version = "1.6.0"
 api.description = "API documentation for LenoreShop"
 
 
+# The class VersionOut is a scheam for representing Version information.
 class VersionOut(Schema):
+    """
+    Schema to represent a Version.
+
+    Attributes:
+        id (int): ID integer. Unique.
+        version_number (str): The version of the app.
+    """
+
     id: int
     version_number: str
 
 
 class UserSchema(Schema):
+    """
+    Schema to validate a User
+
+    Attributes:
+        username (str): The user's username.
+        is_authenticated (bool): Wether or not the use is authenticated.
+        email (str): The user's email address.
+        first_name (str): The user's first name.
+        last_name (str): The user's last name.
+    """
+
     username: str
     is_authenticated: bool
     email: str = None
@@ -26,21 +46,56 @@ class UserSchema(Schema):
 
 
 class StoreIn(Schema):
+    """
+    Schema to validate a Store.
+
+    Attributes:
+        name (str): The name of the store.
+    """
+
     name: str
 
 
 class StoreOut(Schema):
+    """
+    Schema to represent a Store.
+
+    Attributes:
+        id (int): ID integer. Unique.
+        name (str): The name of the store.
+    """
+
     id: int
     name: str
 
 
 class AisleIn(Schema):
+    """
+    Schema to validate an Aisle.
+
+    Attributes:
+        name (str): The name of the aisle.
+        order (int): The order of the aisle. Default = 1.
+        store_id (int): The ID of a Store object.
+    """
+
     name: str
     order: int = 1
     store_id: int
 
 
 class AisleOut(Schema):
+    """
+    Schema to represent an Aisle.
+
+    Attributes:
+        id (int): ID integer. Unique.
+        name (str): The name of the Aisle.
+        order (int): The order of the Aisle. Default = 1.
+        store_id (int): The ID of the store.
+        store (StoreOut): The Store object.
+    """
+
     id: int
     name: str
     order: int = 1
@@ -473,7 +528,7 @@ def list_version(request):
         request (HttpRequest): The HTTP request object.
 
     Returns:
-        VersionOut: a version object
+        (VersionOut): a version object
     """
 
     try:

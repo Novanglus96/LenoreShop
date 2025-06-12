@@ -4,7 +4,6 @@ site_author: John Adams
 copyright: 2025 John Adams
 nav:
   - Home: index.md
-  - About: about.md
   - Reference:
       - Models: models.md
       - API: api.md
