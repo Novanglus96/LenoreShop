@@ -13,6 +13,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Extract Commit Message
+        id: get_commit_message
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+
+      - name: Check for 'publish' Tag
+        if: "!contains(env.COMMIT_MESSAGE, 'publish')"
+        run: |
+          echo "No 'publish' tag found in the commit message. Skipping publish step."
+          exit 0
+
       - name: Read Version
         id: read_version
         run: echo "VERSION=$(cat scripts/version.txt)" >> $GITHUB_ENV
@@ -30,7 +42,7 @@ jobs:
           BACKEND_NAME: lenoreshop_backend
           FRONTEND_NAME: lenoreshop_frontend
           VERSION: ${{ env.VERSION }}
-          DOCKER_HUB_REPO: ${{ secrets.DOCKER_HUB_REPO }}
+          DOCKER_HUB_REPO: ${{ secrets.DOCKER_USERNAME }}
         run: |
           echo "Publishing Docker images to $DOCKER_HUB_REPO..."
 
