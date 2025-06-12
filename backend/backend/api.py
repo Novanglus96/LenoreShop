@@ -104,12 +104,31 @@ class AisleOut(Schema):
 
 
 class ItemIn(Schema):
+    """
+    Schema to validate an Item.
+
+    Attributes:
+        name (str): The name of the item.
+        matches (str): Names that match this item.
+        aisle (AisleOut): Last aisle used for this item.
+    """
+
     name: str
     matches: str = None
     aisle: Optional[AisleOut]
 
 
 class ItemOut(Schema):
+    """
+    Schema to represent an Item.
+
+    Attributes:
+        id (int): ID integer. Unique.
+        name (str): The name of the item.
+        matches (str): Names that macth this item.
+        aisle (AisleOut): Last aisle used for this item. Optional.
+    """
+
     id: int
     name: str
     matches: str = None
@@ -117,6 +136,16 @@ class ItemOut(Schema):
 
 
 class PaginatedItems(Schema):
+    """
+    Schema to represent a paginated list of Items.
+
+    Attributes:
+        items (List[ItemOut]): A paginated list of items.
+        current_page (int): The current page of the list.
+        total_pages (int): The total number of pages of items.
+        total_records (int): The total count of items.
+    """
+
     items: List[ItemOut]
     current_page: int
     total_pages: int
@@ -124,6 +153,19 @@ class PaginatedItems(Schema):
 
 
 class ListItemIn(Schema):
+    """
+    Schema to validate a ListItem.
+
+    Attributes:
+        qty (int): The quantity of list items. Default = 1.
+        purchased (bool): Wether the list item has been purchsaed. Default = False.
+        notes (str): Notes for the list item. Default = None.
+        purch_date (date): Last aisle used for this item. Default = None.
+        item_id (int): ID of the item.
+        aisle_id (int): ID of the aisle.
+        shopping_list_id (int): ID of the shopping list.
+    """
+
     qty: int = 1
     purchased: bool = False
     notes: str = None
@@ -134,6 +176,21 @@ class ListItemIn(Schema):
 
 
 class ListItemOut(Schema):
+    """
+    Schema to represent a ListItem.
+
+    Attributes:
+        id (int): The ID of the list item.
+        qty (int): The quantity of list items. Default = 1.
+        purchased (bool): Wether the list item has been purchsaed. Default = False.
+        notes (str): Notes for the list item. Default = None.
+        purch_date (date): Last aisle used for this item. Default = None.
+        item_id (int): ID of the item.
+        aisle_id (int): ID of the aisle.
+        shopping_list_id (int): ID of the shopping list.
+        item (ItemOut): Object representing the item for the list item.
+    """
+
     id: int
     qty: int = 1
     purchased: bool = False
@@ -146,11 +203,29 @@ class ListItemOut(Schema):
 
 
 class ShoppingListIn(Schema):
+    """
+    Schema to validate a ShoppingList.
+
+    Attributes:
+        name (str): The name of the shopping list.
+        store_id (int): The ID of the store for the shopping list.
+    """
+
     name: str
     store_id: int
 
 
 class ShoppingListOut(Schema):
+    """
+    Schema to represent a ShoppingList.
+
+    Attributes:
+        id (int): ID of the shopping list.
+        name (str): The name of the shopping list.
+        store_id (int): The ID of the store for the shopping list.
+        store (StoreOut): The Store object.
+    """
+
     id: int
     name: str
     store_id: int
@@ -158,6 +233,17 @@ class ShoppingListOut(Schema):
 
 
 class AislesWithItems(Schema):
+    """
+    Schema to represent an Aisle with ListItems assigned to it.
+
+    Attributes:
+        id (int): ID of the aisle.
+        name (str): The name of the aisle.
+        order (int): The order of the aisle.
+        store_id (int): The id of the store this aisle is in.
+        listitems (List[ListItemOut]): A list of list items in this aisle.
+    """
+
     id: int
     name: str
     order: int = 1
@@ -166,6 +252,21 @@ class AislesWithItems(Schema):
 
 
 class ShoppingListFull(Schema):
+    """
+    Schema to represent a ShoppingList with ListItems assigned to it.
+
+    Attributes:
+        id (int): ID of the shopping list.
+        name (str): The name of the shopping list.
+        store_id (int): The ID of the store for this shopping list.
+        store (StoreOut): The Store object.
+        aisles (List[AislesWithItems]): A list of aisles with listitems assigned.
+        purchased_aisles (List[AislesWithItems]): A list of aisles with listitems marked as
+            purchased.
+        totalitems (int): The total number of items on the shopping list.
+        totalpurchased (int): The total number of items marked purchased on the shopping list.
+    """
+
     id: int
     name: str
     store_id: int
