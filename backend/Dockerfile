@@ -54,7 +54,7 @@ COPY ./logos/favicon.ico APP_HOME/staticfiles/favicon.ico
 COPY ./logos/logov2.png APP_HOME/staticfiles/logov2.png
 
 # install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends netcat
+RUN apt-get update && apt-get install -y --no-install-recommends
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
