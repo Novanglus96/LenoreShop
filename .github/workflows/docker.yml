@@ -37,6 +37,12 @@ jobs:
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           echo "Docker Hub login successful."
 
+      - name: Build Docker Images
+        run: |
+          echo "Building Docker images..."
+          docker compose -f docker-compose-prod.yml build
+          echo "Docker images built successfully."
+          
       - name: Publish Docker Images
         env:
           BACKEND_NAME: lenoreshop_backend
