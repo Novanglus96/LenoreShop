@@ -58,10 +58,10 @@ echo "$NEW_VERSION" > "$VERSION_FILE"
 echo "Version bumped to $NEW_VERSION ($VERSION_TYPE update)"
 
 # Backend docker file
-sed -i -r "s/version=\"[0-9]+[.]?[0-9]?[.]?[0-9]?\"/version=\"$NEW_VERSION\"/" $BACKEND_DOCKER_FILE
+sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$NEW_VERSION\"/" $BACKEND_DOCKER_FILE
 
 # Backend docker file
-sed -i -r "s/version=\"[0-9]+[.]?[0-9]?[.]?[0-9]?\"/version=\"$NEW_VERSION\"/" $FRONTEND_DOCKER_FILE
+sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$NEW_VERSION\"/" $FRONTEND_DOCKER_FILE
 
 # Model version
 sed -i -r "s/\"version_number\": \"[0-9]+\.[0-9]+\.[0-9]{1,3}/\"version_number\": \"$NEW_VERSION/" $MODEL_VERSION_FILE
