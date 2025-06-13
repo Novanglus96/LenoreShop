@@ -64,16 +64,16 @@ sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$NEW_VERSION\"/" $BACKEND
 sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$NEW_VERSION\"/" $FRONTEND_DOCKER_FILE
 
 # Model version
-sed -i -r "s/\"version_number\": \"[0-9]+\.[0-9]+\.[0-9]{1,3}/\"version_number\": \"$NEW_VERSION/" $MODEL_VERSION_FILE
+sed -i -r "s/\"version_number\": \"[^\"]*\"/\"version_number\": \"$NEW_VERSION\"/" $MODEL_VERSION_FILE
 
 # api.py
-sed -i -r "s/api.version = \"[0-9]+[.]?[0-9]?[.]?[0-9]?/api.version = \"$NEW_VERSION/" $API_PY_FILE
+sed -i -r "s/^api.version = \"[^\"]*\"/api.version = \"$NEW_VERSION\"/" $API_PY_FILE
 
 # package.json
-sed -i -r "s/\"version\": \"[0-9]+[.]?[0-9]?[.]?[0-9]?/\"version\": \"$NEW_VERSION/" $PACKAGE_JSON_FILE
+sed -i -r "s/\"version\": \"[^\"]*\"/\"version\": \"$NEW_VERSION\"/" $PACKAGE_JSON_FILE
 
 # AppNavigation
-sed -i -r "s/>v[0-9]+[.]?[0-9]?[.]?[0-9]?</>v$NEW_VERSION</" $APPNAVIGATION_VUE_FILE
+sed -i -r "s/(<span[^>]*>v)[0-9]+(\.[0-9]+)*(<\/span>)/\1$NEW_VERSION\3/" $APPNAVIGATION_VUE_FILE
 
 # App.vue
 sed -i -r "s/\"[0-9]+\.[0-9]+\.[0-9]{1,3}\"/\"$NEW_VERSION\"/" $APP_VUE_FILE
