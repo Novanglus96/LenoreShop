@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   frontend:
     build: ./frontend
@@ -12,6 +10,10 @@ services:
       - 80
     image: lenoreshop_frontend:production
     container_name: lenoreshop_frontend
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=production
   backend:
     build:
       context: ./backend
@@ -31,17 +33,23 @@ services:
       - ./.env
     image: lenoreshop_backend:production
     container_name: lenoreshop_backend
+    environment:
+      - DEBUG=0
   db:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.db
+      - ./.env
     networks:
       - default
     labels:
       - "traefik.enable=false"
     container_name: lenoreshop_db
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
   nginx:
     image: novanglus96/lenoreapps_proxy:latest
     volumes:

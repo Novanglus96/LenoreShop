@@ -106,19 +106,7 @@ DJANGO_SUPERUSER_USERNAME=supervisor
 
 Adjust these values according to your environment and application requirements.  Make sure to modify the DJANGO_ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS sections.
 
-### Step 2: Create a `.env.db` File
-
-Create a `.env.db` file in the root directory of the project. This file will store environment variables required to run the application. Below is an example of the variables you need to define:
-
-```env
-POSTGRES_USER=lenoreshopuser
-POSTGRES_PASSWORD=somepassword
-POSTGRES_DB=lenoreshop
-```
-
-Make sure these match the settings in .env file!
-
-### Step 3: Create a `docker-compose.yml` File
+### Step 2: Create a `docker-compose.yml` File
 
 Create a `docker-compose.yml` file in the root directory of the project. Below is an example configuration:
 
@@ -155,7 +143,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.db
+      - ./.env
     networks:
       - lenoreshop
   nginx:
@@ -181,7 +169,7 @@ volumes:
   media_volume:
 ```
 
-### Step 4: Run the Application
+### Step 3: Run the Application
 
 1. Start the services:
 
