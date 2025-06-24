@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   frontend:
     build:
@@ -14,12 +12,11 @@ services:
     container_name: lenoreshop_frontend_dev
     volumes:
       - ./frontend:/app
-    environment:
-      - NODE_ENV=development
-      - TZ=${TIMEZONE}
     command: /bin/sh -c "npm run serve"
     env_file:
       - ./.env.dev
+    environment:
+      - NODE_ENV=development
   backend:
     build:
       context: ./backend
@@ -27,9 +24,6 @@ services:
     command: /usr/src/app/start.dev.sh
     volumes:
       - ./backend:/usr/src/app
-    environment:
-      - DEBUG=1
-      - TZ=America/New_York
     ports:
       - 8001:8001
       - 8002:8002
@@ -39,6 +33,8 @@ services:
       - default
     env_file:
       - ./.env.dev
+    environment:
+      - DEBUG=1
     image: lenoreshop_backend:development
     container_name: lenoreshop_backend_dev
   db:
@@ -46,12 +42,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.dev.db
+      - .env.dev
     networks:
       - default
     container_name: lenoreshop_db_dev
     environment:
-      - TZ=America/New_York
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
 
 volumes:
   postgres_data:
