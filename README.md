@@ -243,6 +243,8 @@ See the full <a href="https://novanglus96.github.io/LenoreShop"><strong>document
 
 - [ ] v2.0 Release
     - [ ] Improved UI
+- [ ] Google/Alexa assistant integration
+- [ ] Import from other sources
 
 See the [open issues](https://github.com/Novanglus96/LenoreShop/issues) for a full list of proposed features (and known issues).
 
@@ -304,6 +306,7 @@ A heartfelt thanks to our Patrons for their generous support! Your contributions
 
 ![Red Supporter Badge](https://img.shields.io/badge/Eleanor-E41B17?style=for-the-badge&logo=patreon&logoColor=gray)
 ![Red Supporter Badge](https://img.shields.io/badge/Danielle-E41B17?style=for-the-badge&logo=patreon&logoColor=gray)
+![BuyMeACoffee Supporter Badge](https://img.shields.io/badge/SuperDev-white?style=for-the-badge&logo=buymeacoffee&logoColor=black)
 <!--![Gold Supporter Badge](https://img.shields.io/badge/Eleanor-gold?style=for-the-badge&logo=patreon&logoColor=gray)-->
 <!--![Silver Supporter Badge](https://img.shields.io/badge/Jane_Smith-silver?style=for-the-badge&logo=patreon&logoColor=gray)-->
 <!--![BuyMeACoffee Supporter Badge](https://img.shields.io/badge/Jane_Smith-white?style=for-the-badge&logo=buymeacoffee&logoColor=black)-->
