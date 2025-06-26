@@ -3,7 +3,7 @@
     "model": "api.Version",
     "pk": 1,
     "fields": {
-        "version_number": "1.6.18"
+        "version_number": "1.6.19"
     }
   }
 ]
