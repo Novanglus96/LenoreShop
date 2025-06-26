@@ -195,6 +195,7 @@ Enjoy using LenoreShop!
 
 - [ ] v2.0 Release
     - [ ] Improved UI
+    - [ ] Offline Mode
 - [ ] Google/Alexa assistant integration
 - [ ] Import from other sources
 

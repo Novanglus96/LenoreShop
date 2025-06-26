@@ -243,6 +243,7 @@ See the full <a href="https://novanglus96.github.io/LenoreShop"><strong>document
 
 - [ ] v2.0 Release
     - [ ] Improved UI
+    - [ ] Offline Mode
 - [ ] Google/Alexa assistant integration
 - [ ] Import from other sources
 
