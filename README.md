@@ -186,6 +186,10 @@ services:
       - ./.env
     networks:
       - lenoreshop
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
   nginx:
     image: novanglus96/lenoreapps_proxy:latest
     container_name: lenoreshop_nginx
