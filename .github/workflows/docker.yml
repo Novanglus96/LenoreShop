@@ -13,6 +13,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Prepare environment file
+        run: cp example.env .env
+        
       - name: Extract Commit Message
         id: get_commit_message
         run: |
