@@ -33,7 +33,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 FROM python:3.11.4-slim-bookworm
 
 LABEL maintainer="John Adams"
-LABEL version="1.6.21"
+LABEL version="1.6.22"
 
 # create directory for the app user
 RUN mkdir -p /home/app
