@@ -8,7 +8,32 @@ on:
       - completed
 
 jobs:
+  check-commit:
+    runs-on: self-hosted
+    outputs:
+      skip: ${{ steps.check_commit.outputs.skip }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
+      - name: Get commit message
+        id: check_commit
+        run: |
+          msg="$(git log -1 --pretty=%B)"
+          echo "Commit message: $msg"
+
+          if [[ -z "$msg" ]]; then
+            echo "No commit message found. Skipping job."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          elif echo "$msg" | grep -Eiq '^(docs|ci):'; then
+            echo "Excluded commit prefix found. Skipping job."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
   versioning:
+    needs: check-commit
+    if: needs.check-commit.outputs.skip != 'true'
     runs-on: [self-hosted]
 
     steps:

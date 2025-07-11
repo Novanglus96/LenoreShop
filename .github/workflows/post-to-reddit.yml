@@ -1,0 +1,67 @@
+name: Post to Reddit
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (major/minor)"
+        required: true
+        default: "minor"
+    
+  workflow_run:
+    workflows: ["Versioning"]  # Ensure it runs after the Versioning workflow
+    types:
+      - completed
+
+jobs:
+  reddit:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine release tag
+        id: get_tag
+        run: |
+          # If manually set, use that
+          if [ -n "${{ github.event.inputs.release_tag }}" ]; then
+            echo "tag=${{ github.event.inputs.release_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            # Otherwise extract from last commit
+            msg="${{ github.event.head_commit.message }}"
+            echo "Commit message: $msg"
+            tag=""
+            if echo "$msg" | grep -iq '\[major\]\|major'; then
+              tag="major"
+            elif echo "$msg" | grep -iq '\[minor\]\|minor'; then
+              tag="minor"
+            fi
+            if [ -z "$tag" ]; then
+              echo "No matching release tag found in commit message."
+              exit 0  # or exit 1 if you want to fail
+            fi
+            echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Get latest release body
+        id: release
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const release = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            return release.data.body || "No changelog available.";
+
+      - name: Post to Reddit
+        if: steps.tag.outputs.TAG != ''
+        env:
+          COMMIT_TAG: ${{ steps.tag.outputs.TAG }}
+          RELEASE_NOTES: ${{ steps.release.outputs.result }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+          REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+        run: python scripts/post_to_reddit.py
