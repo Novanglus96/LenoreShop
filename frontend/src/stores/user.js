@@ -52,7 +52,7 @@ export const useUserStore = defineStore('user', {
       async updateProfile(user) {
         try {
           // Make a POST request to your API endpoint
-          const response = await axios.patch('https://chores.danielleandjohn.love/api/users/' + user.id + '/', user);
+          await axios.patch('https://chores.danielleandjohn.love/api/users/' + user.id + '/', user);
 
           // Add area to local storage
           //this.areas.push(area);
