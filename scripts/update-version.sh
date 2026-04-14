@@ -14,7 +14,6 @@ FRONTEND_DOCKER_FILE="frontend/Dockerfile"
 MODEL_VERSION_FILE="backend/api/fixtures/version.json"
 API_PY_FILE="backend/backend/api.py"
 PACKAGE_JSON_FILE="frontend/package.json"
-APPNAVIGATION_VUE_FILE="frontend/src/components/AppNavigation.vue"
 APP_VUE_FILE="frontend/src/App.vue"
 
 echo "$VERSION" > "$VERSION_FILE"
@@ -23,7 +22,6 @@ sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$VERSION\"/" "$FRONTEND_D
 sed -i -r "s/\"version_number\": \"[^\"]*\"/\"version_number\": \"$VERSION\"/" "$MODEL_VERSION_FILE"
 sed -i -r "s/^api.version = \"[^\"]*\"/api.version = \"$VERSION\"/" "$API_PY_FILE"
 sed -i -r "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" "$PACKAGE_JSON_FILE"
-sed -i -r "s/(<span[^>]*>v)[0-9]+(\.[0-9]+)*(<\/span>)/\1$VERSION\3/" "$APPNAVIGATION_VUE_FILE"
 sed -i -r "s/\"[0-9]+\.[0-9]+\.[0-9]{1,3}\"/\"$VERSION\"/" "$APP_VUE_FILE"
 
 echo "Updated version to $VERSION"

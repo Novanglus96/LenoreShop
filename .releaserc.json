@@ -32,7 +32,6 @@
           "backend/api/fixtures/version.json",
           "backend/backend/api.py",
           "frontend/package.json",
-          "frontend/src/components/AppNavigation.vue",
           "frontend/src/App.vue"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]"

@@ -14,7 +14,7 @@
       </v-list>
     </v-menu>
     <v-img :width="201" aspect-ratio="1/1" src="logov2.png" inline></v-img>
-    <span class="text-subtitle-2 font-italic text-grey-darken-1">v1.6.25</span>
+    <span class="text-subtitle-2 font-italic text-grey-darken-1">v{{ version }}</span>
     <v-spacer></v-spacer>
     <v-menu v-model="menu" :close-on-content-click="false" location="end">
       <template v-slot:activator="{ props }">
@@ -35,6 +35,7 @@
 
 <script setup>
   import { ref } from "vue";
+  import { version } from "../../package.json";
 
   const menus = [
     { title: "Home", url: "/", icon: "mdi-home-outline" },
