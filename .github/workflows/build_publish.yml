@@ -47,12 +47,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Compute project identifiers
+      - name: Compute image name
         shell: bash
         run: |
-          SLUG="$(echo "${{ github.event.repository.name }}" \
-            | tr '[:upper:]' '[:lower:]')"
-          echo "APP_NAME=${SLUG}_app" >> "$GITHUB_ENV"
+          SLUG="$(basename "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
+          echo "APP_NAME=${SLUG}" >> "$GITHUB_ENV"
 
       - name: Check if Docker tag exists
         env:
