@@ -1,3 +1,10 @@
+# [1.7.0-rc.2](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.1...v1.7.0-rc.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* remove deprecated show_defaults option from mkdocs config ([#27](https://github.com/Novanglus96/LenoreShop/issues/27)) ([77a6f4a](https://github.com/Novanglus96/LenoreShop/commit/77a6f4aa64c878e5156d72c81b8e7638ffb1eafa))
+
 # [1.7.0-rc.1](https://github.com/Novanglus96/LenoreShop/compare/v1.6.26-rc.1...v1.7.0-rc.1) (2026-04-14)
 
 
