@@ -1,3 +1,10 @@
+# [1.7.0-rc.3](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.2...v1.7.0-rc.3) (2026-04-14)
+
+
+### Bug Fixes
+
+* compare API version against package.json instead of hardcoded string ([#29](https://github.com/Novanglus96/LenoreShop/issues/29)) ([a572e3b](https://github.com/Novanglus96/LenoreShop/commit/a572e3b920f2a4d7866371a95e51aaffdc39336c))
+
 # [1.7.0-rc.2](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.1...v1.7.0-rc.2) (2026-04-14)
 
 
