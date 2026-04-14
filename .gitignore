@@ -1,3 +1,7 @@
+# mempalace developer tooling
+mempalace.yaml
+entities.json
+
 *.DS_Store
 static
 media
