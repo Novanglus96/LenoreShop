@@ -1,3 +1,10 @@
+# [1.7.0-rc.4](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.3...v1.7.0-rc.4) (2026-04-14)
+
+
+### Features
+
+* add PWA support with manifest and service worker ([#31](https://github.com/Novanglus96/LenoreShop/issues/31)) ([a17bcf3](https://github.com/Novanglus96/LenoreShop/commit/a17bcf39519da30bc7dec2b0b3c0d0c8ee5c47ad))
+
 # [1.7.0-rc.3](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.2...v1.7.0-rc.3) (2026-04-14)
 
 
