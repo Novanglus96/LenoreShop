@@ -2,6 +2,10 @@
 mempalace.yaml
 entities.json
 
+# Sandbox — not committed; host-specific
+docker-compose-sandbox.yml
+scripts/sync-live-to-sandbox.sh
+
 *.DS_Store
 static
 media
