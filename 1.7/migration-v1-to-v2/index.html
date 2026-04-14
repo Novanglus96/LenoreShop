@@ -13,26 +13,28 @@
       
       
       
+        <link rel="prev" href="..">
       
-        <link rel="next" href="migration-v1-to-v2/">
+      
+        <link rel="next" href="../models/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>LenoreShop</title>
+        <title>Migration Guide - LenoreShop</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#about-the-project" class="md-skip">
+        <a href="#migrating-from-v1-to-v2-single-container" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="LenoreShop" class="md-header__button md-logo" aria-label="LenoreShop" data-md-component="logo">
+    <a href=".." title="LenoreShop" class="md-header__button md-logo" aria-label="LenoreShop" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Migration Guide
             
           </span>
         </div>
@@ -218,7 +220,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="LenoreShop" class="md-nav__button md-logo" aria-label="LenoreShop" data-md-component="logo">
+    <a href=".." title="LenoreShop" class="md-nav__button md-logo" aria-label="LenoreShop" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -233,35 +235,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -277,207 +254,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#about-the-project" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        About The Project
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="About The Project">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#built-with" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Built With
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Started
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Getting Started">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-1-create-a-env-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Create a .env File
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-create-a-docker-composeyml-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Create a docker-compose.yml File
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-run-the-application" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Run the Application
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Notes
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#roadmap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Roadmap
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        License
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#support" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Support
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contact" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contact
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#acknowledgements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Acknowledgements
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Acknowledgements">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#thank-you-to-our-supporters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ⭐ Thank You to Our Supporters:
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -486,10 +262,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="migration-v1-to-v2/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -505,6 +308,247 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Changed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before You Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Paths
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-a-keep-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path A: Keep PostgreSQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path A: Keep PostgreSQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-stop-the-old-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Stop the old stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-get-the-new-compose-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Get the new compose file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-update-your-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Update your .env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-migrate-the-media-volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Migrate the media volume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-start-the-new-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Start the new stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-b-switch-to-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path B: Switch to SQLite
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path B: Switch to SQLite">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-export-data-from-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Export data from PostgreSQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-stop-the-old-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Stop the old stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-get-the-new-compose-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Get the new compose file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-create-your-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Create your .env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-start-the-stack-and-load-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Start the stack and load data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-migrate-media-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Migrate media files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the Migration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removing-old-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removing Old Images
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -563,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="models/" class="md-nav__link">
+      <a href="../models/" class="md-nav__link">
         
   
   
@@ -591,7 +635,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   
@@ -636,6 +680,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -644,22 +690,99 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#about-the-project" class="md-nav__link">
+  <a href="#what-changed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        About The Project
+        What Changed
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="About The Project">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before You Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Paths
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-a-keep-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path A: Keep PostgreSQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path A: Keep PostgreSQL">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#built-with" class="md-nav__link">
+  <a href="#step-1-stop-the-old-stack" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Built With
+        Step 1: Stop the old stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-get-the-new-compose-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Get the new compose file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-update-your-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Update your .env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-migrate-the-media-volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Migrate the media volume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-start-the-new-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Start the new stack
       
     </span>
   </a>
@@ -672,22 +795,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
+  <a href="#path-b-switch-to-sqlite" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting Started
+        Path B: Switch to SQLite
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Getting Started">
+    <nav class="md-nav" aria-label="Path B: Switch to SQLite">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#step-1-export-data-from-postgresql" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        Step 1: Export data from PostgreSQL
       
     </span>
   </a>
@@ -695,10 +818,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-1-create-a-env-file" class="md-nav__link">
+  <a href="#step-2-stop-the-old-stack" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Create a .env File
+        Step 2: Stop the old stack
       
     </span>
   </a>
@@ -706,10 +829,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-2-create-a-docker-composeyml-file" class="md-nav__link">
+  <a href="#step-3-get-the-new-compose-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Create a docker-compose.yml File
+        Step 3: Get the new compose file
       
     </span>
   </a>
@@ -717,10 +840,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-3-run-the-application" class="md-nav__link">
+  <a href="#step-4-create-your-env" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 3: Run the Application
+        Step 4: Create your .env
       
     </span>
   </a>
@@ -728,10 +851,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
+  <a href="#step-5-start-the-stack-and-load-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notes
+        Step 5: Start the stack and load data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-migrate-media-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Migrate media files
       
     </span>
   </a>
@@ -744,10 +878,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#roadmap" class="md-nav__link">
+  <a href="#verify-the-migration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Roadmap
+        Verify the Migration
       
     </span>
   </a>
@@ -755,10 +889,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
+  <a href="#rollback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Contributing
+        Rollback
       
     </span>
   </a>
@@ -766,63 +900,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
+  <a href="#removing-old-images" class="md-nav__link">
     <span class="md-ellipsis">
       
-        License
+        Removing Old Images
       
     </span>
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#support" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Support
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contact" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contact
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#acknowledgements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Acknowledgements
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Acknowledgements">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#thank-you-to-our-supporters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ⭐ Thank You to Our Supporters:
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -843,233 +927,182 @@
 
 
 
-  <h1>Home</h1>
+<h1 id="migrating-from-v1-to-v2-single-container">Migrating from v1 to v2 (Single Container)</h1>
+<p>Starting with <strong>v1.7.0</strong>, LenoreShop ships as a single self-contained Docker image instead of four separate containers (frontend, backend, nginx, db). This guide walks through migrating an existing v1 installation to the new architecture.</p>
+<hr />
+<h2 id="what-changed">What Changed</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>v1 (old)</th>
+<th>v2 (new)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Containers</strong></td>
+<td><code>lenoreshop_frontend</code>, <code>lenoreshop_backend</code>, <code>lenoreshop_nginx</code>, <code>lenoreshop_db</code></td>
+<td>Single <code>lenoreshop</code> container</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>PostgreSQL required</td>
+<td>SQLite (default) or PostgreSQL/MySQL (optional)</td>
+</tr>
+<tr>
+<td><strong>Redis</strong></td>
+<td>Not included</td>
+<td>Optional (enable with <code>REDIS_URL</code>)</td>
+</tr>
+<tr>
+<td><strong>Image</strong></td>
+<td><code>novanglus96/lenoreshop_frontend</code> + <code>novanglus96/lenoreshop_backend</code></td>
+<td><code>novanglus96/lenoreshop</code></td>
+</tr>
+<tr>
+<td><strong>Media volume</strong></td>
+<td><code>media_volume</code></td>
+<td><code>lenoreshop_media</code></td>
+</tr>
+<tr>
+<td><strong>Static volume</strong></td>
+<td><code>static_volume</code></td>
+<td><code>lenoreshop_static</code> (rebuilt automatically)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="before-you-start">Before You Start</h2>
+<p>Back up your data first.</p>
+<pre><code class="language-bash"># Export PostgreSQL database
+docker exec lenoreshop_db pg_dump -U $SQL_USER $SQL_DATABASE &gt; lenoreshop_backup.sql
 
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-<p><a name="readme-top"></a></p>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
+# Export media files
+docker run --rm \
+  -v $(docker inspect lenoreshop_backend --format '{{range .Mounts}}{{if eq .Destination &quot;/home/app/web/mediafiles&quot;}}{{.Name}}{{end}}{{end}}'):/data \
+  alpine tar czf - -C /data . &gt; lenoreshop_media_backup.tar.gz
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-<!-- PROJECT LOGO -->
-<p><br /></p>
-<div align="center">
-  <a href="https://github.com/Novanglus96/LenoreShop">
-    <img src="https://novanglus96.github.io/LenoreShop/images/logov2.png" alt="Logo" height="40">
-  </a>
-
-  <p align="center">
-    A simple shopping app.
-    <br />
-    <a href="https://github.com/Novanglus96/LenoreShop/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/Novanglus96/LenoreShop/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-  </p>
-</div>
-
-<!-- ABOUT THE PROJECT -->
-<h2 id="about-the-project">About The Project</h2>
-<p><img alt="LenoreShop Screen Shot" src="images/LenoreShop_Screenshot.png" /></p>
-<p>Introducing LenoreShop, the ultimate shopping list app designed to streamline your grocery shopping experience. Whether you're managing a single shopping trip or juggling multiple stores, LenoreShop has you covered with its intuitive features and user-friendly interface.</p>
-<p><b>Key Features:</b></p>
+echo &quot;Backup complete.&quot;
+</code></pre>
+<hr />
+<h2 id="migration-paths">Migration Paths</h2>
+<p>Choose based on your preferred database for v2:</p>
 <ul>
-<li><b>Multiple Stores:</b> Easily add as many stores as you frequent, ensuring all your favorite shopping destinations are covered.</li>
-<li><b>Unlimited Shopping Lists:</b> Create and manage multiple shopping lists for each store, helping you stay organized and efficient.</li>
-<li><b>Customizable Aisles:</b> Add aisles specific to each store and arrange them in the order you typically shop, making your trips faster and more convenient.</li>
-<li><b>Item Organization:</b> Add items to your lists by aisle, so you never miss a thing and can quickly find what you need.</li>
+<li><strong><a href="#path-a-keep-postgresql">Path A — Keep PostgreSQL</a></strong>: Migrate existing data, keep PostgreSQL</li>
+<li><strong><a href="#path-b-switch-to-sqlite">Path B — Switch to SQLite</a></strong>: Simpler setup, migrate data via Django fixtures</li>
 </ul>
-
-<p><b>Why Choose LenoreShop?</b>
-LenoreShop is perfect for anyone who needs to shop, offering a tailored shopping experience that adapts to your personal preferences. With its seamless integration of Django for a robust backend and Vue for a sleek, responsive frontend, LenoreShop ensures a smooth and reliable user experience.</p>
-<p>Simplify your shopping routine with LenoreShop and enjoy the convenience of a perfectly organized shopping trip every time.</p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<h3 id="built-with">Built With</h3>
-<ul>
-<li><a href="https://www.djangoproject.com/"><img alt="Django" src="https://img.shields.io/badge/django-092E20?style=for-the-badge&amp;logo=django&amp;logoColor=white" /></a></li>
-<li><a href="https://vuejs.org/"><img alt="Vue" src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&amp;logo=vuedotjs&amp;logoColor=4FC08D" /></a></li>
-<li><a href="https://www.docker.com/"><img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&amp;logo=docker&amp;logoColor=white" /></a></li>
-</ul>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- GETTING STARTED -->
-<h2 id="getting-started">Getting Started</h2>
-<p>Welcome to LenoreShop! This guide will help you set up and run the application using Docker.</p>
-<h3 id="prerequisites">Prerequisites</h3>
-<ul>
-<li><a href="https://www.docker.com/get-started">Docker</a></li>
-<li><a href="https://docs.docker.com/compose/install/">Docker Compose</a></li>
-</ul>
-<blockquote>
-<p><strong>Upgrading from v1?</strong> See the <a href="migration-v1-to-v2/">Migration Guide</a>.</p>
-</blockquote>
-<!-- INSTALLATION -->
-<h3 id="step-1-create-a-env-file">Step 1: Create a <code>.env</code> File</h3>
-<p>Create a <code>.env</code> file in your deployment directory. The minimum required configuration:</p>
-<pre><code class="language-env">DEBUG=0
-SECRET_KEY=your-long-random-secret-key
+<hr />
+<h2 id="path-a-keep-postgresql">Path A: Keep PostgreSQL</h2>
+<h3 id="step-1-stop-the-old-stack">Step 1: Stop the old stack</h3>
+<pre><code class="language-bash">docker compose down
+# Do NOT use --volumes — this preserves your data
+</code></pre>
+<h3 id="step-2-get-the-new-compose-file">Step 2: Get the new compose file</h3>
+<p>Download <a href="https://github.com/Novanglus96/LenoreShop/blob/main/docker-compose-full.yml"><code>docker-compose-full.yml</code></a> and save it as <code>docker-compose.yml</code> in your deployment directory.</p>
+<h3 id="step-3-update-your-env">Step 3: Update your <code>.env</code></h3>
+<p>The v2 image reads the same database variables but adds new optional ones. Update your <code>.env</code>:</p>
+<pre><code class="language-env"># Required
+DEBUG=0
+SECRET_KEY=your-secret-key
 DJANGO_ALLOWED_HOSTS=your-host-or-ip
 CSRF_TRUSTED_ORIGINS=https://your-domain
+
+# Database (keep your existing values)
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=lenoreshop
+SQL_USER=lenoreshopuser
+SQL_PASSWORD=somepassword
+SQL_HOST=db
+SQL_PORT=5432
+
+# Optional: Redis (enables caching and background worker)
+# REDIS_URL=redis://redis:6379/0
+
+# Optional: exposed port (default 7000)
+# APP_PORT=7000
 
 # Optional: superuser created on first run
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_EMAIL=admin@example.com
 DJANGO_SUPERUSER_PASSWORD=changeme
 </code></pre>
-<p>See <code>example.env</code> in the repository for the full list of options including PostgreSQL, MySQL, and Redis.</p>
-<h3 id="step-2-create-a-docker-composeyml-file">Step 2: Create a <code>docker-compose.yml</code> File</h3>
-<p><strong>Minimal setup (SQLite — no external database required):</strong></p>
-<pre><code class="language-yaml">services:
-  app:
-    image: novanglus96/lenoreshop:latest
-    volumes:
-      - lenoreshop_data:/home/app/web/data
-      - lenoreshop_static:/home/app/web/staticfiles
-      - lenoreshop_media:/home/app/web/mediafiles
-    env_file:
-      - ./.env
-    ports:
-      - &quot;${APP_PORT:-7000}:80&quot;
-    restart: unless-stopped
+<p><strong>Remove</strong> any old v1-only variables (<code>DATABASE=postgres</code> is no longer used).</p>
+<h3 id="step-4-migrate-the-media-volume">Step 4: Migrate the media volume</h3>
+<p>The media volume was renamed from <code>media_volume</code> to <code>lenoreshop_media</code>. Copy its contents across:</p>
+<pre><code class="language-bash"># Determine the old volume name (usually &lt;project&gt;_media_volume)
+docker volume ls | grep media
 
-volumes:
-  lenoreshop_data:
-  lenoreshop_static:
-  lenoreshop_media:
+# Copy from old volume to new
+docker volume create lenoreshop_media
+docker run --rm \
+  -v &lt;old_media_volume&gt;:/source \
+  -v lenoreshop_media:/dest \
+  alpine sh -c &quot;cp -a /source/. /dest/&quot;
 </code></pre>
-<p><strong>Full setup (PostgreSQL + Redis):</strong></p>
-<pre><code class="language-yaml">services:
-  app:
-    image: novanglus96/lenoreshop:latest
-    volumes:
-      - lenoreshop_static:/home/app/web/staticfiles
-      - lenoreshop_media:/home/app/web/mediafiles
-    env_file:
-      - ./.env
-    ports:
-      - &quot;${APP_PORT:-7000}:80&quot;
-    depends_on:
-      - db
-      - redis
-    restart: unless-stopped
-
-  db:
-    image: postgres:15
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
-    environment:
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
-      - POSTGRES_DB=${SQL_DATABASE}
-    restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-  lenoreshop_static:
-  lenoreshop_media:
-</code></pre>
-<p>For PostgreSQL, add these to your <code>.env</code>:</p>
-<pre><code class="language-env">SQL_ENGINE=django.db.backends.postgresql
-SQL_DATABASE=lenoreshop
-SQL_USER=lenoreshopuser
-SQL_PASSWORD=somepassword
-SQL_HOST=db
-SQL_PORT=5432
-REDIS_URL=redis://redis:6379/0
-</code></pre>
-<h3 id="step-3-run-the-application">Step 3: Run the Application</h3>
+<blockquote>
+<p>Static files (<code>static_volume</code>) do <strong>not</strong> need migrating — they are regenerated automatically by <code>collectstatic</code> on container startup.</p>
+</blockquote>
+<h3 id="step-5-start-the-new-stack">Step 5: Start the new stack</h3>
 <pre><code class="language-bash">docker compose up -d
 </code></pre>
-<p>Access the application at <code>http://your-host:7000</code> (or your configured <code>APP_PORT</code>).</p>
-<h3 id="notes">Notes</h3>
-<ul>
-<li>Static files and database migrations are applied automatically on startup.</li>
-<li>The superuser is created automatically on first run if <code>DJANGO_SUPERUSER_*</code> vars are set.</li>
-<li>If you encounter any issues, ensure your <code>.env</code> file has the correct values.</li>
-</ul>
-<p>Enjoy using LenoreShop!</p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p>The container will run migrations and start serving automatically. Access the app at <code>http://your-host:7000</code> (or your configured <code>APP_PORT</code>).</p>
+<hr />
+<h2 id="path-b-switch-to-sqlite">Path B: Switch to SQLite</h2>
+<h3 id="step-1-export-data-from-postgresql">Step 1: Export data from PostgreSQL</h3>
+<pre><code class="language-bash"># Export all application data as Django fixtures
+docker exec lenoreshop_backend \
+  python manage.py dumpdata \
+    --exclude auth.permission \
+    --exclude contenttypes \
+    --indent 2 &gt; lenoreshop_data.json
+</code></pre>
+<h3 id="step-2-stop-the-old-stack">Step 2: Stop the old stack</h3>
+<pre><code class="language-bash">docker compose down
+</code></pre>
+<h3 id="step-3-get-the-new-compose-file">Step 3: Get the new compose file</h3>
+<p>Download <a href="https://github.com/Novanglus96/LenoreShop/blob/main/docker-compose-prod.yml"><code>docker-compose-prod.yml</code></a> and save it as <code>docker-compose.yml</code> in your deployment directory.</p>
+<h3 id="step-4-create-your-env">Step 4: Create your <code>.env</code></h3>
+<pre><code class="language-env">DEBUG=0
+SECRET_KEY=your-secret-key
+DJANGO_ALLOWED_HOSTS=your-host-or-ip
+CSRF_TRUSTED_ORIGINS=https://your-domain
+APP_PORT=7000
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=changeme
+</code></pre>
+<p>No database variables are needed — SQLite is the default.</p>
+<h3 id="step-5-start-the-stack-and-load-data">Step 5: Start the stack and load data</h3>
+<pre><code class="language-bash">docker compose up -d
 
-<!-- ROADMAP -->
-<h2 id="roadmap">Roadmap</h2>
-<ul>
-<li>[ ] v2.0 Release<ul>
-<li>[ ] Improved UI</li>
-<li>[ ] Offline Mode</li>
-</ul>
-</li>
-<li>[ ] Google/Alexa assistant integration</li>
-<li>[ ] Import from other sources</li>
-</ul>
-<p>See the <a href="https://github.com/Novanglus96/LenoreShop/issues">open issues</a> for a full list of proposed features (and known issues).</p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTRIBUTING -->
-<h2 id="contributing">Contributing</h2>
-<p>Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are <strong>greatly appreciated</strong>.</p>
-<p>If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!</p>
+# Wait for the container to finish startup (~15s), then load fixtures
+docker exec lenoreshop python manage.py loaddata /path/to/lenoreshop_data.json
+</code></pre>
+<h3 id="step-6-migrate-media-files">Step 6: Migrate media files</h3>
+<pre><code class="language-bash">docker run --rm \
+  -v &lt;old_media_volume&gt;:/source \
+  -v lenoreshop_media:/dest \
+  alpine sh -c &quot;cp -a /source/. /dest/&quot;
+</code></pre>
+<hr />
+<h2 id="verify-the-migration">Verify the Migration</h2>
 <ol>
-<li>Fork the Project</li>
-<li>Create your Feature Branch (<code>git checkout -b feature/AmazingFeature</code>)</li>
-<li>Commit your Changes (<code>git commit -m 'Add some AmazingFeature'</code>)</li>
-<li>Push to the Branch (<code>git push origin feature/AmazingFeature</code>)</li>
-<li>Open a Pull Request</li>
+<li>Open the app in your browser</li>
+<li>Confirm your stores, lists, and items are present</li>
+<li>Check the version shown in the nav bar matches the release version</li>
 </ol>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
-<h2 id="license">License</h2>
-<p>Distributed under the MIT License. See <code>LICENSE.txt</code> for more information.</p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<h2 id="support">Support</h2>
-<p><a href="https://www.buymeacoffee.com/novanglus" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a></p>
-<p>Or</p>
-
-<p><a href="https://www.patreon.com/novanglus">
-    <img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
-</a></p>
-<!-- CONTACT -->
-<h2 id="contact">Contact</h2>
-<p>John Adams - Lenore.Apps@gmail.com</p>
-<p>Project Link: <a href="https://github.com/Novanglus96/LenoreShop">https://github.com/Novanglus96/LenoreShop</a></p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- ACKNOWLEDGMENTS -->
-<h2 id="acknowledgements">Acknowledgements</h2>
-<p>A heartfelt thanks to our Patrons for their generous support! Your contributions help us maintain and improve this project.</p>
-<h3 id="thank-you-to-our-supporters">⭐ Thank You to Our Supporters:</h3>
-<p><img alt="Red Supporter Badge" src="https://img.shields.io/badge/Eleanor-E41B17?style=for-the-badge&amp;logo=patreon&amp;logoColor=gray" />
-<img alt="Red Supporter Badge" src="https://img.shields.io/badge/Danielle-E41B17?style=for-the-badge&amp;logo=patreon&amp;logoColor=gray" />
-<img alt="BuyMeACoffee Supporter Badge" src="https://img.shields.io/badge/SuperDev-white?style=for-the-badge&amp;logo=buymeacoffee&amp;logoColor=black" /></p>
-<!--![Gold Supporter Badge](https://img.shields.io/badge/Eleanor-gold?style=for-the-badge&logo=patreon&logoColor=gray)-->
-<!--![Silver Supporter Badge](https://img.shields.io/badge/Jane_Smith-silver?style=for-the-badge&logo=patreon&logoColor=gray)-->
-<!--![BuyMeACoffee Supporter Badge](https://img.shields.io/badge/Jane_Smith-white?style=for-the-badge&logo=buymeacoffee&logoColor=black)-->
-
-<p>Want to see your name here? Support us on <a href="https://www.patreon.com/novanglus">Patreon</a> to join our amazing community and shape the future of LenoreShop!</p>
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+<hr />
+<h2 id="rollback">Rollback</h2>
+<p>If anything goes wrong, your old containers and volumes are still intact (as long as you didn't run <code>docker compose down --volumes</code>). Restore your original <code>docker-compose.yml</code> and start the old stack:</p>
+<pre><code class="language-bash">docker compose up -d
+</code></pre>
+<p>Your data was never modified — the old volumes are untouched.</p>
+<hr />
+<h2 id="removing-old-images">Removing Old Images</h2>
+<p>Once you've confirmed the migration is successful, clean up the old images:</p>
+<pre><code class="language-bash">docker image rm novanglus96/lenoreshop_frontend novanglus96/lenoreshop_backend
+</code></pre>
 
 
 
@@ -1123,10 +1156,10 @@ Don't forget to give the project a star! Thanks again!</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
