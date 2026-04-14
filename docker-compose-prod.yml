@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: lenoreshop_app:production
+    image: lenoreshop:production
     container_name: lenoreshop_app
     ports:
       - "${APP_PORT:-7000}:80"
