@@ -41,6 +41,7 @@
     "postcss": "^8.4.29",
     "vite": "^6.3.5",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-vue-devtools": "^7.7.6"
   }
 }
