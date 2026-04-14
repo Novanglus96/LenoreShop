@@ -41,6 +41,7 @@ import { useMainStore } from "@/stores/main";
 import { onMounted, computed, ref, watch, onUnmounted } from "vue";
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 import { useVersion } from "@/composables/versionComposable";
+import { version as appVersion } from "../package.json";
 
 const reloadPage = () => {
   window.location.reload();
@@ -50,7 +51,7 @@ const { prefetchVersion, version } = useVersion();
 const showBanner = ref(false);
 
 const checkVersion = computed(() => {
-  return version.value && version.value.version_number !== "1.6.26-rc.1";
+  return version.value && version.value.version_number !== appVersion;
 });
 
 const updateBanner = () => {
