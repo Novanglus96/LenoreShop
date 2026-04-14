@@ -1,70 +1,21 @@
 services:
-  frontend:
-    build: ./frontend
-    networks:
-      - default
-    labels:
-      - "traefik.enable=false"
-    restart: unless-stopped
-    expose:
-      - 80
-    image: lenoreshop_frontend:production
-    container_name: lenoreshop_frontend
-    env_file:
-      - ./.env
-    environment:
-      - NODE_ENV=production
-  backend:
+  app:
     build:
-      context: ./backend
-    command: /home/app/web/start.sh
-    volumes:
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-    expose:
-      - 8000
-    depends_on:
-      - db
-    networks:
-      - default
-    labels:
-      - "traefik.enable=false"
-    env_file:
-      - ./.env
-    image: lenoreshop_backend:production
-    container_name: lenoreshop_backend
-    environment:
-      - DEBUG=0
-  db:
-    image: postgres:15
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
-    networks:
-      - default
-    labels:
-      - "traefik.enable=false"
-    container_name: lenoreshop_db
-    environment:
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
-      - POSTGRES_DB=${SQL_DATABASE}
-  nginx:
-    image: novanglus96/lenoreapps_proxy:latest
-    volumes:
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - default
+      context: .
+      dockerfile: Dockerfile
+    image: lenoreshop_app:production
+    container_name: lenoreshop_app
     ports:
-      - 7000:80
-    container_name: lenoreshop_nginx
+      - "${APP_PORT:-7000}:80"
+    volumes:
+      - lenoreshop_data:/home/app/web/data
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
-  static_volume:
-  media_volume:
+  lenoreshop_data:
+  lenoreshop_static:
+  lenoreshop_media:
