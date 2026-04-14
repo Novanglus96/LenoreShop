@@ -33,7 +33,6 @@ plugins:
             show_root_full_path: false
             show_bases: false
             allow_inspection: true
-            show_defaults: true
             members:
               - __str__
           #rendering:
