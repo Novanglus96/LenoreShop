@@ -1,0 +1,14 @@
+name: Delete Merged Branches
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete-branch:
+    if: github.event.pull_request.merged == true
+    runs-on: self-hosted
+    steps:
+      - name: Delete branch if merged
+        uses: dawidd6/action-delete-branch@v3
+        with:
+          github_token: ${{ secrets.GH_PAT }}

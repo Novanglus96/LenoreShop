@@ -1,10 +1,8 @@
-name: Deploy MkDocs (Preview)
+name: Deploy MkDocs (Release)
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: write
@@ -14,9 +12,10 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
+      - name: Checkout release tag
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.release.tag_name }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -34,8 +33,15 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Deploy preview docs (dev)
+      - name: Deploy versioned docs
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          mike deploy dev --push --config-file backend/mkdocs.yml
+          VERSION=${{ github.event.release.tag_name }}
+          VERSION=${VERSION#v}
+          MAJOR_MINOR=$(echo "$VERSION" | cut -d. -f1,2)
+          mike deploy "$MAJOR_MINOR" --push --update-aliases --config-file backend/mkdocs.yml
+
+          if [[ "${{ github.event.release.prerelease }}" != "true" ]]; then
+            mike alias "$MAJOR_MINOR" latest --push --config-file backend/mkdocs.yml
+          fi

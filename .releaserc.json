@@ -1,0 +1,42 @@
+{
+  "branches": [
+    {"name": "main"},
+    {"name": "alpha", "channel": "alpha", "prerelease": "alpha"},
+    {"name": "beta", "channel": "beta", "prerelease": "beta"},
+    {"name": "rc", "channel": "rc", "prerelease": "rc"}
+  ],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "chmod +x scripts/update-version.sh && ./scripts/update-version.sh ${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "scripts/version.txt",
+          "backend/Dockerfile",
+          "frontend/Dockerfile",
+          "backend/api/fixtures/version.json",
+          "backend/backend/api.py",
+          "frontend/package.json",
+          "frontend/src/App.vue"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

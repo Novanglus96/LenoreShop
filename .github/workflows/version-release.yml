@@ -1,0 +1,54 @@
+name: Semantic Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - release/v*
+      - alpha
+      - beta
+      - rc
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: self-hosted
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --save-dev semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec
+
+      - name: Run Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          semantic_version: 21.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Re-checkout repo after release
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Upload version artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: version
+          path: scripts/version.txt
