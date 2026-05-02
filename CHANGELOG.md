@@ -1,3 +1,10 @@
+# [1.7.0-rc.14](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.13...v1.7.0-rc.14) (2026-05-02)
+
+
+### Bug Fixes
+
+* ui spacing, admin link, and version endpoint ([#42](https://github.com/Novanglus96/LenoreShop/issues/42)) ([dbbaaf9](https://github.com/Novanglus96/LenoreShop/commit/dbbaaf9fb685a219f5ba0d4bcdf275fa0cc77f70))
+
 # [1.7.0-rc.13](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.12...v1.7.0-rc.13) (2026-05-02)
 
 
