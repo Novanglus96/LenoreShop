@@ -9,7 +9,7 @@
       :isEdit="false"
       :key="-1"
     />
-    <v-container>
+    <v-container fluid class="pa-0 pa-sm-2">
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
           <h2 class="text-h6 text-primary ps-4">{{ fullshoppinglist.name }}</h2>
