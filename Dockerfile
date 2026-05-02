@@ -27,6 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     netcat-openbsd \
     postgresql-client \
     default-mysql-client \
+    default-libmysqlclient-dev \
+    pkg-config \
     nginx \
     supervisor \
     && rm -rf /var/lib/apt/lists/*
