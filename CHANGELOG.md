@@ -1,3 +1,10 @@
+# [1.7.0-rc.5](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.4...v1.7.0-rc.5) (2026-05-02)
+
+
+### Features
+
+* add MySQL/MariaDB support ([#19](https://github.com/Novanglus96/LenoreShop/issues/19)) ([#32](https://github.com/Novanglus96/LenoreShop/issues/32)) ([db6ddd9](https://github.com/Novanglus96/LenoreShop/commit/db6ddd92b2b2bcc4b9e205783cae04ec3898f9c1))
+
 # [1.7.0-rc.4](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.3...v1.7.0-rc.4) (2026-04-14)
 
 
