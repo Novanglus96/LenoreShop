@@ -32,6 +32,15 @@
           >
         </template>
       </v-snackbar>
+      <v-snackbar
+        v-model="showOfflineBanner"
+        color="warning"
+        location="top"
+        timeout="-1"
+      >
+        <v-icon icon="mdi-wifi-off" class="mr-2" />
+        You're offline. Changes will sync when connection is restored.
+      </v-snackbar>
     </v-main>
   </v-app>
 </template>
@@ -41,6 +50,7 @@ import { useMainStore } from "@/stores/main";
 import { onMounted, computed, ref, watch, onUnmounted } from "vue";
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 import { useVersion } from "@/composables/versionComposable";
+import { useOffline } from "@/composables/offlineComposable";
 import { version as appVersion } from "../package.json";
 
 const reloadPage = () => {
@@ -48,7 +58,9 @@ const reloadPage = () => {
 };
 const store = useMainStore();
 const { prefetchVersion, version } = useVersion();
+const { isOffline } = useOffline();
 const showBanner = ref(false);
+const showOfflineBanner = computed(() => isOffline.value);
 
 const checkVersion = computed(() => {
   return version.value && version.value.version_number !== appVersion;
