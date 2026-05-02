@@ -734,7 +734,7 @@ def list_listsbystore(request, store_id: int):
     return qs
 
 
-@api.put("/aisles/reorder")
+@api.post("/aisles/reorder")
 def reorder_aisles(request, payload: AisleReorderIn):
     """
     Bulk-update the order of aisles.

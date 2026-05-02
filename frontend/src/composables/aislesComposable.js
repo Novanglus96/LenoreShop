@@ -71,7 +71,7 @@ async function getAislesByStoreFunction() {
 
 async function reorderAislesFunction(aisles) {
   try {
-    const response = await apiClient.put('/aisles/reorder', { aisles })
+    const response = await apiClient.post('/aisles/reorder', { aisles })
     return response.data
   } catch (error) {
     handleApiError(error, 'Aisles not reordered: ')
