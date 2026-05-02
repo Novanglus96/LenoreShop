@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
-api.version = "1.7.0-rc.8"
+api.version = "1.7.0-rc.9"
 api.description = "API documentation for LenoreShop"
 
 

@@ -1,3 +1,10 @@
+# [1.7.0-rc.9](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.8...v1.7.0-rc.9) (2026-05-02)
+
+
+### Bug Fixes
+
+* change aisle reorder endpoint from PUT to POST ([#36](https://github.com/Novanglus96/LenoreShop/issues/36)) ([4aae7cb](https://github.com/Novanglus96/LenoreShop/commit/4aae7cbdfe2af74a1303f1b4dbb628fb0c85bbbf))
+
 # [1.7.0-rc.8](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.7...v1.7.0-rc.8) (2026-05-02)
 
 
