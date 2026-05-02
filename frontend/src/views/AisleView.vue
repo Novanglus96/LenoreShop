@@ -77,7 +77,7 @@
 
   const onReorder = () => {
     const updated = sortableAisles.value.map((aisle, index) => ({
-      id: aisle.id,
+      ...aisle,
       order: index + 1,
     }));
     reorderAisles(updated);

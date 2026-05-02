@@ -71,8 +71,11 @@ async function getAislesByStoreFunction() {
 
 async function reorderAislesFunction(aisles) {
   try {
-    const response = await apiClient.post('/aisles/reorder', { aisles })
-    return response.data
+    await Promise.all(
+      aisles.map(({ id, order, name, store_id }) =>
+        apiClient.put('/aisles/' + id, { name, order, store_id })
+      )
+    )
   } catch (error) {
     handleApiError(error, 'Aisles not reordered: ')
   }
