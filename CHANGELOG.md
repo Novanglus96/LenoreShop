@@ -1,3 +1,10 @@
+# [1.7.0-rc.13](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.12...v1.7.0-rc.13) (2026-05-02)
+
+
+### Bug Fixes
+
+* improve spacing — top gap on mobile, more margin on desktop ([#41](https://github.com/Novanglus96/LenoreShop/issues/41)) ([c9f93c2](https://github.com/Novanglus96/LenoreShop/commit/c9f93c271d5834a6a887d7f5bcb815cf532fb793))
+
 # [1.7.0-rc.12](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.11...v1.7.0-rc.12) (2026-05-02)
 
 
