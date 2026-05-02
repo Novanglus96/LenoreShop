@@ -1,3 +1,10 @@
+# [1.7.0-rc.15](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.14...v1.7.0-rc.15) (2026-05-02)
+
+
+### Bug Fixes
+
+* use window.location.assign for admin link to bypass Vue Router interception ([#43](https://github.com/Novanglus96/LenoreShop/issues/43)) ([a3249cd](https://github.com/Novanglus96/LenoreShop/commit/a3249cd8dac32281531b9fe625c4ecb8e09f464b))
+
 # [1.7.0-rc.14](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.13...v1.7.0-rc.14) (2026-05-02)
 
 
