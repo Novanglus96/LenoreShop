@@ -1,7 +1,13 @@
 <template>
   <v-card color="primary" variant="outlined">
-    <v-card-title class="text-h6">
-      ({{ aisle.order }}) {{ aisle.name }}
+    <v-card-title class="text-h6 d-flex align-center">
+      <v-icon
+        v-if="aisle.order !== 0"
+        class="drag-handle mr-2"
+        icon="mdi-drag"
+        style="cursor: grab"
+      />
+      {{ aisle.name }}
     </v-card-title>
     <v-card-subtitle>{{ aisle.store.name }}</v-card-subtitle>
     <v-card-actions>
