@@ -1,3 +1,10 @@
+# [1.7.0-rc.10](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.9...v1.7.0-rc.10) (2026-05-02)
+
+
+### Bug Fixes
+
+* reorder aisles using individual PUT calls instead of bulk endpoint ([#37](https://github.com/Novanglus96/LenoreShop/issues/37)) ([abd093f](https://github.com/Novanglus96/LenoreShop/commit/abd093f876a56185e6ea5902c969cd0c1025d4c8))
+
 # [1.7.0-rc.9](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.8...v1.7.0-rc.9) (2026-05-02)
 
 
