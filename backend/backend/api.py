@@ -1,5 +1,5 @@
 from ninja import NinjaAPI, Schema, Query
-from api.models import Store, Aisle, Item, ListItem, ShoppingList, Version
+from api.models import Store, Aisle, Item, ListItem, ShoppingList
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
@@ -19,11 +19,9 @@ class VersionOut(Schema):
     Schema to represent a Version.
 
     Attributes:
-        id (int): ID integer. Unique.
         version_number (str): The version of the app.
     """
 
-    id: int
     version_number: str
 
 
@@ -1073,11 +1071,7 @@ def list_version(request):
         (VersionOut): a version object
     """
 
-    try:
-        qs = get_object_or_404(Version, id=1)
-        return qs
-    except Exception as e:
-        raise HttpError(500, f"Record retrieval error: {str(e)}")
+    return {"version_number": api.version}
 
 
 @api.post("/demo/load", response={200: dict, 409: dict})
