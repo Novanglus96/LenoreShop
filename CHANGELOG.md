@@ -1,3 +1,10 @@
+# [1.7.0-rc.7](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.6...v1.7.0-rc.7) (2026-05-02)
+
+
+### Features
+
+* drag and drop aisle reordering ([#24](https://github.com/Novanglus96/LenoreShop/issues/24)) ([#34](https://github.com/Novanglus96/LenoreShop/issues/34)) ([751bb88](https://github.com/Novanglus96/LenoreShop/commit/751bb8897c1b6becab840ce7a4d7a8c68fdb1701))
+
 # [1.7.0-rc.6](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.5...v1.7.0-rc.6) (2026-05-02)
 
 
