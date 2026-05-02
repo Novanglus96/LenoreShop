@@ -1,3 +1,10 @@
+# [1.7.0-rc.11](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.10...v1.7.0-rc.11) (2026-05-02)
+
+
+### Features
+
+* add offline mode with optimistic updates and pending sync queue ([#39](https://github.com/Novanglus96/LenoreShop/issues/39)) ([1bc1722](https://github.com/Novanglus96/LenoreShop/commit/1bc17223ef5336a9053bb01a1c791094dbe2c888))
+
 # [1.7.0-rc.10](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.9...v1.7.0-rc.10) (2026-05-02)
 
 
