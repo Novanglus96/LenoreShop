@@ -1,3 +1,10 @@
+# [1.7.0-rc.12](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.11...v1.7.0-rc.12) (2026-05-02)
+
+
+### Features
+
+* consolidate nav menu, move version to footer, edge-to-edge mobile layout ([#40](https://github.com/Novanglus96/LenoreShop/issues/40)) ([b53bb5b](https://github.com/Novanglus96/LenoreShop/commit/b53bb5b99e33739993618e7916e22198aea861db))
+
 # [1.7.0-rc.11](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.10...v1.7.0-rc.11) (2026-05-02)
 
 
