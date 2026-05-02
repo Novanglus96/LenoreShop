@@ -8,7 +8,7 @@
       @update-dialog="updateDialog"
       :passedFormData="blankFormData"
     />
-    <v-container fluid class="pa-0 pa-sm-2">
+    <v-container fluid class="pa-0">
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
           <draggable
