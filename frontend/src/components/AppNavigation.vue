@@ -11,7 +11,7 @@
           </template>
           <v-list-item-title>{{ menu.title }}</v-list-item-title>
         </v-list-item>
-        <v-list-item as="a" href="/admin/" prepend-icon="mdi-security">
+        <v-list-item prepend-icon="mdi-security" @click="() => window.location.assign('/admin/')">
           <v-list-item-title>Admin</v-list-item-title>
         </v-list-item>
         <v-divider />
