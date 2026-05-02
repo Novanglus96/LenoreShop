@@ -104,15 +104,6 @@ class AisleOut(Schema):
     store: StoreOut
 
 
-class AisleOrderItem(Schema):
-    id: int
-    order: int
-
-
-class AisleReorderIn(Schema):
-    aisles: List[AisleOrderItem]
-
-
 class ItemIn(Schema):
     """
     Schema to validate an Item.
@@ -732,26 +723,6 @@ def list_listsbystore(request, store_id: int):
     """
     qs = ShoppingList.objects.all().filter(store__id=store_id)
     return qs
-
-
-@api.post("/aisles/reorder")
-def reorder_aisles(request, payload: AisleReorderIn):
-    """
-    Bulk-update the order of aisles.
-
-    Endpoint:
-        - **Path**: `/api/aisles/reorder`
-        - **Method**: `PUT`
-
-    Args:
-        payload (AisleReorderIn): List of {id, order} pairs.
-
-    Returns:
-        success (bool): True if successfully reordered.
-    """
-    for item in payload.aisles:
-        Aisle.objects.filter(id=item.id).update(order=item.order)
-    return {"success": True}
 
 
 @api.put("/aisles/{aisle_id}")
