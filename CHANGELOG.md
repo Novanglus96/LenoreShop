@@ -1,3 +1,10 @@
+# [1.7.0-rc.6](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.5...v1.7.0-rc.6) (2026-05-02)
+
+
+### Features
+
+* add demo data for initial setup ([#23](https://github.com/Novanglus96/LenoreShop/issues/23)) ([#33](https://github.com/Novanglus96/LenoreShop/issues/33)) ([fc7f431](https://github.com/Novanglus96/LenoreShop/commit/fc7f431dc16a331f8baf054ac77085f42e5f1c42))
+
 # [1.7.0-rc.5](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.4...v1.7.0-rc.5) (2026-05-02)
 
 
