@@ -995,6 +995,53 @@ SQL_HOST=db
 SQL_PORT=5432
 REDIS_URL=redis://redis:6379/0
 </code></pre>
+<p><strong>Full setup (MySQL/MariaDB + Redis):</strong></p>
+<pre><code class="language-yaml">services:
+  app:
+    image: novanglus96/lenoreshop:latest
+    volumes:
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    ports:
+      - &quot;${APP_PORT:-7000}:80&quot;
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: mysql:8
+    volumes:
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_DATABASE=${SQL_DATABASE}
+      - MYSQL_USER=${SQL_USER}
+      - MYSQL_PASSWORD=${SQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_PASSWORD}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  lenoreshop_static:
+  lenoreshop_media:
+</code></pre>
+<p>For MySQL, add these to your <code>.env</code>:</p>
+<pre><code class="language-env">SQL_ENGINE=django.db.backends.mysql
+SQL_DATABASE=lenoreshop
+SQL_USER=lenoreshopuser
+SQL_PASSWORD=somepassword
+SQL_HOST=db
+SQL_PORT=3306
+REDIS_URL=redis://redis:6379/0
+</code></pre>
 <h3 id="step-3-run-the-application">Step 3: Run the Application</h3>
 <pre><code class="language-bash">docker compose up -d
 </code></pre>
