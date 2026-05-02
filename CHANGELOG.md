@@ -1,3 +1,10 @@
+# [1.7.0-rc.8](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.7...v1.7.0-rc.8) (2026-05-02)
+
+
+### Bug Fixes
+
+* move reorder endpoint before parameterized aisle route ([#35](https://github.com/Novanglus96/LenoreShop/issues/35)) ([e25d837](https://github.com/Novanglus96/LenoreShop/commit/e25d837f93fb969d4e787bb9fdf0521bf0df1144))
+
 # [1.7.0-rc.7](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.6...v1.7.0-rc.7) (2026-05-02)
 
 
