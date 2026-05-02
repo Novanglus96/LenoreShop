@@ -177,6 +177,59 @@ SQL_PORT=5432
 REDIS_URL=redis://redis:6379/0
 ```
 
+**Full setup (MySQL/MariaDB + Redis):**
+
+```yaml
+services:
+  app:
+    image: novanglus96/lenoreshop:latest
+    volumes:
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    ports:
+      - "${APP_PORT:-7000}:80"
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: mysql:8
+    volumes:
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_DATABASE=${SQL_DATABASE}
+      - MYSQL_USER=${SQL_USER}
+      - MYSQL_PASSWORD=${SQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_PASSWORD}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  lenoreshop_static:
+  lenoreshop_media:
+```
+
+For MySQL, add these to your `.env`:
+
+```env
+SQL_ENGINE=django.db.backends.mysql
+SQL_DATABASE=lenoreshop
+SQL_USER=lenoreshopuser
+SQL_PASSWORD=somepassword
+SQL_HOST=db
+SQL_PORT=3306
+REDIS_URL=redis://redis:6379/0
+```
+
 ### Step 3: Run the Application
 
 ```bash
