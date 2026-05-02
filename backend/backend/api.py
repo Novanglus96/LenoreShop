@@ -734,6 +734,26 @@ def list_listsbystore(request, store_id: int):
     return qs
 
 
+@api.put("/aisles/reorder")
+def reorder_aisles(request, payload: AisleReorderIn):
+    """
+    Bulk-update the order of aisles.
+
+    Endpoint:
+        - **Path**: `/api/aisles/reorder`
+        - **Method**: `PUT`
+
+    Args:
+        payload (AisleReorderIn): List of {id, order} pairs.
+
+    Returns:
+        success (bool): True if successfully reordered.
+    """
+    for item in payload.aisles:
+        Aisle.objects.filter(id=item.id).update(order=item.order)
+    return {"success": True}
+
+
 @api.put("/aisles/{aisle_id}")
 def update_aisle(request, aisle_id: int, payload: AisleIn):
     """
@@ -756,26 +776,6 @@ def update_aisle(request, aisle_id: int, payload: AisleIn):
     aisle.order = payload.order
     aisle.store_id = payload.store_id
     aisle.save()
-    return {"success": True}
-
-
-@api.put("/aisles/reorder")
-def reorder_aisles(request, payload: AisleReorderIn):
-    """
-    Bulk-update the order of aisles.
-
-    Endpoint:
-        - **Path**: `/api/aisles/reorder`
-        - **Method**: `PUT`
-
-    Args:
-        payload (AisleReorderIn): List of {id, order} pairs.
-
-    Returns:
-        success (bool): True if successfully reordered.
-    """
-    for item in payload.aisles:
-        Aisle.objects.filter(id=item.id).update(order=item.order)
     return {"success": True}
 
 
