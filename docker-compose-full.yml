@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lenoreshop:production
+    container_name: lenoreshop_app
+    ports:
+      - "${APP_PORT:-7000}:80"
+    volumes:
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: lenoreshop_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: lenoreshop_redis
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  lenoreshop_static:
+  lenoreshop_media:

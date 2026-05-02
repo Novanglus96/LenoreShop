@@ -1,0 +1,66 @@
+name: Announce on Reddit
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to announce (e.g. v1.3.0)"
+        required: true
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  VERSION: ${{ github.event.release.tag_name || inputs.tag }}
+  IS_PRERELEASE: ${{ github.event.release.prerelease || 'false' }}
+
+jobs:
+  reddit:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract major/minor versions
+        id: version_parts
+        run: |
+          MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          if [ "$PATCH" = "0" ]; then
+            echo "type=release" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=patch" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip non-minor/major releases
+        if: steps.version_parts.outputs.type != 'release'
+        run: echo "Not a minor or major release. Skipping Reddit post."
+
+      - name: Get release notes
+        if: steps.version_parts.outputs.type == 'release'
+        id: release_notes
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const release = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            return release.data.body || "No changelog found.";
+
+      - name: Post to Reddit
+        if: steps.version_parts.outputs.type == 'release'
+        env:
+          COMMIT_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          RELEASE_NOTES: ${{ steps.release_notes.outputs.result }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+          REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+        run: python scripts/post_to_reddit.py

@@ -69,6 +69,18 @@ async function getAislesByStoreFunction() {
   }
 }
 
+async function reorderAislesFunction(aisles) {
+  try {
+    await Promise.all(
+      aisles.map(({ id, order, name, store_id }) =>
+        apiClient.put('/aisles/' + id, { name, order, store_id })
+      )
+    )
+  } catch (error) {
+    handleApiError(error, 'Aisles not reordered: ')
+  }
+}
+
 //async function getAislesFunction() {
 //  try {
 //    const response = await apiClient.get('/aisles')
@@ -112,6 +124,13 @@ export function useAisles(storeID) {
     }
   })
 
+  const reorderAislesMutation = useMutation({
+    mutationFn: reorderAislesFunction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aisles', storeID] })
+    }
+  })
+
   async function addAisle(newAisle) {
     createAisleMutation.mutate(newAisle);
   }
@@ -124,11 +143,16 @@ export function useAisles(storeID) {
     deleteAisleMutation.mutate(deletedAisle);
   }
 
+  async function reorderAisles(aisles) {
+    reorderAislesMutation.mutate(aisles);
+  }
+
   return {
     aisles,
     isLoading,
     addAisle,
     editAisle,
-    removeAisle
+    removeAisle,
+    reorderAisles,
   }
 }

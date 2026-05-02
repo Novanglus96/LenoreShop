@@ -1,6 +1,7 @@
 Django==4.2.3
 gunicorn==21.2.0
 psycopg2-binary==2.9.6
+mysqlclient==2.2.4
 markdown==3.4.4
 django-filter==23.2
 django-cors-headers==4.2.0

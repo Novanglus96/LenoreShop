@@ -73,120 +73,176 @@ Simplify your shopping routine with LenoreShop and enjoy the convenience of a pe
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Welcome to LenoreShop! This guide will help you set up and run the application using Docker and Docker Compose.
+Welcome to LenoreShop! This guide will help you set up and run the application using Docker.
 
 ### Prerequisites
-
-Make sure you have the following installed on your system:
 
 * [Docker](https://www.docker.com/get-started)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
+> **Upgrading from v1?** See the [Migration Guide](migration-v1-to-v2.md).
+
 <!-- INSTALLATION -->
 ### Step 1: Create a `.env` File
 
-Create a `.env` file in the root directory of the project. This file will store environment variables required to run the application. Below is an example of the variables you need to define:
+Create a `.env` file in your deployment directory. The minimum required configuration:
 
 ```env
 DEBUG=0
-SECRET_KEY=mysupersecretkey
-DJANGO_ALLOWED_HOSTS=(docker-ip)
-CSRF_TRUSTED_ORIGINS=http://(docker-ip)
+SECRET_KEY=your-long-random-secret-key
+DJANGO_ALLOWED_HOSTS=your-host-or-ip
+CSRF_TRUSTED_ORIGINS=https://your-domain
+
+# Optional: superuser created on first run
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=changeme
+```
+
+See `example.env` in the repository for the full list of options including PostgreSQL, MySQL, and Redis.
+
+### Step 2: Create a `docker-compose.yml` File
+
+**Minimal setup (SQLite — no external database required):**
+
+```yaml
+services:
+  app:
+    image: novanglus96/lenoreshop:latest
+    volumes:
+      - lenoreshop_data:/home/app/web/data
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    ports:
+      - "${APP_PORT:-7000}:80"
+    restart: unless-stopped
+
+volumes:
+  lenoreshop_data:
+  lenoreshop_static:
+  lenoreshop_media:
+```
+
+**Full setup (PostgreSQL + Redis):**
+
+```yaml
+services:
+  app:
+    image: novanglus96/lenoreshop:latest
+    volumes:
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    ports:
+      - "${APP_PORT:-7000}:80"
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  lenoreshop_static:
+  lenoreshop_media:
+```
+
+For PostgreSQL, add these to your `.env`:
+
+```env
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=lenoreshop
 SQL_USER=lenoreshopuser
 SQL_PASSWORD=somepassword
 SQL_HOST=db
 SQL_PORT=5432
-DATABASE=postgres
-DJANGO_SUPERUSER_PASSWORD=suepervisorpassword
-DJANGO_SUPERUSER_EMAIL=someone@somewhere.com
-DJANGO_SUPERUSER_USERNAME=supervisor
+REDIS_URL=redis://redis:6379/0
 ```
 
-Adjust these values according to your environment and application requirements.  Make sure to modify the DJANGO_ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS sections.
-
-### Step 2: Create a `docker-compose.yml` File
-
-Create a `docker-compose.yml` file in the root directory of the project. Below is an example configuration:
+**Full setup (MySQL/MariaDB + Redis):**
 
 ```yaml
 services:
-  frontend:
-    image: novanglus96/lenoreshop_frontend:latest
-    container_name: lenoreshop_frontend
-    networks:
-      - lenoreshop
-    restart: unless-stopped
-    expose:
-      - 80
+  app:
+    image: novanglus96/lenoreshop:latest
+    volumes:
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
     env_file:
       - ./.env
-  backend:
-    image: novanglus96/lenoreshop_backend:latest
-    container_name: lenoreshop_backend
-    command: /home/app/web/start.sh
-    volumes:
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-    expose:
-      - 8000
+    ports:
+      - "${APP_PORT:-7000}:80"
     depends_on:
       - db
-    networks:
-      - lenoreshop
-    env_file:
-      - ./.env
-  db:
-    image: postgres:15
-    container_name: lenoreshop_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
-    networks:
-      - lenoreshop
-    environment:
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
-      - POSTGRES_DB=${SQL_DATABASE}
-  nginx:
-    image: novanglus96/lenoreapps_proxy:latest
-    container_name: lenoreshop_nginx
-    ports:
-      - "8080:80"
-    volumes:
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - lenoreshop
+      - redis
+    restart: unless-stopped
 
-networks:
-  lenoreshop:
+  db:
+    image: mysql:8
+    volumes:
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_DATABASE=${SQL_DATABASE}
+      - MYSQL_USER=${SQL_USER}
+      - MYSQL_PASSWORD=${SQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SQL_PASSWORD}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
-  static_volume:
-  media_volume:
+  mysql_data:
+  lenoreshop_static:
+  lenoreshop_media:
+```
+
+For MySQL, add these to your `.env`:
+
+```env
+SQL_ENGINE=django.db.backends.mysql
+SQL_DATABASE=lenoreshop
+SQL_USER=lenoreshopuser
+SQL_PASSWORD=somepassword
+SQL_HOST=db
+SQL_PORT=3306
+REDIS_URL=redis://redis:6379/0
 ```
 
 ### Step 3: Run the Application
 
-1. Start the services:
+```bash
+docker compose up -d
+```
 
-   ```bash
-   docker compose up -d
-   ```
-
-2. Access the application in your browser at `http://localhost:8080`.
+Access the application at `http://your-host:7000` (or your configured `APP_PORT`).
 
 ### Notes
 
-* Adjust exposed ports as needed for your environment.
-* If you encounter any issues, ensure your `.env` file has the correct values and your Docker and Docker Compose installations are up to date.
+* Static files and database migrations are applied automatically on startup.
+* The superuser is created automatically on first run if `DJANGO_SUPERUSER_*` vars are set.
+* If you encounter any issues, ensure your `.env` file has the correct values.
 
 Enjoy using LenoreShop!
 

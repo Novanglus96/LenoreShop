@@ -11,10 +11,25 @@
     <v-container>
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
+          <draggable
+            v-model="sortableAisles"
+            item-key="id"
+            handle=".drag-handle"
+            @end="onReorder"
+          >
+            <template #item="{ element }">
+              <AisleCard
+                :aisle="element"
+                :key="element.id"
+                @edit-aisle="updateAisle"
+                @remove-aisle="deleteAisle"
+              />
+            </template>
+          </draggable>
           <AisleCard
-            v-for="aisle in aisles"
-            :aisle="aisle"
-            :key="aisle.id"
+            v-if="uncategorizedAisle"
+            :aisle="uncategorizedAisle"
+            :key="uncategorizedAisle.id"
             @edit-aisle="updateAisle"
             @remove-aisle="deleteAisle"
           />
@@ -30,7 +45,8 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { ref, watch, computed } from "vue";
+  import draggable from "vuedraggable";
   import AisleCard from "@/components/AisleCard.vue";
   import AisleForm from "@/components/AisleForm.vue";
   import { useAisles } from "@/composables/aislesComposable";
@@ -42,9 +58,31 @@
     aisleFormDialog.value = false;
   };
 
-  const { aisles, isLoading, addAisle, editAisle, removeAisle } = useAisles(
-    store.store_id,
+  const { aisles, isLoading, addAisle, editAisle, removeAisle, reorderAisles } =
+    useAisles(store.store_id);
+
+  const sortableAisles = ref([]);
+
+  const uncategorizedAisle = computed(() =>
+    aisles.value?.find(a => a.order === 0) ?? null
   );
+
+  watch(
+    aisles,
+    val => {
+      sortableAisles.value = (val ?? []).filter(a => a.order !== 0);
+    },
+    { immediate: true }
+  );
+
+  const onReorder = () => {
+    const updated = sortableAisles.value.map((aisle, index) => ({
+      ...aisle,
+      order: index + 1,
+    }));
+    reorderAisles(updated);
+  };
+
   const createAisle = async newAisle => {
     await addAisle(newAisle);
   };

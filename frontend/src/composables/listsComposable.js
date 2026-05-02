@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
+import { watch } from "vue";
 import axios from "axios";
 import { useMainStore } from "@/stores/main";
+import {
+  isOffline,
+  savePendingUpdate,
+  removePendingUpdate,
+  loadPendingUpdates,
+} from "@/composables/offlineComposable";
 
 const apiClient = axios.create({
   baseURL: "/api",
@@ -217,6 +224,59 @@ export function useShoppingLists() {
   };
 }
 
+// Move item between aisles/purchased_aisles in the cached full list
+function applyOptimisticPurchase(old, updatedListItem) {
+  if (!old) return old;
+  const { id, purchased } = updatedListItem;
+
+  const removeFromAisles = (aisles) => {
+    let removedItem = null;
+    let sourceAisle = null;
+    const updated = aisles.map((aisle) => {
+      const idx = aisle.listitems.findIndex((i) => i.id === id);
+      if (idx !== -1) {
+        removedItem = { ...aisle.listitems[idx], purchased };
+        sourceAisle = aisle;
+        return { ...aisle, listitems: aisle.listitems.filter((i) => i.id !== id) };
+      }
+      return aisle;
+    });
+    return { updated, removedItem, sourceAisle };
+  };
+
+  const addToAisles = (aisles, item, sourceAisle) => {
+    const existing = aisles.find((a) => a.id === sourceAisle.id);
+    if (existing) {
+      return aisles.map((a) =>
+        a.id === sourceAisle.id
+          ? { ...a, listitems: [...a.listitems, item] }
+          : a,
+      );
+    }
+    return [...aisles, { ...sourceAisle, listitems: [item] }];
+  };
+
+  if (purchased) {
+    const { updated: newAisles, removedItem, sourceAisle } = removeFromAisles(old.aisles);
+    if (!removedItem) return old;
+    return {
+      ...old,
+      aisles: newAisles,
+      purchased_aisles: addToAisles(old.purchased_aisles, removedItem, sourceAisle),
+      totalpurchased: old.totalpurchased + 1,
+    };
+  } else {
+    const { updated: newPurchasedAisles, removedItem, sourceAisle } = removeFromAisles(old.purchased_aisles);
+    if (!removedItem) return old;
+    return {
+      ...old,
+      aisles: addToAisles(old.aisles, removedItem, sourceAisle),
+      purchased_aisles: newPurchasedAisles,
+      totalpurchased: Math.max(0, old.totalpurchased - 1),
+    };
+  }
+}
+
 export function useFullShoppingList(listID) {
   const queryClient = useQueryClient();
 
@@ -245,8 +305,27 @@ export function useFullShoppingList(listID) {
 
   const updateListItemMutation = useMutation({
     mutationFn: updateListItemFunction,
-    onSuccess: () => {
-      console.log("Success updating list item");
+    onMutate: async (updatedListItem) => {
+      await queryClient.cancelQueries({ queryKey: ["fullshoppinglist", listID] });
+      const previousList = queryClient.getQueryData(["fullshoppinglist", listID]);
+      queryClient.setQueryData(["fullshoppinglist", listID], (old) =>
+        applyOptimisticPurchase(old, updatedListItem),
+      );
+      return { previousList };
+    },
+    onError: (err, updatedListItem, context) => {
+      if (!navigator.onLine) {
+        // Keep the optimistic state, queue for sync when back online
+        savePendingUpdate(updatedListItem);
+        return;
+      }
+      if (context?.previousList) {
+        queryClient.setQueryData(["fullshoppinglist", listID], context.previousList);
+      }
+      console.error("Error updating list item");
+    },
+    onSuccess: (data, updatedListItem) => {
+      removePendingUpdate(updatedListItem.id);
       queryClient.invalidateQueries({ queryKey: ["fullshoppinglist", listID] });
     },
   });
@@ -265,6 +344,23 @@ export function useFullShoppingList(listID) {
       console.log("Success clearing purchased list");
       queryClient.invalidateQueries({ queryKey: ["fullshoppinglist", listID] });
     },
+  });
+
+  // Flush pending updates when connection is restored
+  watch(isOffline, async (offline) => {
+    if (offline) return;
+    const pending = loadPendingUpdates();
+    for (const item of pending) {
+      try {
+        await updateListItemFunction(item);
+        removePendingUpdate(item.id);
+      } catch {
+        // Will retry on next reconnect
+      }
+    }
+    if (pending.length > 0) {
+      queryClient.invalidateQueries({ queryKey: ["fullshoppinglist", listID] });
+    }
   });
 
   async function addListItem(listItem) {
