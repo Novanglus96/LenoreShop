@@ -1,3 +1,10 @@
+# [1.7.0-rc.17](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.16...v1.7.0-rc.17) (2026-05-03)
+
+
+### Bug Fixes
+
+* revert admin link to plain anchor now that SW denylist is in place ([#45](https://github.com/Novanglus96/LenoreShop/issues/45)) ([c63d271](https://github.com/Novanglus96/LenoreShop/commit/c63d271600dde2a9ddb9a4f48b8a961308a80d1a))
+
 # [1.7.0-rc.16](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.15...v1.7.0-rc.16) (2026-05-03)
 
 
