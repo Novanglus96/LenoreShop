@@ -80,7 +80,7 @@ Welcome to LenoreShop! This guide will help you set up and run the application u
 * [Docker](https://www.docker.com/get-started)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-> **Upgrading from a pre-1.7.0 multi-container install?** See the [Migration Guide](migration-v1-to-v2.md).
+> **Upgrading from a pre-1.7.0 multi-container install?** See the [Migration Guide](backend/docs/migration-v1-to-v2.md).
 
 <!-- INSTALLATION -->
 ### Step 1: Create a `.env` File
