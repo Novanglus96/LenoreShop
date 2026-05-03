@@ -3,7 +3,7 @@
     <VueQueryDevtools />
     <AppNavigation />
     <v-main>
-      <v-container fluid-class="pa-2">
+      <v-container fluid class="pa-0 pt-3 pa-sm-4">
         <router-view />
       </v-container>
       <v-snackbar

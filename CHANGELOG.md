@@ -1,3 +1,59 @@
+# [1.7.0-rc.18](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.17...v1.7.0-rc.18) (2026-05-03)
+
+
+### Bug Fixes
+
+* remove redundant logo from HomeView ([#46](https://github.com/Novanglus96/LenoreShop/issues/46)) ([2f9e458](https://github.com/Novanglus96/LenoreShop/commit/2f9e45830a197707c4d941d752cd9c0cf9a81cab))
+
+# [1.7.0-rc.17](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.16...v1.7.0-rc.17) (2026-05-03)
+
+
+### Bug Fixes
+
+* revert admin link to plain anchor now that SW denylist is in place ([#45](https://github.com/Novanglus96/LenoreShop/issues/45)) ([c63d271](https://github.com/Novanglus96/LenoreShop/commit/c63d271600dde2a9ddb9a4f48b8a961308a80d1a))
+
+# [1.7.0-rc.16](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.15...v1.7.0-rc.16) (2026-05-03)
+
+
+### Bug Fixes
+
+* exclude /admin from service worker navigateFallback ([#44](https://github.com/Novanglus96/LenoreShop/issues/44)) ([e0dd0ea](https://github.com/Novanglus96/LenoreShop/commit/e0dd0ea965612185847bde657acab1492e1a1b16))
+
+# [1.7.0-rc.15](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.14...v1.7.0-rc.15) (2026-05-02)
+
+
+### Bug Fixes
+
+* use window.location.assign for admin link to bypass Vue Router interception ([#43](https://github.com/Novanglus96/LenoreShop/issues/43)) ([a3249cd](https://github.com/Novanglus96/LenoreShop/commit/a3249cd8dac32281531b9fe625c4ecb8e09f464b))
+
+# [1.7.0-rc.14](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.13...v1.7.0-rc.14) (2026-05-02)
+
+
+### Bug Fixes
+
+* ui spacing, admin link, and version endpoint ([#42](https://github.com/Novanglus96/LenoreShop/issues/42)) ([dbbaaf9](https://github.com/Novanglus96/LenoreShop/commit/dbbaaf9fb685a219f5ba0d4bcdf275fa0cc77f70))
+
+# [1.7.0-rc.13](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.12...v1.7.0-rc.13) (2026-05-02)
+
+
+### Bug Fixes
+
+* improve spacing — top gap on mobile, more margin on desktop ([#41](https://github.com/Novanglus96/LenoreShop/issues/41)) ([c9f93c2](https://github.com/Novanglus96/LenoreShop/commit/c9f93c271d5834a6a887d7f5bcb815cf532fb793))
+
+# [1.7.0-rc.12](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.11...v1.7.0-rc.12) (2026-05-02)
+
+
+### Features
+
+* consolidate nav menu, move version to footer, edge-to-edge mobile layout ([#40](https://github.com/Novanglus96/LenoreShop/issues/40)) ([b53bb5b](https://github.com/Novanglus96/LenoreShop/commit/b53bb5b99e33739993618e7916e22198aea861db))
+
+# [1.7.0-rc.11](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.10...v1.7.0-rc.11) (2026-05-02)
+
+
+### Features
+
+* add offline mode with optimistic updates and pending sync queue ([#39](https://github.com/Novanglus96/LenoreShop/issues/39)) ([1bc1722](https://github.com/Novanglus96/LenoreShop/commit/1bc17223ef5336a9053bb01a1c791094dbe2c888))
+
 # [1.7.0-rc.10](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.9...v1.7.0-rc.10) (2026-05-02)
 
 

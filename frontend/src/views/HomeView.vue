@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <img alt="LenoreShop logo" src="/logov2.png" />
     <HelloWorld />
   </div>
 </template>
