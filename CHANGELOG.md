@@ -1,3 +1,10 @@
+# [1.7.0-rc.16](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.15...v1.7.0-rc.16) (2026-05-03)
+
+
+### Bug Fixes
+
+* exclude /admin from service worker navigateFallback ([#44](https://github.com/Novanglus96/LenoreShop/issues/44)) ([e0dd0ea](https://github.com/Novanglus96/LenoreShop/commit/e0dd0ea965612185847bde657acab1492e1a1b16))
+
 # [1.7.0-rc.15](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.14...v1.7.0-rc.15) (2026-05-02)
 
 
