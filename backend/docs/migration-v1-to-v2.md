@@ -1,6 +1,6 @@
-# Migrating from v1 to v2 (Single Container)
+# Migrating to v1.7.0 (Single Container)
 
-Starting with **v1.7.0**, LenoreShop ships as a single self-contained Docker image instead of four separate containers (frontend, backend, nginx, db). This guide walks through migrating an existing v1 installation to the new architecture.
+Starting with **v1.7.0**, LenoreShop ships as a single self-contained Docker image instead of four separate containers (frontend, backend, nginx, db). This guide walks through migrating an existing pre-1.7.0 installation to the new architecture.
 
 ---
 

@@ -4,7 +4,7 @@ site_author: John Adams
 copyright: 2025 John Adams
 nav:
   - Home: index.md
-  - Migration Guide: migration-v1-to-v2.md
+  - Migrating to v1.7.0: migration-v1-to-v2.md
   - Reference:
       - Models: models.md
       - API: api.md
