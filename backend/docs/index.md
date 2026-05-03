@@ -80,7 +80,7 @@ Welcome to LenoreShop! This guide will help you set up and run the application u
 * [Docker](https://www.docker.com/get-started)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-> **Upgrading from v1?** See the [Migration Guide](migration-v1-to-v2.md).
+> **Upgrading from a pre-1.7.0 multi-container install?** See the [Migration Guide](migration-v1-to-v2.md).
 
 <!-- INSTALLATION -->
 ### Step 1: Create a `.env` File
@@ -253,11 +253,17 @@ Enjoy using LenoreShop!
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] v2.0 Release
-    - [ ] Improved UI
-    - [ ] Offline Mode
-- [ ] Google/Alexa assistant integration
-- [ ] Import from other sources
+**v1.7.0** ✅ Released
+- Single-container deployment
+- MySQL/MariaDB support
+- Demo data loader
+- Drag-and-drop aisle reordering
+- Offline mode (PWA)
+- UI refresh
+
+**v2.0.0** — Planned
+- [ ] Wishlists
+- [ ] Packing lists
 
 See the [open issues](https://github.com/Novanglus96/LenoreShop/issues) for a full list of proposed features (and known issues).
 
