@@ -1,3 +1,10 @@
+# [1.7.0-rc.18](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.17...v1.7.0-rc.18) (2026-05-03)
+
+
+### Bug Fixes
+
+* remove redundant logo from HomeView ([#46](https://github.com/Novanglus96/LenoreShop/issues/46)) ([2f9e458](https://github.com/Novanglus96/LenoreShop/commit/2f9e45830a197707c4d941d752cd9c0cf9a81cab))
+
 # [1.7.0-rc.17](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0-rc.16...v1.7.0-rc.17) (2026-05-03)
 
 
