@@ -79,6 +79,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ""),
       },
+      "/ws": {
+        target: "ws://localhost:8001", // Local backend WebSocket
+        ws: true,
+      },
     },
   },
   define: {
