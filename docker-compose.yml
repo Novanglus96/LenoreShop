@@ -41,15 +41,13 @@ services:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - .env.dev
     networks:
       - default
     container_name: lenoreshop_db_dev
     environment:
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
-      - POSTGRES_DB=${SQL_DATABASE}
+      - POSTGRES_USER=lenoreshop
+      - POSTGRES_PASSWORD=lenoreshop
+      - POSTGRES_DB=lenoreshop
 
 volumes:
   postgres_data:
