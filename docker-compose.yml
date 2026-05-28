@@ -50,6 +50,7 @@ services:
       - POSTGRES_USER=${SQL_USER}
       - POSTGRES_PASSWORD=${SQL_PASSWORD}
       - POSTGRES_DB=${SQL_DATABASE}
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
 volumes:
   postgres_data:
