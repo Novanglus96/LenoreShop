@@ -1,3 +1,10 @@
+# [1.8.0-alpha.1](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0...v1.8.0-alpha.1) (2026-05-28)
+
+
+### Features
+
+* add WebSocket real-time sync for multi-user list editing ([#53](https://github.com/Novanglus96/LenoreShop/issues/53)) ([53a4230](https://github.com/Novanglus96/LenoreShop/commit/53a423039bf74743321776a5e85695aa39373247))
+
 # [1.7.0](https://github.com/Novanglus96/LenoreShop/compare/v1.6.25...v1.7.0) (2026-05-03)
 
 
