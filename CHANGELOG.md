@@ -1,3 +1,10 @@
+# [1.8.0-alpha.4](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.3...v1.8.0-alpha.4) (2026-05-28)
+
+
+### Bug Fixes
+
+* render single edit and delete dialog outside v-for in ShoppingList ([#56](https://github.com/Novanglus96/LenoreShop/issues/56)) ([39ce08d](https://github.com/Novanglus96/LenoreShop/commit/39ce08d0e9ce61eebdd4c6b35d2063cba434543c))
+
 # [1.8.0-alpha.3](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.2...v1.8.0-alpha.3) (2026-05-28)
 
 
