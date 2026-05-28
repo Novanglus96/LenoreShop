@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.8.0-alpha.1",
+  "version": "1.8.0-alpha.2",
   "private": true,
   "scripts": {
     "dev": "vite --host",

@@ -1,3 +1,10 @@
+# [1.8.0-alpha.2](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.1...v1.8.0-alpha.2) (2026-05-28)
+
+
+### Bug Fixes
+
+* guard fullshoppinglist bindings against undefined during WebSocket refetch ([#54](https://github.com/Novanglus96/LenoreShop/issues/54)) ([e4842c8](https://github.com/Novanglus96/LenoreShop/commit/e4842c830f4e35fc50ad9a846a8ad40aa27b0d2d))
+
 # [1.8.0-alpha.1](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0...v1.8.0-alpha.1) (2026-05-28)
 
 
