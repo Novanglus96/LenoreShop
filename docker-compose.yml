@@ -33,6 +33,7 @@ services:
       - default
     env_file:
       - ./.env.dev
+      - ./.env.db
     environment:
       - DEBUG=1
     image: lenoreshop_backend:development
@@ -41,13 +42,15 @@ services:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env.db
     networks:
       - default
     container_name: lenoreshop_db_dev
     environment:
-      - POSTGRES_USER=lenoreshop
-      - POSTGRES_PASSWORD=lenoreshop
-      - POSTGRES_DB=lenoreshop
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
 
 volumes:
   postgres_data:
