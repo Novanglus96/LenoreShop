@@ -49,7 +49,7 @@ python manage.py test api.tests.SomeTestClass.test_method     # single test
 ### Backend Linting
 
 ```bash
-/home/jadams/.local/share/code-server/extensions/charliermarsh.ruff-2026.38.0-linux-x64/bundled/libs/bin/ruff check backend/ --fix
+/home/jadams/.local/share/code-server/extensions/charliermarsh.ruff-2026.46.0-linux-x64/bundled/libs/bin/ruff check backend/ --fix
 ```
 
 Ruff is not on PATH — use the full path above. Run before committing any Python changes. After `--fix`, manually resolve remaining `F841` errors, then confirm `All checks passed!`.
