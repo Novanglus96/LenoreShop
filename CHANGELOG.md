@@ -1,3 +1,10 @@
+# [1.8.0-alpha.3](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.2...v1.8.0-alpha.3) (2026-05-28)
+
+
+### Bug Fixes
+
+* disable devtools plugins in production builds ([#55](https://github.com/Novanglus96/LenoreShop/issues/55)) ([bf2f0aa](https://github.com/Novanglus96/LenoreShop/commit/bf2f0aa003a59abfedea5ec3a6a44467c8cc87f7))
+
 # [1.8.0-alpha.2](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.1...v1.8.0-alpha.2) (2026-05-28)
 
 
