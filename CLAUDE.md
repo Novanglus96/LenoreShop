@@ -16,7 +16,6 @@ LenoreShop is a full-stack shopping list manager. The stack is:
 ```bash
 # Development (live reload, hot module replacement)
 cp example.env .env.dev   # edit as needed
-cp example.env.db .env.db # set DB credentials — never change after first run
 docker compose -f docker-compose.yml up -d
 # Frontend: http://localhost:8081  Backend: http://localhost:8001  Docs: http://localhost:8002
 
