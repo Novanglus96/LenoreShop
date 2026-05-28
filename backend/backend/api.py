@@ -1,5 +1,6 @@
 from ninja import NinjaAPI, Schema, Query
 from api.models import Store, Aisle, Item, ListItem, ShoppingList
+from api.broadcast import broadcast_invalidate
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
@@ -9,7 +10,7 @@ from django.core.paginator import Paginator
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
-api.version = "1.7.0"
+api.version = "1.8.0-alpha.4"
 api.description = "API documentation for LenoreShop"
 
 
@@ -311,6 +312,7 @@ def create_aisle(request, payload: AisleIn):
         id (int): returns the id of the created Aisle.
     """
     aisle = Aisle.objects.create(**payload.dict())
+    broadcast_invalidate(["aisles"])
     return {"id": aisle.id}
 
 
@@ -331,6 +333,7 @@ def create_item(request, payload: ItemIn):
         id (int): returns the id of the created Item.
     """
     item = Item.objects.create(**payload.dict())
+    broadcast_invalidate(["items"])
     return item
 
 
@@ -358,11 +361,13 @@ def create_listitem(request, payload: ListItemIn):
         item = Item.objects.get(id=payload.item_id)
         item.aisle_id = payload.aisle_id
         item.save()
+        broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
         return {"id": listitem.id}
     else:
         existing_item.qty += payload.qty
         existing_item.purchased = False
         existing_item.save()
+        broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
         return {"id": existing_item.id}
 
 
@@ -383,6 +388,7 @@ def create_shoppinglist(request, payload: ShoppingListIn):
         id (int): returns the id of the created ShoppingList.
     """
     shoppinglist = ShoppingList.objects.create(**payload.dict())
+    broadcast_invalidate(["shoppinglists"])
     return {"id": shoppinglist.id}
 
 
@@ -745,6 +751,7 @@ def update_aisle(request, aisle_id: int, payload: AisleIn):
     aisle.order = payload.order
     aisle.store_id = payload.store_id
     aisle.save()
+    broadcast_invalidate(["aisles"])
     return {"success": True}
 
 
@@ -769,6 +776,7 @@ def update_item(request, item_id: int, payload: ItemIn):
     item.name = payload.name
     item.matches = payload.matches
     item.save()
+    broadcast_invalidate(["items"])
     return {"success": True}
 
 
@@ -798,6 +806,7 @@ def update_listitem(request, listitem_id: int, payload: ListItemIn):
     listitem.aisle_id = payload.aisle_id
     listitem.shopping_list_id = payload.shopping_list_id
     listitem.save()
+    broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
     return {"success": True}
 
 
@@ -822,6 +831,7 @@ def update_shoppinglist(request, shoppinglist_id: int, payload: ShoppingListIn):
     shoppinglist.name = payload.name
     shoppinglist.store_id = payload.store_id
     shoppinglist.save()
+    broadcast_invalidate(["shoppinglists"])
     return {"success": True}
 
 
@@ -843,6 +853,7 @@ def delete_aisle(request, aisle_id: int):
     """
     aisle = get_object_or_404(Aisle, id=aisle_id)
     aisle.delete()
+    broadcast_invalidate(["aisles"])
     return {"success": True}
 
 
@@ -864,6 +875,7 @@ def delete_item(request, item_id: int):
     """
     item = get_object_or_404(Item, id=item_id)
     item.delete()
+    broadcast_invalidate(["items"])
     return {"success": True}
 
 
@@ -885,6 +897,7 @@ def delete_listitem(request, listitem_id: int):
     """
     listitem = get_object_or_404(ListItem, id=listitem_id)
     listitem.delete()
+    broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
     return {"success": True}
 
 
@@ -907,6 +920,7 @@ def delete_listitems_by_shoppinglist(request, shoppinglist_id: int):
     """
     listitems = ListItem.objects.filter(shopping_list_id=shoppinglist_id)
     listitems.delete()
+    broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
     return {"success": True}
 
 
@@ -931,6 +945,7 @@ def delete_purchased_listitems_by_shoppinglist(request, shoppinglist_id: int):
         shopping_list_id=shoppinglist_id, purchased=True
     )
     listitems.delete()
+    broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
     return {"success": True}
 
 
@@ -952,6 +967,7 @@ def delete_shoppinglist(request, shoppinglist_id: int):
     """
     shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
     shoppinglist.delete()
+    broadcast_invalidate(["shoppinglists"])
     return {"success": True}
 
 
@@ -972,6 +988,7 @@ def create_store(request, payload: StoreIn):
         id (int): The ID of the added Store.
     """
     store = Store.objects.create(**payload.dict())
+    broadcast_invalidate(["stores"])
     return {"id": store.id}
 
 
@@ -1034,6 +1051,7 @@ def update_store(request, store_id: int, payload: StoreIn):
     store = get_object_or_404(Store, id=store_id)
     store.name = payload.name
     store.save()
+    broadcast_invalidate(["stores"])
     return {"success": True}
 
 
@@ -1055,6 +1073,7 @@ def delete_store(request, store_id: int):
     """
     store = get_object_or_404(Store, id=store_id)
     store.delete()
+    broadcast_invalidate(["stores"])
     return {"success": True}
 
 

@@ -1,3 +1,31 @@
+# [1.8.0-alpha.4](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.3...v1.8.0-alpha.4) (2026-05-28)
+
+
+### Bug Fixes
+
+* render single edit and delete dialog outside v-for in ShoppingList ([#56](https://github.com/Novanglus96/LenoreShop/issues/56)) ([39ce08d](https://github.com/Novanglus96/LenoreShop/commit/39ce08d0e9ce61eebdd4c6b35d2063cba434543c))
+
+# [1.8.0-alpha.3](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.2...v1.8.0-alpha.3) (2026-05-28)
+
+
+### Bug Fixes
+
+* disable devtools plugins in production builds ([#55](https://github.com/Novanglus96/LenoreShop/issues/55)) ([bf2f0aa](https://github.com/Novanglus96/LenoreShop/commit/bf2f0aa003a59abfedea5ec3a6a44467c8cc87f7))
+
+# [1.8.0-alpha.2](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0-alpha.1...v1.8.0-alpha.2) (2026-05-28)
+
+
+### Bug Fixes
+
+* guard fullshoppinglist bindings against undefined during WebSocket refetch ([#54](https://github.com/Novanglus96/LenoreShop/issues/54)) ([e4842c8](https://github.com/Novanglus96/LenoreShop/commit/e4842c830f4e35fc50ad9a846a8ad40aa27b0d2d))
+
+# [1.8.0-alpha.1](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0...v1.8.0-alpha.1) (2026-05-28)
+
+
+### Features
+
+* add WebSocket real-time sync for multi-user list editing ([#53](https://github.com/Novanglus96/LenoreShop/issues/53)) ([53a4230](https://github.com/Novanglus96/LenoreShop/commit/53a423039bf74743321776a5e85695aa39373247))
+
 # [1.7.0](https://github.com/Novanglus96/LenoreShop/compare/v1.6.25...v1.7.0) (2026-05-03)
 
 

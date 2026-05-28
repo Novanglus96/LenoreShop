@@ -12,13 +12,13 @@
     <v-container fluid class="pa-0">
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
-          <h2 class="text-h6 text-primary ps-4">{{ fullshoppinglist.name }}</h2>
+          <h2 class="text-h6 text-primary ps-4">{{ fullshoppinglist?.name }}</h2>
           <h2 class="text-subtitle-1 text-info ps-4">
-            {{ fullshoppinglist.store.name }}
+            {{ fullshoppinglist?.store?.name }}
           </h2>
           <h2 class="text-subtitle-2 text-grey ps-4">
-            {{ fullshoppinglist.totalpurchased }} of
-            {{ fullshoppinglist.totalitems }} purchased
+            {{ fullshoppinglist?.totalpurchased }} of
+            {{ fullshoppinglist?.totalitems }} purchased
           </h2>
         </v-col>
       </v-row>
@@ -44,7 +44,7 @@
               <template v-slot:actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="clear_purchased_dialog = false">No</v-btn>
-                <v-btn @click="clearPurchasedListFunction(fullshoppinglist.id)">
+                <v-btn @click="clearPurchasedListFunction(fullshoppinglist?.id)">
                   Yes
                 </v-btn>
               </template>
@@ -70,7 +70,7 @@
               <template v-slot:actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="clear_full_dialog = false">No</v-btn>
-                <v-btn @click="clearListFunction(fullshoppinglist.id)">
+                <v-btn @click="clearListFunction(fullshoppinglist?.id)">
                   Yes
                 </v-btn>
               </template>
@@ -84,7 +84,7 @@
             @edit-list-item="editListItem"
             @delete-list-item="removeListItem"
             @item-purchased="purchaseItem"
-            :listitems="fullshoppinglist.aisles"
+            :listitems="fullshoppinglist?.aisles ?? []"
             :purchased="false"
           />
         </v-col>
@@ -107,7 +107,7 @@
           <ShoppingList
             @edit-list-item="editListItem"
             @item-purchased="purchaseItem"
-            :listitems="fullshoppinglist.purchased_aisles"
+            :listitems="fullshoppinglist?.purchased_aisles ?? []"
             :purchased="true"
           />
         </v-col>

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <VueQueryDevtools />
+    <VueQueryDevtools v-if="isDev" />
     <AppNavigation />
     <v-main>
       <v-container fluid class="pa-0 pt-3 pa-sm-4">
@@ -51,14 +51,17 @@ import { onMounted, computed, ref, watch, onUnmounted } from "vue";
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 import { useVersion } from "@/composables/versionComposable";
 import { useOffline } from "@/composables/offlineComposable";
+import { useRealtimeSync } from "@/composables/useRealtimeSync";
 import { version as appVersion } from "../package.json";
 
+const isDev = import.meta.env.DEV;
 const reloadPage = () => {
   window.location.reload();
 };
 const store = useMainStore();
 const { prefetchVersion, version } = useVersion();
 const { isOffline } = useOffline();
+useRealtimeSync();
 const showBanner = ref(false);
 const showOfflineBanner = computed(() => isOffline.value);
 

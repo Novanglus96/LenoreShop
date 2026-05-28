@@ -6,10 +6,10 @@ import { fileURLToPath, URL } from "node:url";
 import eslint from "vite-plugin-eslint";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
-    vueDevTools(),
+    mode !== "production" && vueDevTools(),
     createHtmlPlugin({
       inject: {
         data: {
@@ -79,6 +79,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ""),
       },
+      "/ws": {
+        target: "ws://backend:8001", // Local backend WebSocket (Docker service name)
+        ws: true,
+      },
     },
   },
   define: {
@@ -91,4 +95,4 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-});
+}));

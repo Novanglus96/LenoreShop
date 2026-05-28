@@ -56,33 +56,12 @@
             :ripple="false"
             @click="selectedItem(item)"
           ></v-btn>
-          <ListItemForm
-            v-model="listItemFormDialog"
-            @edit-list-item="editListItem"
-            @update-dialog="updateDialog"
-            :isEdit="true"
-            :passedFormData="passedFormData"
-            :key="item.id"
-          />
           <v-btn
             icon="mdi-delete"
             variant="plain"
             :ripple="false"
             @click="selectedDeleteItem(item)"
           ></v-btn>
-          <v-dialog v-model="deleteDialog" width="auto" :key="item.id">
-            <v-card>
-              <v-card-text>
-                Delete item "{{ passedDeleteData.name }}" from list?
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="primary" @click="deleteDialog = false">No</v-btn>
-                <v-btn color="primary" @click="deleteItem(passedDeleteData)">
-                  Yes
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </template>
       </v-list-item>
       <v-list-item
@@ -104,12 +83,30 @@
       </v-list-item>
     </div>
   </v-list>
+  <ListItemForm
+    v-model="listItemFormDialog"
+    @edit-list-item="editListItem"
+    @update-dialog="updateDialog"
+    :isEdit="true"
+    :passedFormData="passedFormData"
+    :key="passedFormData.id"
+  />
+  <v-dialog v-model="deleteDialog" width="auto">
+    <v-card>
+      <v-card-text>
+        Delete item "{{ passedDeleteData.name }}" from list?
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="deleteDialog = false">No</v-btn>
+        <v-btn color="primary" @click="deleteItem(passedDeleteData)">Yes</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
   import { defineProps, defineEmits, ref } from "vue";
   import ListItemForm from "@/components/ListItemForm.vue";
-  //import { useFullShoppingList } from '@/composables/listsComposable'
 
   const emit = defineEmits(["itemPurchased", "editListItem", "deleteListItem"]);
   const passedFormData = ref({

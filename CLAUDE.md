@@ -16,8 +16,10 @@ LenoreShop is a full-stack shopping list manager. The stack is:
 ```bash
 # Development (live reload, hot module replacement)
 cp example.env .env.dev   # edit as needed
-docker compose -f docker-compose.yml up -d
+docker compose --env-file .env.dev -f docker-compose.yml up -d
 # Frontend: http://localhost:8081  Backend: http://localhost:8001  Docs: http://localhost:8002
+# Note: --env-file makes .env.dev vars available for ${VAR} substitution in the compose file
+# (Docker Compose substitution reads the host shell / .env, not env_file entries)
 
 # Production
 cp example.env .env
@@ -49,7 +51,7 @@ python manage.py test api.tests.SomeTestClass.test_method     # single test
 ### Backend Linting
 
 ```bash
-/home/jadams/.local/share/code-server/extensions/charliermarsh.ruff-2026.38.0-linux-x64/bundled/libs/bin/ruff check backend/ --fix
+/home/jadams/.local/share/code-server/extensions/charliermarsh.ruff-2026.46.0-linux-x64/bundled/libs/bin/ruff check backend/ --fix
 ```
 
 Ruff is not on PATH — use the full path above. Run before committing any Python changes. After `--fix`, manually resolve remaining `F841` errors, then confirm `All checks passed!`.
