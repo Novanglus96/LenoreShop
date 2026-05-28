@@ -6,10 +6,10 @@ import { fileURLToPath, URL } from "node:url";
 import eslint from "vite-plugin-eslint";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
-    vueDevTools(),
+    mode !== "production" && vueDevTools(),
     createHtmlPlugin({
       inject: {
         data: {
@@ -95,4 +95,4 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-});
+}));
