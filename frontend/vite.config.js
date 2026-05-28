@@ -80,7 +80,7 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/api/, ""),
       },
       "/ws": {
-        target: "ws://localhost:8001", // Local backend WebSocket
+        target: "ws://backend:8001", // Local backend WebSocket (Docker service name)
         ws: true,
       },
     },
