@@ -1,14 +1,15 @@
 from ninja import NinjaAPI, Schema, Query
-from api.models import Store, Aisle, Item, ListItem, ShoppingList, Version
+from api.models import Store, Aisle, Item, ListItem, ShoppingList
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
+from django.core.management import call_command
 from datetime import date
 from django.core.paginator import Paginator
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
-api.version = "1.6.26-alpha.1"
+api.version = "1.7.0"
 api.description = "API documentation for LenoreShop"
 
 
@@ -18,11 +19,9 @@ class VersionOut(Schema):
     Schema to represent a Version.
 
     Attributes:
-        id (int): ID integer. Unique.
         version_number (str): The version of the app.
     """
 
-    id: int
     version_number: str
 
 
@@ -1072,8 +1071,17 @@ def list_version(request):
         (VersionOut): a version object
     """
 
-    try:
-        qs = get_object_or_404(Version, id=1)
-        return qs
-    except Exception as e:
-        raise HttpError(500, f"Record retrieval error: {str(e)}")
+    return {"version_number": api.version}
+
+
+@api.post("/demo/load", response={200: dict, 409: dict})
+def load_demo_data(request):
+    """
+    Load demo stores, aisles, items, and shopping lists.
+    Only succeeds if no stores exist yet.
+    Returns 409 if the database already has store data.
+    """
+    if Store.objects.exists():
+        raise HttpError(409, "Demo data not loaded: stores already exist.")
+    call_command("load_demo_data")
+    return {"success": True, "message": "Demo data loaded successfully."}

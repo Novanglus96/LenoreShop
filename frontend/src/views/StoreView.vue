@@ -9,7 +9,7 @@
       @update-dialog="updateDialog"
       :passedFormData="blankFormData"
     />
-    <v-container>
+    <v-container fluid class="pa-0">
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
           <StoreCard

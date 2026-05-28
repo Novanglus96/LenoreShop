@@ -27,6 +27,7 @@
         "assets": [
           "CHANGELOG.md",
           "scripts/version.txt",
+          "Dockerfile",
           "backend/Dockerfile",
           "frontend/Dockerfile",
           "backend/api/fixtures/version.json",

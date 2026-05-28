@@ -1,6 +1,6 @@
 <template>
   <div class="lists">
-    <v-btn density="compact" @click="listItemFormDialog = true">Add Item</v-btn>
+    <v-btn density="compact" @click="listItemFormDialog = true" :disabled="isOffline">Add Item</v-btn>
     <ListItemForm
       v-model="listItemFormDialog"
       @add-list-item="createListItem"
@@ -9,7 +9,7 @@
       :isEdit="false"
       :key="-1"
     />
-    <v-container>
+    <v-container fluid class="pa-0">
       <v-row dense v-if="!isLoading">
         <v-col cols="12">
           <h2 class="text-h6 text-primary ps-4">{{ fullshoppinglist.name }}</h2>
@@ -31,6 +31,7 @@
                 variant="outlined"
                 prepend-icon="mdi-delete-sweep-outline"
                 v-bind="activatorProps"
+                :disabled="isOffline"
               >
                 Clear Purchased
               </v-btn>
@@ -56,6 +57,7 @@
                 variant="outlined"
                 prepend-icon="mdi-delete-sweep-outline"
                 v-bind="activatorProps"
+                :disabled="isOffline"
               >
                 Clear All
               </v-btn>
@@ -128,8 +130,10 @@
   import ListItemForm from "@/components/ListItemForm.vue";
   import { useFullShoppingList } from "@/composables/listsComposable";
   import { useMainStore } from "@/stores/main";
+  import { useOffline } from "@/composables/offlineComposable";
 
   const store = useMainStore();
+  const { isOffline } = useOffline();
   const clear_full_dialog = ref(false);
   const clear_purchased_dialog = ref(false);
   const listItemFormDialog = ref(false);
