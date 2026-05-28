@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <VueQueryDevtools />
+    <VueQueryDevtools v-if="isDev" />
     <AppNavigation />
     <v-main>
       <v-container fluid class="pa-0 pt-3 pa-sm-4">
@@ -54,6 +54,7 @@ import { useOffline } from "@/composables/offlineComposable";
 import { useRealtimeSync } from "@/composables/useRealtimeSync";
 import { version as appVersion } from "../package.json";
 
+const isDev = import.meta.env.DEV;
 const reloadPage = () => {
   window.location.reload();
 };
