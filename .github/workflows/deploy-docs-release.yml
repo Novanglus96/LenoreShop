@@ -43,5 +43,5 @@ jobs:
           mike deploy "$MAJOR_MINOR" --push --update-aliases --config-file backend/mkdocs.yml
 
           if [[ "${{ github.event.release.prerelease }}" != "true" ]]; then
-            mike alias "$MAJOR_MINOR" latest --push --config-file backend/mkdocs.yml
+            mike alias "$MAJOR_MINOR" latest --update-aliases --push --config-file backend/mkdocs.yml
           fi
