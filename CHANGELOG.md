@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0...v1.8.1) (2026-08-08)
+
+
+### Bug Fixes
+
+* allow release docs deploy to be re-run manually ([fb59e73](https://github.com/Novanglus96/LenoreShop/commit/fb59e7370b21fd3464b07a9c235f5645b5a85bda))
+
 # [1.8.0](https://github.com/Novanglus96/LenoreShop/compare/v1.7.0...v1.8.0) (2026-05-28)
 
 
