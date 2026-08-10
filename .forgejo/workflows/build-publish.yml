@@ -1,0 +1,27 @@
+name: Build & Publish
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to build and publish (e.g. v1.8.1)"
+        required: true
+jobs:
+  build-publish:
+    uses: lenore/lenore-ci/.forgejo/workflows/build-publish.yml@v1
+    with:
+      # The tag is the only source of truth. workflow_dispatch is what the old
+      # build_publish.yml lacked entirely — its sole trigger was
+      # release:[published], so re-running a failed build meant deleting and
+      # re-publishing the release.
+      tag: ${{ github.event.release.tag_name || inputs.tag }}
+      image_list: app
+      # Both registries from the first real release. release-audit asserts
+      # "image present in BOTH registries" per tag, so leaving push_forge off
+      # would make it report a true gap on every release — and a check that is
+      # permanently red is a check nobody reads.
+      push_dockerhub: true
+      push_forge: true
+      dry_run: false
+    secrets: inherit
