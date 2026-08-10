@@ -1,0 +1,15 @@
+name: Semantic Release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "release/v*", alpha, beta, rc]
+jobs:
+  release:
+    uses: lenore/lenore-ci/.forgejo/workflows/release.yml@v1
+    with:
+      # Cutover: the forge is the writer. This flip and the deletion of
+      # .github/workflows/ are one change on purpose — Forgejo reads both
+      # directories, so a split would run every workflow twice and produce the
+      # double-bump this migration exists to prevent.
+      dry_run: false
+    secrets: inherit
