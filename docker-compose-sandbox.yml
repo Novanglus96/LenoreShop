@@ -1,0 +1,50 @@
+services:
+  app:
+    image: novanglus96/lenoreshop:rc
+    volumes:
+      - lenoreshop_data:/home/app/web/data
+      - lenoreshop_static:/home/app/web/staticfiles
+      - lenoreshop_media:/home/app/web/mediafiles
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - ./.env
+    ports:
+      - 8080:80
+    container_name: lenoreshop
+    environment:
+      - DEBUG=0
+    networks:
+      - sandbox
+
+  redis:
+    image: redis:7-alpine
+    container_name: lenoreshop_redis
+    restart: unless-stopped
+    networks:
+      - sandbox
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./backup:/backup
+    env_file:
+      - ./.env
+    container_name: lenoreshop_db
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
+    networks:
+      - sandbox
+
+volumes:
+  postgres_data:
+  lenoreshop_data:
+  lenoreshop_static:
+  lenoreshop_media:
+
+networks:
+  sandbox:

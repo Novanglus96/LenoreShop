@@ -1,0 +1,20 @@
+name: Announce
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to announce (e.g. v1.8.1)"
+        required: true
+jobs:
+  # Reddit only. Unlike LenoreFin this repo has no scripts/post_to_patreon.py
+  # and never had a Patreon job — just as well, since Patreon's public API v2
+  # is read-only for posts and that integration has been dead since 2026-05-28.
+  reddit:
+    uses: lenore/lenore-ci/.forgejo/workflows/announce.yml@v1
+    with:
+      tag: ${{ github.event.release.tag_name || inputs.tag }}
+      target: reddit
+      dry_run: false
+    secrets: inherit
