@@ -1,0 +1,12 @@
+name: Deploy MkDocs (Preview)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  docs:
+    uses: lenore/lenore-ci/.forgejo/workflows/docs.yml@v1
+    with:
+      mode: preview
+      dry_run: false
+    secrets: inherit
