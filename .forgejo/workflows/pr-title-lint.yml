@@ -1,0 +1,8 @@
+name: Lint PR Title
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+jobs:
+  lint:
+    uses: lenore/lenore-ci/.forgejo/workflows/pr-title-lint.yml@v1
+    secrets: inherit
