@@ -19,7 +19,7 @@ from django.db.models import F
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
-api.version = "1.8.1"
+api.version = "1.9.0-alpha.1"
 api.description = "API documentation for LenoreShop"
 
 

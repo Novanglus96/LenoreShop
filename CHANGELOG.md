@@ -1,3 +1,11 @@
+# [1.9.0-alpha.1](https://forge.lan.danielleandjohn.love/lenore/LenoreShop/compare/v1.8.1...v1.9.0-alpha.1) (2026-08-12)
+
+
+### Features
+
+* allow the freezer date added to be unknown ([345d686](https://forge.lan.danielleandjohn.love/lenore/LenoreShop/commit/345d68653d52a51204587bd67935f7124975513f))
+* track frozen foods by freezer with throw out dates ([8ed31cb](https://forge.lan.danielleandjohn.love/lenore/LenoreShop/commit/8ed31cb33d785ddd67a2ca3f3a6b4ebf021a7934))
+
 ## [1.8.1](https://github.com/Novanglus96/LenoreShop/compare/v1.8.0...v1.8.1) (2026-08-08)
 
 
