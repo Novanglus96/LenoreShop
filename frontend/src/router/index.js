@@ -7,6 +7,8 @@ import ItemView from "@/views/ItemView.vue";
 import AisleView from "@/views/AisleView.vue";
 import ListsStoreView from "@/views/ListsStoreView.vue";
 import ListsView from "@/views/ListsView.vue";
+import FreezerView from "@/views/FreezerView.vue";
+import FreezerContentsView from "@/views/FreezerContentsView.vue";
 
 const routes = [
   {
@@ -48,6 +50,16 @@ const routes = [
     path: "/aisles/:store",
     name: "aislefilter",
     component: AisleView,
+  },
+  {
+    path: "/freezers",
+    name: "freezers",
+    component: FreezerView,
+  },
+  {
+    path: "/freezer",
+    name: "freezer",
+    component: FreezerContentsView,
   },
   {
     path: "/:catchAll(.*)",

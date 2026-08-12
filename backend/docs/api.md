@@ -72,3 +72,29 @@
 #### ::: backend.api.ShoppingListIn
 #### ::: backend.api.ShoppingListOut
 #### ::: backend.api.ShoppingListFull
+
+## Freezer
+### Views
+#### ::: backend.api.create_freezer
+#### ::: backend.api.get_freezer
+#### ::: backend.api.get_freezerfull
+#### ::: backend.api.list_freezers
+#### ::: backend.api.update_freezer
+#### ::: backend.api.delete_freezer
+### Schemas
+#### ::: backend.api.FreezerIn
+#### ::: backend.api.FreezerOut
+#### ::: backend.api.FreezerFull
+
+## FreezerItem
+### Views
+#### ::: backend.api.create_freezeritem
+#### ::: backend.api.get_freezeritem
+#### ::: backend.api.list_freezeritems
+#### ::: backend.api.list_freezeritemsbyfreezer
+#### ::: backend.api.list_freezeritemsexpiring
+#### ::: backend.api.update_freezeritem
+#### ::: backend.api.delete_freezeritem
+### Schemas
+#### ::: backend.api.FreezerItemIn
+#### ::: backend.api.FreezerItemOut

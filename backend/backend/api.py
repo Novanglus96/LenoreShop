@@ -1,12 +1,21 @@
 from ninja import NinjaAPI, Schema, Query
-from api.models import Store, Aisle, Item, ListItem, ShoppingList
+from api.models import (
+    Store,
+    Aisle,
+    Item,
+    ListItem,
+    ShoppingList,
+    Freezer,
+    FreezerItem,
+)
 from api.broadcast import broadcast_invalidate
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 from django.core.management import call_command
-from datetime import date
+from datetime import date, timedelta
 from django.core.paginator import Paginator
+from django.db.models import F
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
@@ -275,6 +284,110 @@ class ShoppingListFull(Schema):
     purchased_aisles: List[AislesWithItems]
     totalitems: int
     totalpurchased: int
+
+
+class FreezerIn(Schema):
+    """
+    Schema to validate a Freezer.
+
+    Attributes:
+        name (str): The name of the freezer.
+        location (str): Where the freezer is. Default = None.
+    """
+
+    name: str
+    location: str = None
+
+
+class FreezerOut(Schema):
+    """
+    Schema to represent a Freezer.
+
+    Attributes:
+        id (int): ID integer. Unique.
+        name (str): The name of the freezer.
+        location (str): Where the freezer is. Default = None.
+    """
+
+    id: int
+    name: str
+    location: str = None
+
+
+class FreezerItemIn(Schema):
+    """
+    Schema to validate a FreezerItem.
+
+    Attributes:
+        name (str): The name of the frozen food.
+        qty (int): How much is stored. Default = 1.
+        unit (str): The unit for qty. Default = None.
+        date_added (date): The date this went into the freezer. Default = None,
+            meaning the date is unknown.
+        discard_date (date): The date this should be thrown out. Default = None.
+        notes (str): Notes for the frozen food. Default = None.
+        freezer_id (int): ID of the freezer.
+    """
+
+    name: str
+    qty: int = 1
+    unit: str = None
+    date_added: date = None
+    discard_date: date = None
+    notes: str = None
+    freezer_id: int
+
+
+class FreezerItemOut(Schema):
+    """
+    Schema to represent a FreezerItem.
+
+    Attributes:
+        id (int): The ID of the freezer item.
+        name (str): The name of the frozen food.
+        qty (int): How much is stored. Default = 1.
+        unit (str): The unit for qty. Default = None.
+        date_added (date): The date this went into the freezer. None when the
+            date is unknown.
+        discard_date (date): The date this should be thrown out. Default = None.
+        notes (str): Notes for the frozen food. Default = None.
+        freezer_id (int): ID of the freezer.
+        days_until_discard (int): Days left before discard_date, negative once
+            past it. None when no discard_date is set.
+        is_expired (bool): True if the discard date has passed.
+    """
+
+    id: int
+    name: str
+    qty: int = 1
+    unit: str = None
+    date_added: date = None
+    discard_date: date = None
+    notes: str = None
+    freezer_id: int
+    days_until_discard: int = None
+    is_expired: bool = False
+
+
+class FreezerFull(Schema):
+    """
+    Schema to represent a Freezer with the FreezerItems stored in it.
+
+    Attributes:
+        id (int): ID of the freezer.
+        name (str): The name of the freezer.
+        location (str): Where the freezer is. Default = None.
+        freezeritems (List[FreezerItemOut]): The frozen foods in this freezer.
+        totalitems (int): The total number of frozen foods in this freezer.
+        totalexpired (int): How many of those are past their discard date.
+    """
+
+    id: int
+    name: str
+    location: str = None
+    freezeritems: List[FreezerItemOut]
+    totalitems: int
+    totalexpired: int
 
 
 @api.get("/me", response=UserSchema)
@@ -1074,6 +1187,312 @@ def delete_store(request, store_id: int):
     store = get_object_or_404(Store, id=store_id)
     store.delete()
     broadcast_invalidate(["stores"])
+    return {"success": True}
+
+
+@api.post("/freezers")
+def create_freezer(request, payload: FreezerIn):
+    """
+    The function `create_freezer` creates a Freezer.
+
+    Endpoint:
+        - **Path**: `/api/freezers`
+        - **Method**: `POST`
+
+    Args:
+        request ():
+        payload (FreezerIn): A Freezer object to add.
+
+    Returns:
+        id (int): The ID of the added Freezer.
+    """
+    freezer = Freezer.objects.create(**payload.dict())
+    broadcast_invalidate(["freezers"])
+    return {"id": freezer.id}
+
+
+@api.get("/freezers/{freezer_id}", response=FreezerOut)
+def get_freezer(request, freezer_id: int):
+    """
+    The function `get_freezer` returns a Freezer object for a given ID.
+
+    Endpoint:
+        - **Path**: `/api/freezers/{freezer_id}`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+        freezer_id (int): ID of a Freezer to retreive.
+
+    Returns:
+        (FreezerOut): A Freezer object.
+    """
+    freezer = get_object_or_404(Freezer, id=freezer_id)
+    return freezer
+
+
+@api.get("/freezers", response=List[FreezerOut])
+def list_freezers(request):
+    """
+    The function `list_freezers` returns a list of Freezers.
+
+    Endpoint:
+        - **Path**: `/api/freezers`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+
+    Returns:
+        (List[FreezerOut]): A list of Freezer objects.
+    """
+    qs = Freezer.objects.all().order_by("name")
+    return qs
+
+
+@api.put("/freezers/{freezer_id}")
+def update_freezer(request, freezer_id: int, payload: FreezerIn):
+    """
+    The function `update_freezer` updates a given Freezer.
+
+    Endpoint:
+        - **Path**: `/api/freezers/{freezer_id}`
+        - **Method**: `PUT`
+
+    Args:
+        request ():
+        freezer_id (int): ID of a Freezer to update.
+        payload (FreezerIn): A Freezer object with updates.
+
+    Returns:
+        success (bool): True if successfully updated.
+    """
+    freezer = get_object_or_404(Freezer, id=freezer_id)
+    freezer.name = payload.name
+    freezer.location = payload.location
+    freezer.save()
+    broadcast_invalidate(["freezers", "freezerfull"])
+    return {"success": True}
+
+
+@api.delete("/freezers/{freezer_id}")
+def delete_freezer(request, freezer_id: int):
+    """
+    The function `delete_freezer` deletes a given Freezer and everything in it.
+
+    Endpoint:
+        - **Path**: `/api/freezers/{freezer_id}`
+        - **Method**: `DELETE`
+
+    Args:
+        request ():
+        freezer_id (int): ID of a Freezer to delete.
+
+    Returns:
+        success (bool): True if successfully deleted.
+    """
+    freezer = get_object_or_404(Freezer, id=freezer_id)
+    freezer.delete()
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    return {"success": True}
+
+
+@api.get("/freezerfull/{freezer_id}", response=FreezerFull)
+def get_freezerfull(request, freezer_id: int):
+    """
+    The function `get_freezerfull` returns a Freezer with its frozen foods.
+
+    Items are ordered so the ones closest to their discard date come first,
+    with undated items last.
+
+    Endpoint:
+        - **Path**: `/api/freezerfull/{freezer_id}`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+        freezer_id (int): The ID of a Freezer.
+
+    Returns:
+        (FreezerFull): A FreezerFull object.
+    """
+    freezer = get_object_or_404(Freezer, id=freezer_id)
+    freezeritems = FreezerItem.objects.filter(freezer=freezer).order_by(
+        F("discard_date").asc(nulls_last=True), "name"
+    )
+    totalexpired = FreezerItem.objects.filter(
+        freezer=freezer, discard_date__lt=date.today()
+    ).count()
+    return FreezerFull(
+        id=freezer.id,
+        name=freezer.name,
+        location=freezer.location,
+        freezeritems=[FreezerItemOut.from_orm(fi) for fi in freezeritems],
+        totalitems=freezeritems.count(),
+        totalexpired=totalexpired,
+    )
+
+
+@api.post("/freezeritems")
+def create_freezeritem(request, payload: FreezerItemIn):
+    """
+    The function `create_freezeritem` creates a FreezerItem.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems`
+        - **Method**: `POST`
+
+    Args:
+        request ():
+        payload (FreezerItemIn): A FreezerItem object to add.
+
+    Returns:
+        id (int): The ID of the added FreezerItem.
+    """
+    freezeritem = FreezerItem.objects.create(**payload.dict())
+    broadcast_invalidate(["freezeritems", "freezerfull"])
+    return {"id": freezeritem.id}
+
+
+@api.get("/freezeritems/{freezeritem_id}", response=FreezerItemOut)
+def get_freezeritem(request, freezeritem_id: int):
+    """
+    The function `get_freezeritem` returns a FreezerItem for a given ID.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of a FreezerItem to retreive.
+
+    Returns:
+        (FreezerItemOut): A FreezerItem object.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    return freezeritem
+
+
+@api.get("/freezeritems", response=List[FreezerItemOut])
+def list_freezeritems(request):
+    """
+    The function `list_freezeritems` returns a list of all FreezerItems.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+
+    Returns:
+        (List[FreezerItemOut]): A list of FreezerItem objects.
+    """
+    qs = FreezerItem.objects.all().order_by(
+        F("discard_date").asc(nulls_last=True), "name"
+    )
+    return qs
+
+
+@api.get("/freezeritemsbyfreezer/{freezer_id}", response=List[FreezerItemOut])
+def list_freezeritemsbyfreezer(request, freezer_id: int):
+    """
+    The function `list_freezeritemsbyfreezer` returns the FreezerItems in a
+    given Freezer.
+
+    Endpoint:
+        - **Path**: `/api/freezeritemsbyfreezer/{freezer_id}`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+        freezer_id (int): ID of the Freezer to list frozen foods for.
+
+    Returns:
+        (List[FreezerItemOut]): A list of FreezerItem objects.
+    """
+    qs = FreezerItem.objects.filter(freezer_id=freezer_id).order_by(
+        F("discard_date").asc(nulls_last=True), "name"
+    )
+    return qs
+
+
+@api.get("/freezeritemsexpiring", response=List[FreezerItemOut])
+def list_freezeritemsexpiring(request, days: int = 14):
+    """
+    The function `list_freezeritemsexpiring` returns FreezerItems that are
+    already past their discard date or reach it within `days` days.
+
+    Endpoint:
+        - **Path**: `/api/freezeritemsexpiring`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+        days (int): How many days ahead to look. Default = 14.
+
+    Returns:
+        (List[FreezerItemOut]): A list of FreezerItem objects.
+    """
+    cutoff = date.today() + timedelta(days=days)
+    qs = FreezerItem.objects.filter(
+        discard_date__isnull=False, discard_date__lte=cutoff
+    ).order_by("discard_date", "name")
+    return qs
+
+
+@api.put("/freezeritems/{freezeritem_id}")
+def update_freezeritem(request, freezeritem_id: int, payload: FreezerItemIn):
+    """
+    The function `update_freezeritem` updates a given FreezerItem.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}`
+        - **Method**: `PUT`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of a FreezerItem to update.
+        payload (FreezerItemIn): A FreezerItem object with updates.
+
+    Returns:
+        success (bool): True if successfully updated.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    freezeritem.name = payload.name
+    freezeritem.qty = payload.qty
+    freezeritem.unit = payload.unit
+    # Assigned unconditionally: None is a meaningful value here ("date added
+    # unknown"), so clearing the field has to be possible.
+    freezeritem.date_added = payload.date_added
+    freezeritem.discard_date = payload.discard_date
+    freezeritem.notes = payload.notes
+    freezeritem.freezer_id = payload.freezer_id
+    freezeritem.save()
+    broadcast_invalidate(["freezeritems", "freezerfull"])
+    return {"success": True}
+
+
+@api.delete("/freezeritems/{freezeritem_id}")
+def delete_freezeritem(request, freezeritem_id: int):
+    """
+    The function `delete_freezeritem` deletes a given FreezerItem.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}`
+        - **Method**: `DELETE`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of a FreezerItem to delete.
+
+    Returns:
+        success (bool): True if successfully deleted.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    freezeritem.delete()
+    broadcast_invalidate(["freezeritems", "freezerfull"])
     return {"success": True}
 
 
