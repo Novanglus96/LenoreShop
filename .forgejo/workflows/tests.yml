@@ -1,0 +1,41 @@
+name: Tests
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  # Every default in lenore-ci's tests.yml assumes LenoreChore's setup, and
+  # this repo matches none of them, so all three are overridden here rather
+  # than by forking the workflow.
+  tests:
+    uses: lenore/lenore-ci/.forgejo/workflows/tests.yml@v1
+    with:
+      # pytest is not a dependency here — the suite is Django's own runner.
+      #
+      # The env vars are not optional padding: settings.py calls .split() and
+      # int() on SECRET_KEY / DEBUG / DJANGO_ALLOWED_HOSTS /
+      # CSRF_TRUSTED_ORIGINS unguarded, so Django raises at import, not at
+      # runtime, if they are missing. Compose supplies them in Docker; a bare
+      # manage.py run has to pass them itself.
+      #
+      # SQL_ENGINE and REDIS_URL are deliberately left unset, which selects
+      # sqlite and the InMemory channel layer.
+      backend_test_cmd: >-
+        SECRET_KEY=ci DEBUG=0 DJANGO_ALLOWED_HOSTS=localhost
+        CSRF_TRUSTED_ORIGINS=http://localhost
+        python manage.py test
+
+      # requirements-test.txt rather than requirements.txt or -dev.txt: those
+      # pull mysqlclient, which needs libmysqlclient-dev headers the job image
+      # does not carry and would fail the install step. See the file's header.
+      backend_requirements: requirements-test.txt
+
+      # There is no `npm test` script and no frontend unit tests, so the
+      # default would fail on a missing script. Lint and build instead — that
+      # still catches a broken import, a syntax error or a lint regression
+      # before it lands, which is the failure mode this repo actually has.
+      #
+      # `npx eslint .` rather than `npm run lint`, because the lint script
+      # passes --fix: auto-fixable problems would be silently repaired and
+      # reported as a pass.
+      frontend_test_cmd: npx eslint . && npm run build
+    secrets: inherit
