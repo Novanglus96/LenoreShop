@@ -148,6 +148,18 @@ writer; GitHub is a push mirror kept for the public face and offsite DR.
 | `docs.yml` / `docs-release.yml` | push to `main` / `release: published` |
 | `announce.yml` | `release: published` — **posts to Reddit** |
 | `pr-title-lint.yml` | `pull_request` |
+| `tests.yml` | `pull_request` |
+
+**Forge repo settings** (configured 2026-08-11, not in version control):
+
+- **Delete branch after merge is on.** A merged PR's head branch is pruned
+  automatically — no `delete-merged-branches` workflow needed.
+- **`main`, `rc`, `beta` and `alpha` are protected**, with `apply_to_admins`
+  on. Force pushes and branch deletion are blocked. Normal pushes are still
+  **allowed** (`enable_push: true`, no approvals, no required status checks)
+  because semantic-release has to push its `chore(release):` bump commit
+  directly to whichever branch it ran on. Do **not** set required approvals or
+  disable push on these branches — that is what breaks the release.
 
 Versioning is **semantic-release** (`.releaserc.json`), driven by conventional
 commits, with `alpha`/`beta`/`rc` prerelease channels. `@semantic-release/exec`
