@@ -182,7 +182,8 @@ class FreezerItem(models.Model):
         name (CharField): The name of the frozen food.
         qty (IntegerField): How much is stored. Default = 1.
         unit (CharField): The unit for qty, eg. "lbs", "bags". Optional.
-        date_added (DateField): The date this was put in the freezer.
+        date_added (DateField): The date this was put in the freezer. Optional,
+            since food already in the freezer often has no date on it.
         discard_date (DateField): The date this should be thrown out. Optional.
         notes (TextField): Notes associated with this frozen food.
         freezer (Freezer): An object representing a Freezer.
@@ -191,7 +192,9 @@ class FreezerItem(models.Model):
     name = models.CharField(max_length=50)
     qty = models.IntegerField(default=1)
     unit = models.CharField(max_length=20, null=True, blank=True)
-    date_added = models.DateField(default=date.today)
+    date_added = models.DateField(
+        auto_now=False, auto_now_add=False, null=True, blank=True
+    )
     discard_date = models.DateField(
         auto_now=False, auto_now_add=False, null=True, blank=True
     )

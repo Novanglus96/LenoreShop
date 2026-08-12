@@ -92,12 +92,17 @@
     removeFreezerItem,
   } = useFreezerFull(store.freezer_id);
 
+  // Prefilled with today because most food is logged as it goes in. Clearing
+  // the field is what records "date added unknown", which is the case when
+  // backfilling food that was already in the freezer.
+  const today = new Date().toLocaleDateString("en-CA");
+
   const blankFormData = ref({
     id: 0,
     name: null,
     qty: 1,
     unit: null,
-    date_added: null,
+    date_added: today,
     discard_date: null,
     notes: null,
     freezer_id: store.freezer_id,

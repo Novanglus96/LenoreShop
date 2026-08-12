@@ -16,7 +16,7 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <span :class="discardClass(item)">{{ discardLabel(item) }}</span>
-        <span class="text-grey">&middot; frozen {{ item.date_added }}</span>
+        <span class="text-grey">&middot; {{ addedLabel(item) }}</span>
         <span v-if="item.notes" class="text-black">
           &middot; {{ item.notes }}
         </span>
@@ -133,6 +133,11 @@
   const deleteItem = async item => {
     emit("deleteFreezerItem", { id: item.id });
     deleteDialog.value = false;
+  };
+
+  const addedLabel = item => {
+    if (!item.date_added) return "date added unknown";
+    return `frozen ${item.date_added}`;
   };
 
   const discardLabel = item => {

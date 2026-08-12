@@ -55,6 +55,8 @@
                   type="date"
                   v-model="date_added.value.value"
                   :error-messages="date_added.errorMessage.value"
+                  hint="Leave blank if unknown"
+                  persistent-hint
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="4">

@@ -323,7 +323,7 @@ class FreezerItemIn(Schema):
         qty (int): How much is stored. Default = 1.
         unit (str): The unit for qty. Default = None.
         date_added (date): The date this went into the freezer. Default = None,
-            which the endpoint resolves to today.
+            meaning the date is unknown.
         discard_date (date): The date this should be thrown out. Default = None.
         notes (str): Notes for the frozen food. Default = None.
         freezer_id (int): ID of the freezer.
@@ -347,7 +347,8 @@ class FreezerItemOut(Schema):
         name (str): The name of the frozen food.
         qty (int): How much is stored. Default = 1.
         unit (str): The unit for qty. Default = None.
-        date_added (date): The date this went into the freezer.
+        date_added (date): The date this went into the freezer. None when the
+            date is unknown.
         discard_date (date): The date this should be thrown out. Default = None.
         notes (str): Notes for the frozen food. Default = None.
         freezer_id (int): ID of the freezer.
@@ -360,7 +361,7 @@ class FreezerItemOut(Schema):
     name: str
     qty: int = 1
     unit: str = None
-    date_added: date
+    date_added: date = None
     discard_date: date = None
     notes: str = None
     freezer_id: int
@@ -1348,10 +1349,7 @@ def create_freezeritem(request, payload: FreezerItemIn):
     Returns:
         id (int): The ID of the added FreezerItem.
     """
-    data = payload.dict()
-    if data.get("date_added") is None:
-        data["date_added"] = date.today()
-    freezeritem = FreezerItem.objects.create(**data)
+    freezeritem = FreezerItem.objects.create(**payload.dict())
     broadcast_invalidate(["freezeritems", "freezerfull"])
     return {"id": freezeritem.id}
 
@@ -1465,8 +1463,9 @@ def update_freezeritem(request, freezeritem_id: int, payload: FreezerItemIn):
     freezeritem.name = payload.name
     freezeritem.qty = payload.qty
     freezeritem.unit = payload.unit
-    if payload.date_added is not None:
-        freezeritem.date_added = payload.date_added
+    # Assigned unconditionally: None is a meaningful value here ("date added
+    # unknown"), so clearing the field has to be possible.
+    freezeritem.date_added = payload.date_added
     freezeritem.discard_date = payload.discard_date
     freezeritem.notes = payload.notes
     freezeritem.freezer_id = payload.freezer_id
