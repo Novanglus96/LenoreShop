@@ -1,0 +1,6 @@
+-r requirements.txt
+
+# Pinned to match the ruff bundled in the charliermarsh.ruff VS Code extension
+# and the globally managed /usr/local/bin/ruff, so CLI and editor diagnostics
+# agree. Bump all three together.
+ruff==0.15.21

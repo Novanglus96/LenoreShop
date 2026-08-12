@@ -20,5 +20,11 @@
 ## ListItem
 ### ::: api.models.ListItem
 
+## Freezer
+### ::: api.models.Freezer
+
+## FreezerItem
+### ::: api.models.FreezerItem
+
 ## Version
 ### ::: api.models.Version

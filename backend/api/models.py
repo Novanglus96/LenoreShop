@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -146,6 +148,85 @@ class ListItem(models.Model):
             (String): The ListItem Object name.
         """
         return self.item.name
+
+
+class Freezer(models.Model):
+    """
+    Model representing a Freezer.
+
+    Attributes:
+        name (CharField): The name of the freezer. Required. Unique.
+        location (CharField): Where the freezer is, eg. "Garage". Optional.
+    """
+
+    name = models.CharField(max_length=50, unique=True)
+    location = models.CharField(max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        """
+        Returns:
+            (String): The Freezer Object name.
+        """
+        return self.name
+
+
+class FreezerItem(models.Model):
+    """
+    Model representing a frozen food stored in a Freezer.
+
+    Unlike ListItem, this does not reference the Item catalog. Freezer
+    contents are often one-off leftovers ("chili, Nov 3") that would only
+    pollute the shopping list catalog if they were forced into it.
+
+    Attributes:
+        name (CharField): The name of the frozen food.
+        qty (IntegerField): How much is stored. Default = 1.
+        unit (CharField): The unit for qty, eg. "lbs", "bags". Optional.
+        date_added (DateField): The date this was put in the freezer.
+        discard_date (DateField): The date this should be thrown out. Optional.
+        notes (TextField): Notes associated with this frozen food.
+        freezer (Freezer): An object representing a Freezer.
+    """
+
+    name = models.CharField(max_length=50)
+    qty = models.IntegerField(default=1)
+    unit = models.CharField(max_length=20, null=True, blank=True)
+    date_added = models.DateField(default=date.today)
+    discard_date = models.DateField(
+        auto_now=False, auto_now_add=False, null=True, blank=True
+    )
+    notes = models.TextField(null=True, blank=True)
+    freezer = models.ForeignKey(Freezer, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["freezer", "name"]
+
+    @property
+    def days_until_discard(self):
+        """
+        Returns:
+            (int): Days until discard_date, negative once past it. None if no
+                discard_date is set.
+        """
+        if not self.discard_date:
+            return None
+        return (self.discard_date - date.today()).days
+
+    @property
+    def is_expired(self):
+        """
+        Returns:
+            (bool): True if the discard date has passed.
+        """
+        days = self.days_until_discard
+        return days is not None and days < 0
+
+    def __str__(self):
+        """
+        Returns:
+            (String): The FreezerItem Object name.
+        """
+        return f"{self.freezer.name} | {self.name}"
 
 
 class Version(SingletonModel):

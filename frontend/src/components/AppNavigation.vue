@@ -32,6 +32,7 @@
     { title: "Stores", url: "/stores", icon: "mdi-storefront-outline" },
     { title: "Shopping Lists", url: "/lists", icon: "mdi-cart-outline" },
     { title: "Items", url: "/items", icon: "mdi-food-apple-outline" },
+    { title: "Freezers", url: "/freezers", icon: "mdi-snowflake" },
   ];
 </script>
 

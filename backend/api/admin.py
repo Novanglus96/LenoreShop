@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import Store, Aisle, Item, ShoppingList, ListItem, Version
+from .models import (
+    Store,
+    Aisle,
+    Item,
+    ShoppingList,
+    ListItem,
+    Freezer,
+    FreezerItem,
+    Version,
+)
 
 # Register your models here.
 
@@ -53,6 +62,33 @@ class ListItemAdmin(admin.ModelAdmin):
     ordering = ["shopping_list", "aisle", "item"]
 
 
+class FreezerAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "location"]
+
+    search_fields = ["name", "location"]
+
+    ordering = ["name"]
+
+
+class FreezerItemAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "freezer",
+        "name",
+        "qty",
+        "unit",
+        "date_added",
+        "discard_date",
+        "notes",
+    ]
+
+    list_filter = ["freezer", "discard_date"]
+
+    search_fields = ["name"]
+
+    ordering = ["freezer", "discard_date", "name"]
+
+
 class VersionAdmin(admin.ModelAdmin):
     list_display = ["version_number"]
 
@@ -78,4 +114,6 @@ admin.site.register(Aisle, AisleAdmin)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(ShoppingList, ShoppingListAdmin)
 admin.site.register(ListItem, ListItemAdmin)
+admin.site.register(Freezer, FreezerAdmin)
+admin.site.register(FreezerItem, FreezerItemAdmin)
 admin.site.register(Version, VersionAdmin)
