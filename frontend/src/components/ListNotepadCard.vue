@@ -101,7 +101,12 @@ const ariaLabel = computed(
   gap: var(--ls-space-sm);
   width: 100%;
   height: 100%;
-  padding: var(--ls-space);
+  /* Longhand on purpose: the padding shorthand would also set padding-bottom,
+     clobbering the room .ls-paper--torn reserves for the tear and letting the
+     last ruled line run into the torn edge. */
+  padding-top: var(--ls-space);
+  padding-right: var(--ls-space);
+  padding-left: var(--ls-space);
   border: 0;
   text-align: left;
   font-family: var(--ls-font-body);

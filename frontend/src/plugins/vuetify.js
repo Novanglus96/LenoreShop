@@ -19,7 +19,7 @@ const myCustomLightTheme = {
     warning: "#ffc107",
     info: "#795548",
     success: "#4caf50",
-    background: "#f7f4ec",
+    background: "#d6cab4",
     surface: "#fffdf6",
     "surface-variant": "#f7f1e2",
     "on-surface-variant": "#14263f",

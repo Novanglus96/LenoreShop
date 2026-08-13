@@ -72,19 +72,19 @@
  * Browsers without mask support simply get a straight-edged rounded card.
  */
 .ls-paper--torn {
-  --ls-tear: 9px;
+  --ls-tear: 15px;
   padding-bottom: calc(var(--ls-space-sm) + var(--ls-tear));
   box-shadow: none;
-  filter: drop-shadow(0 2px 3px rgba(0, 34, 85, 0.13))
-    drop-shadow(0 8px 16px rgba(0, 34, 85, 0.09));
+  filter: drop-shadow(0 2px 3px rgba(0, 34, 85, 0.16))
+    drop-shadow(0 8px 16px rgba(0, 34, 85, 0.1));
   -webkit-mask:
     linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ls-tear)) no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='9' preserveAspectRatio='none'%3E%3Cpath d='M0 3.2 L6 1.1 L12 4.3 L18 1.8 L24 4.9 L30 2.1 L36 4.4 L42 1.3 L48 3.2 L48 9 L0 9 Z' fill='%23000'/%3E%3C/svg%3E")
-      0 100% / 48px var(--ls-tear) repeat-x;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='15' preserveAspectRatio='none'%3E%3Cpath d='M0 7 L5 2 L9 10 L14 1.5 L19 8 L24 3 L28 11 L33 2 L38 9 L43 1.5 L47 8.5 L52 2.5 L56 10 L60 6 L60 15 L0 15 Z' fill='%23000'/%3E%3C/svg%3E")
+      0 100% / 60px var(--ls-tear) repeat-x;
   mask:
     linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ls-tear)) no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='9' preserveAspectRatio='none'%3E%3Cpath d='M0 3.2 L6 1.1 L12 4.3 L18 1.8 L24 4.9 L30 2.1 L36 4.4 L42 1.3 L48 3.2 L48 9 L0 9 Z' fill='%23000'/%3E%3C/svg%3E")
-      0 100% / 48px var(--ls-tear) repeat-x;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='15' preserveAspectRatio='none'%3E%3Cpath d='M0 7 L5 2 L9 10 L14 1.5 L19 8 L24 3 L28 11 L33 2 L38 9 L43 1.5 L47 8.5 L52 2.5 L56 10 L60 6 L60 15 L0 15 Z' fill='%23000'/%3E%3C/svg%3E")
+      0 100% / 60px var(--ls-tear) repeat-x;
 }
 
 /* Interactive sheets lift and straighten slightly on hover. */

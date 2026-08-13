@@ -25,6 +25,15 @@
   --ls-paper: #fffdf6;
   --ls-paper-shade: #f7f1e2;
   --ls-paper-edge: #ebe3cf;
+  /* The desk the sheets lie on. This has to sit clearly darker than --ls-paper
+     or the torn and iced edges have no silhouette to read against — at the
+     original #f7f4ec the contrast was 1.08:1 and the shaping was invisible.
+     1.59:1 is enough for the eye to trace an edge without the page turning
+     into a dark surface the sheets fight with.
+
+     Keep the frost gradient light rather than deepening it to match: against a
+     ground this warm, a paler blue reads *more* strongly, not less. */
+  --ls-ground: #d6cab4;
   /* Ruled lines and the red margin rule down the left of a notepad sheet. */
   --ls-rule: rgba(0, 34, 85, 0.13);
   --ls-rule-strong: rgba(0, 34, 85, 0.22);

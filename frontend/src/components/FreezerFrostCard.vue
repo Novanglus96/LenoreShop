@@ -130,8 +130,12 @@ const ariaLabel = computed(() => {
   gap: var(--ls-space-sm);
   width: 100%;
   height: 100%;
-  /* Extra top padding leaves room for the magnet. */
-  padding: var(--ls-space-md) var(--ls-space) var(--ls-space);
+  /* Extra top padding leaves room for the magnet. Longhand on purpose: the
+     shorthand would clobber the bottom padding .ls-frost-sheet--iced reserves
+     for the icicles, letting the footer run into them. */
+  padding-top: var(--ls-space-md);
+  padding-right: var(--ls-space);
+  padding-left: var(--ls-space);
   border: 0;
   text-align: left;
   font-family: var(--ls-font-body);
