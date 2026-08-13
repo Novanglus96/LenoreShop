@@ -3,7 +3,11 @@ from datetime import date, timedelta
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from backend.api import LIST_PREVIEW_ITEM_COUNT
+from backend.api import (
+    FREEZER_PREVIEW_ITEM_COUNT,
+    FREEZER_SOON_DAYS,
+    LIST_PREVIEW_ITEM_COUNT,
+)
 
 from .models import Aisle, Freezer, FreezerItem, Item, ListItem, ShoppingList, Store
 
@@ -296,6 +300,114 @@ class FreezerAPITests(TestCase):
         )
         response = self.client.get("/api/freezeritemsexpiring?days=120")
         self.assertEqual([i["name"] for i in response.json()], ["Far off"])
+
+
+class FreezerCardTests(TestCase):
+    """
+    Tests for the counts and preview lines the dashboard freezer cards render.
+    """
+
+    def setUp(self):
+        self.freezer = Freezer.objects.create(name="Garage", location="Garage")
+
+    def add_item(self, name, days=None):
+        discard_date = None if days is None else date.today() + timedelta(days=days)
+        return FreezerItem.objects.create(
+            name=name, freezer=self.freezer, discard_date=discard_date
+        )
+
+    def test_empty_freezer_reports_nothing(self):
+        body = self.client.get("/api/freezers").json()
+        self.assertEqual(body[0]["totalitems"], 0)
+        self.assertEqual(body[0]["totalexpired"], 0)
+        self.assertEqual(body[0]["totalexpiring"], 0)
+        self.assertEqual(body[0]["preview_items"], [])
+
+    def test_expired_and_expiring_are_counted_separately(self):
+        self.add_item("Old chili", days=-3)
+        self.add_item("Peas", days=5)
+        self.add_item("Chicken", days=90)
+        self.add_item("Mystery beef")
+
+        body = self.client.get("/api/freezers").json()
+        self.assertEqual(body[0]["totalitems"], 4)
+        self.assertEqual(body[0]["totalexpired"], 1)
+        self.assertEqual(body[0]["totalexpiring"], 1)
+
+    def test_item_due_today_counts_as_expiring_not_expired(self):
+        self.add_item("Fish", days=0)
+
+        body = self.client.get("/api/freezers").json()
+        self.assertEqual(body[0]["totalexpired"], 0)
+        self.assertEqual(body[0]["totalexpiring"], 1)
+
+    def test_expiring_window_edge_is_included(self):
+        self.add_item("Edge", days=FREEZER_SOON_DAYS)
+        self.add_item("Past the edge", days=FREEZER_SOON_DAYS + 1)
+
+        body = self.client.get("/api/freezers").json()
+        self.assertEqual(body[0]["totalexpiring"], 1)
+
+    def test_preview_is_ordered_soonest_first_with_undated_last(self):
+        self.add_item("Chicken", days=30)
+        self.add_item("Mystery beef")
+        self.add_item("Old chili", days=-3)
+
+        body = self.client.get("/api/freezers").json()
+        self.assertEqual(
+            [i["name"] for i in body[0]["preview_items"]],
+            ["Old chili", "Chicken", "Mystery beef"],
+        )
+
+    def test_preview_carries_the_countdown_and_expiry_flag(self):
+        self.add_item("Old chili", days=-3)
+
+        body = self.client.get("/api/freezers").json()
+        preview = body[0]["preview_items"][0]
+        self.assertEqual(preview["days_until_discard"], -3)
+        self.assertTrue(preview["is_expired"])
+
+    def test_undated_preview_item_has_no_countdown(self):
+        self.add_item("Mystery beef")
+
+        body = self.client.get("/api/freezers").json()
+        preview = body[0]["preview_items"][0]
+        self.assertIsNone(preview["days_until_discard"])
+        self.assertFalse(preview["is_expired"])
+
+    def test_preview_is_capped_but_counts_are_not(self):
+        for index in range(6):
+            self.add_item(f"Item {index}", days=index + 1)
+
+        body = self.client.get("/api/freezers").json()
+        self.assertEqual(body[0]["totalitems"], 6)
+        self.assertEqual(len(body[0]["preview_items"]), FREEZER_PREVIEW_ITEM_COUNT)
+
+    def test_single_freezer_endpoint_carries_the_same_counts(self):
+        self.add_item("Old chili", days=-3)
+
+        body = self.client.get(f"/api/freezers/{self.freezer.id}").json()
+        self.assertEqual(body["totalitems"], 1)
+        self.assertEqual(body["totalexpired"], 1)
+
+    def test_counts_are_not_inflated_by_other_freezers(self):
+        kitchen = Freezer.objects.create(name="Kitchen")
+        FreezerItem.objects.create(name="Ice cream", freezer=kitchen)
+        self.add_item("Peas")
+
+        body = self.client.get("/api/freezers").json()
+        by_name = {row["name"]: row for row in body}
+        self.assertEqual(by_name["Garage"]["totalitems"], 1)
+        self.assertEqual(by_name["Kitchen"]["totalitems"], 1)
+
+    def test_listing_does_not_query_per_freezer(self):
+        for index in range(5):
+            freezer = Freezer.objects.create(name=f"Freezer {index}")
+            FreezerItem.objects.create(name=f"Item {index}", freezer=freezer)
+
+        # One query for the freezers, one for the prefetched preview items.
+        with self.assertNumQueries(2):
+            self.client.get("/api/freezers")
 
 
 class ShoppingListCardTests(TestCase):

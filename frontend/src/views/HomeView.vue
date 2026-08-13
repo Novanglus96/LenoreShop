@@ -67,6 +67,37 @@
           @open="openList"
         />
       </div>
+
+      <!-- Freezers only appear once at least one exists; the section is not a
+           prompt to set one up. -->
+      <section v-if="hasFreezers" class="dashboard__freezers">
+        <header class="dashboard__header">
+          <h2 class="ls-hand ls-hand--title">In the Freezer</h2>
+          <v-btn
+            to="/freezers"
+            color="primary"
+            variant="tonal"
+            prepend-icon="mdi-snowflake"
+            class="dashboard__manage"
+          >
+            Manage freezers
+          </v-btn>
+        </header>
+
+        <p v-if="freezerAlert" class="dashboard__alert">
+          <v-icon icon="mdi-alert-circle-outline" size="18" />
+          {{ freezerAlert }}
+        </p>
+
+        <div class="dashboard__grid">
+          <FreezerFrostCard
+            v-for="freezer in freezers"
+            :key="freezer.id"
+            :freezer="freezer"
+            @open="openFreezer"
+          />
+        </div>
+      </section>
     </template>
 
     <!-- Single instance, outside any v-for. -->
@@ -93,11 +124,14 @@ import { useRouter } from "vue-router";
 import { useMainStore } from "@/stores/main";
 import { useShoppingLists } from "@/composables/listsComposable";
 import { useStores } from "@/composables/storesComposable";
+import { useFreezers } from "@/composables/freezersComposable";
 import { useDemo } from "@/composables/demoComposable";
 import ListNotepadCard from "@/components/ListNotepadCard.vue";
+import FreezerFrostCard from "@/components/FreezerFrostCard.vue";
 
 const { shoppinglists, isLoading: isLoadingLists } = useShoppingLists();
 const { stores, isLoading: isLoadingStores } = useStores();
+const { freezers } = useFreezers();
 const { loadDemo, isDemoLoading } = useDemo();
 
 const router = useRouter();
@@ -108,6 +142,25 @@ const showEmptyState = computed(
 );
 
 const hasLists = computed(() => shoppinglists.value?.length > 0);
+
+const hasFreezers = computed(() => freezers.value?.length > 0);
+
+// One line summarising everything that needs attention, so a freezer problem is
+// visible without reading each card. Expired outranks expiring — food already
+// past its date is the thing to act on first.
+const freezerAlert = computed(() => {
+  if (!freezers.value) return "";
+  const expired = freezers.value.reduce((sum, f) => sum + f.totalexpired, 0);
+  const expiring = freezers.value.reduce((sum, f) => sum + f.totalexpiring, 0);
+  const parts = [];
+  if (expired > 0) {
+    parts.push(`${expired} item${expired === 1 ? "" : "s"} past its discard date`);
+  }
+  if (expiring > 0) {
+    parts.push(`${expiring} to use up soon`);
+  }
+  return parts.join(" · ");
+});
 
 // A repeating set of small angles, so the sheets look dropped on the page
 // rather than laid out on a grid. Deterministic, so cards don't jump on
@@ -125,6 +178,12 @@ const openList = list => {
   store.list_id = list.id;
   store.store_id = list.store_id;
   router.push("/list");
+};
+
+const openFreezer = freezer => {
+  const store = useMainStore();
+  store.freezer_id = freezer.id;
+  router.push("/freezer");
 };
 </script>
 
@@ -160,6 +219,24 @@ const openList = list => {
 .dashboard__skeleton {
   padding: var(--ls-space);
   opacity: 0.6;
+}
+
+/* Separated from the lists above by space and a rule rather than a box, so the
+   two sections read as one page instead of two panels. */
+.dashboard__freezers {
+  margin-top: var(--ls-space-lg);
+  padding-top: var(--ls-space-md);
+  border-top: 1px solid var(--ls-rule);
+}
+
+.dashboard__alert {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--ls-space);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ls-alert);
 }
 
 .dashboard__welcome,

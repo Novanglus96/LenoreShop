@@ -25,6 +25,57 @@ api.description = "API documentation for LenoreShop"
 # Number of items previewed as ruled lines on a shopping list card.
 LIST_PREVIEW_ITEM_COUNT = 4
 
+# Number of items previewed on a freezer card.
+FREEZER_PREVIEW_ITEM_COUNT = 4
+
+# How far ahead counts as "expiring soon" for a freezer. Shared with the
+# /freezeritemsexpiring endpoint so the dashboard and that list agree on what
+# is urgent.
+FREEZER_SOON_DAYS = 14
+
+
+def freezer_queryset():
+    """
+    Returns the base Freezer queryset used by every endpoint that responds with
+    `FreezerOut`, so freezer cards get their counts and preview lines without an
+    extra query per freezer.
+
+    Expired and expiring are kept separate rather than lumped together the way
+    /freezeritemsexpiring does it, because a card needs to distinguish "throw
+    this out now" from "use this up soon".
+
+    Returns:
+        (QuerySet): Freezers annotated with `totalitems`, `totalexpired` and
+            `totalexpiring`, with the preview items prefetched.
+    """
+    today = date.today()
+    soon = today + timedelta(days=FREEZER_SOON_DAYS)
+    return Freezer.objects.annotate(
+        totalitems=Count("freezeritem", distinct=True),
+        totalexpired=Count(
+            "freezeritem",
+            filter=Q(freezeritem__discard_date__lt=today),
+            distinct=True,
+        ),
+        totalexpiring=Count(
+            "freezeritem",
+            filter=Q(
+                freezeritem__discard_date__gte=today,
+                freezeritem__discard_date__lte=soon,
+            ),
+            distinct=True,
+        ),
+    ).prefetch_related(
+        Prefetch(
+            "freezeritem_set",
+            # Soonest to go off first, undated last — the same order the
+            # freezer detail view uses.
+            queryset=FreezerItem.objects.order_by(
+                F("discard_date").asc(nulls_last=True), "name"
+            ),
+        )
+    )
+
 
 def shoppinglist_queryset():
     """
@@ -366,6 +417,22 @@ class FreezerIn(Schema):
     location: str = None
 
 
+class FreezerPreviewItem(Schema):
+    """
+    Schema to represent a single item previewed on a freezer card.
+
+    Attributes:
+        name (str): The name of the frozen food.
+        days_until_discard (int): Days left before discard_date, negative once
+            past it. None when no discard_date is set.
+        is_expired (bool): True if the discard date has passed.
+    """
+
+    name: str
+    days_until_discard: int = None
+    is_expired: bool = False
+
+
 class FreezerOut(Schema):
     """
     Schema to represent a Freezer.
@@ -374,11 +441,40 @@ class FreezerOut(Schema):
         id (int): ID integer. Unique.
         name (str): The name of the freezer.
         location (str): Where the freezer is. Default = None.
+        totalitems (int): The total number of frozen foods in this freezer.
+        totalexpired (int): How many are already past their discard date.
+        totalexpiring (int): How many reach their discard date within
+            FREEZER_SOON_DAYS days, not counting the ones already past it.
+        preview_items (List[FreezerPreviewItem]): The items closest to their
+            discard date, for previewing the freezer without fetching it whole.
     """
 
     id: int
     name: str
     location: str = None
+    totalitems: int = 0
+    totalexpired: int = 0
+    totalexpiring: int = 0
+    preview_items: List[FreezerPreviewItem] = []
+
+    @staticmethod
+    def resolve_preview_items(obj):
+        """
+        Returns the items closest to their discard date, already ordered by the
+        prefetch in `freezer_queryset`. Falls back to an empty list when the
+        object was not loaded through that queryset.
+        """
+        freezeritems = getattr(obj, "freezeritem_set", None)
+        if freezeritems is None:
+            return []
+        return [
+            FreezerPreviewItem(
+                name=freezeritem.name,
+                days_until_discard=freezeritem.days_until_discard,
+                is_expired=freezeritem.is_expired,
+            )
+            for freezeritem in freezeritems.all()[:FREEZER_PREVIEW_ITEM_COUNT]
+        ]
 
 
 class FreezerItemIn(Schema):
@@ -1294,7 +1390,7 @@ def get_freezer(request, freezer_id: int):
     Returns:
         (FreezerOut): A Freezer object.
     """
-    freezer = get_object_or_404(Freezer, id=freezer_id)
+    freezer = get_object_or_404(freezer_queryset(), id=freezer_id)
     return freezer
 
 
@@ -1313,7 +1409,7 @@ def list_freezers(request):
     Returns:
         (List[FreezerOut]): A list of Freezer objects.
     """
-    qs = Freezer.objects.all().order_by("name")
+    qs = freezer_queryset().order_by("name")
     return qs
 
 
@@ -1417,7 +1513,9 @@ def create_freezeritem(request, payload: FreezerItemIn):
         id (int): The ID of the added FreezerItem.
     """
     freezeritem = FreezerItem.objects.create(**payload.dict())
-    broadcast_invalidate(["freezeritems", "freezerfull"])
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"id": freezeritem.id}
 
 
@@ -1486,7 +1584,7 @@ def list_freezeritemsbyfreezer(request, freezer_id: int):
 
 
 @api.get("/freezeritemsexpiring", response=List[FreezerItemOut])
-def list_freezeritemsexpiring(request, days: int = 14):
+def list_freezeritemsexpiring(request, days: int = FREEZER_SOON_DAYS):
     """
     The function `list_freezeritemsexpiring` returns FreezerItems that are
     already past their discard date or reach it within `days` days.
@@ -1537,7 +1635,9 @@ def update_freezeritem(request, freezeritem_id: int, payload: FreezerItemIn):
     freezeritem.notes = payload.notes
     freezeritem.freezer_id = payload.freezer_id
     freezeritem.save()
-    broadcast_invalidate(["freezeritems", "freezerfull"])
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"success": True}
 
 
@@ -1559,7 +1659,9 @@ def delete_freezeritem(request, freezeritem_id: int):
     """
     freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
     freezeritem.delete()
-    broadcast_invalidate(["freezeritems", "freezerfull"])
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"success": True}
 
 

@@ -194,6 +194,9 @@ export function useFreezerFull(freezerID) {
   function invalidate() {
     queryClient.invalidateQueries({ queryKey: ["freezerfull", freezerID] });
     queryClient.invalidateQueries({ queryKey: ["freezeritems"] });
+    // The freezer list carries the dashboard's item and expiry counts, so
+    // changing an item's contents or its discard date changes them too.
+    queryClient.invalidateQueries({ queryKey: ["freezers"] });
   }
 
   const createFreezerItemMutation = useMutation({

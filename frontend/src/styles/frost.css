@@ -1,0 +1,132 @@
+/**
+ * Frost surfaces — the freezer's counterpart to paper.css.
+ *
+ * A freezer card is the same idea as a shopping list card (a small sheet you
+ * can read at a glance) made of a different material, so the two never get
+ * mistaken for each other in a mixed dashboard: cold tint instead of warm, a
+ * magnet instead of a folded tab, icicles instead of a torn edge.
+ *
+ * Structure deliberately mirrors paper.css class for class, so anything built
+ * on one translates to the other.
+ */
+
+/* -- Sheet of frost -------------------------------------------------------- */
+
+.ls-frost-sheet {
+  position: relative;
+  /* A cold sheen across the surface rather than a flat fill. */
+  background-color: var(--ls-frost);
+  background-image: linear-gradient(
+    160deg,
+    #ffffff 0%,
+    var(--ls-frost) 42%,
+    var(--ls-frost-shade) 100%
+  );
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-elev-1);
+  transition:
+    transform var(--ls-duration) var(--ls-ease),
+    box-shadow var(--ls-duration) var(--ls-ease);
+}
+
+/* Icicles along the bottom edge.
+ *
+ * Same masking approach as .ls-paper--torn — and the same consequence: a mask
+ * clips box-shadow, so iced sheets use filter: drop-shadow() so the shadow
+ * follows the icicles. Browsers without mask support get a plain rounded card.
+ */
+.ls-frost-sheet--iced {
+  --ls-icicle: 10px;
+  padding-bottom: calc(var(--ls-space-sm) + var(--ls-icicle));
+  box-shadow: none;
+  filter: drop-shadow(0 2px 3px rgba(10, 78, 116, 0.16))
+    drop-shadow(0 8px 16px rgba(10, 78, 116, 0.11));
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ls-icicle)) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='10'%3E%3Crect width='48' height='3.5' fill='%23000'/%3E%3Cpolygon points='4,3 8,3 6,9' fill='%23000'/%3E%3Cpolygon points='14,3 19,3 16.5,6.5' fill='%23000'/%3E%3Cpolygon points='26,3 31,3 28.5,9.5' fill='%23000'/%3E%3Cpolygon points='38,3 42,3 40,6' fill='%23000'/%3E%3C/svg%3E")
+      0 100% / 48px var(--ls-icicle) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ls-icicle)) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='10'%3E%3Crect width='48' height='3.5' fill='%23000'/%3E%3Cpolygon points='4,3 8,3 6,9' fill='%23000'/%3E%3Cpolygon points='14,3 19,3 16.5,6.5' fill='%23000'/%3E%3Cpolygon points='26,3 31,3 28.5,9.5' fill='%23000'/%3E%3Cpolygon points='38,3 42,3 40,6' fill='%23000'/%3E%3C/svg%3E")
+      0 100% / 48px var(--ls-icicle) repeat-x;
+}
+
+@media (hover: hover) {
+  .ls-frost-sheet.ls-paper--liftable:hover {
+    box-shadow: var(--ls-elev-2);
+  }
+
+  .ls-frost-sheet--iced.ls-paper--liftable:hover {
+    box-shadow: none;
+    filter: drop-shadow(0 4px 6px rgba(10, 78, 116, 0.2))
+      drop-shadow(0 14px 28px rgba(10, 78, 116, 0.15));
+  }
+}
+
+/* -- Magnet ---------------------------------------------------------------- */
+
+/* The disc that pins the note to the freezer door. Centred at the top of the
+   sheet, where a real magnet would sit. */
+.ls-magnet {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border-radius: 50%;
+  /* Off-centre highlight reads as a domed plastic disc rather than a flat dot. */
+  background: radial-gradient(
+    circle at 34% 30%,
+    #ffffff 0%,
+    var(--ls-powder) 38%,
+    #6fb3d8 78%,
+    #3d7fa6 100%
+  );
+  box-shadow:
+    0 1px 2px rgba(10, 78, 116, 0.45),
+    inset 0 -1px 2px rgba(10, 78, 116, 0.3);
+  pointer-events: none;
+}
+
+/* -- Ruled lines ----------------------------------------------------------- */
+
+/* Frost ruling has no red margin rule — that belongs to notepaper. */
+.ls-frost-ruled {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--ls-rule-height) - 1px),
+    var(--ls-frost-rule) calc(var(--ls-rule-height) - 1px),
+    var(--ls-frost-rule) var(--ls-rule-height)
+  );
+}
+
+/* -- Status pills ---------------------------------------------------------- */
+
+.ls-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 8px;
+  border-radius: var(--ls-radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.ls-pill--alert {
+  background: var(--ls-alert-bg);
+  color: var(--ls-alert);
+}
+
+.ls-pill--warn {
+  background: var(--ls-warn-bg);
+  color: var(--ls-warn);
+}
+
+.ls-pill--calm {
+  background: var(--ls-frost-edge);
+  color: var(--ls-frost-ink);
+}

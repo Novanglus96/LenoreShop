@@ -36,9 +36,24 @@
   --ls-ink-faint: #93a2b4;
   --ls-ink-on-navy: #f4f9ff;
 
+  /* -- Frost surfaces ---------------------------------------------------- */
+  /* The freezer's counterpart to the paper tokens: same structure, cold end of
+     the palette, so a freezer card is legible as a different material at a
+     glance without introducing a second colour scheme. */
+  --ls-frost: #f1fafe;
+  --ls-frost-shade: #e2f3fc;
+  --ls-frost-edge: #c9e8f7;
+  --ls-frost-rule: rgba(10, 78, 116, 0.13);
+  --ls-frost-ink: #0c3b55;
+  --ls-frost-ink-soft: #4a7893;
+  --ls-frost-ink-faint: #8caec2;
+
   /* -- Status ------------------------------------------------------------ */
   --ls-done: #3f8f4f;
   --ls-warn: #b8791a;
+  --ls-warn-bg: #fdf0d6;
+  --ls-alert: #b23c2e;
+  --ls-alert-bg: #fbe0dc;
 
   /* -- Shape ------------------------------------------------------------- */
   --ls-radius-sm: 8px;
