@@ -70,6 +70,11 @@
  * box-shadow, torn sheets swap to filter: drop-shadow(), which follows the
  * masked silhouette instead of the box — so the shadow traces the tear.
  * Browsers without mask support simply get a straight-edged rounded card.
+ *
+ * The tile's path must fill from the top edge DOWN TO the jagged line, so the
+ * union with the first mask layer ends the sheet at the tear. Filling the other
+ * side of the line instead leaves the card's straight bottom intact with
+ * notches bitten out above it, which reads as a rendering fault.
  */
 .ls-paper--torn {
   --ls-tear: 15px;
@@ -79,11 +84,11 @@
     drop-shadow(0 8px 16px rgba(0, 34, 85, 0.1));
   -webkit-mask:
     linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ls-tear)) no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='15' preserveAspectRatio='none'%3E%3Cpath d='M0 7 L5 2 L9 10 L14 1.5 L19 8 L24 3 L28 11 L33 2 L38 9 L43 1.5 L47 8.5 L52 2.5 L56 10 L60 6 L60 15 L0 15 Z' fill='%23000'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='15' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H60 V6 L56 10 L52 2.5 L47 8.5 L43 1.5 L38 9 L33 2 L28 11 L24 3 L19 8 L14 1.5 L9 10 L5 2 L0 6 Z' fill='%23000'/%3E%3C/svg%3E")
       0 100% / 60px var(--ls-tear) repeat-x;
   mask:
     linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ls-tear)) no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='15' preserveAspectRatio='none'%3E%3Cpath d='M0 7 L5 2 L9 10 L14 1.5 L19 8 L24 3 L28 11 L33 2 L38 9 L43 1.5 L47 8.5 L52 2.5 L56 10 L60 6 L60 15 L0 15 Z' fill='%23000'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='15' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H60 V6 L56 10 L52 2.5 L47 8.5 L43 1.5 L38 9 L33 2 L28 11 L24 3 L19 8 L14 1.5 L9 10 L5 2 L0 6 Z' fill='%23000'/%3E%3C/svg%3E")
       0 100% / 60px var(--ls-tear) repeat-x;
 }
 
