@@ -3,7 +3,9 @@ from datetime import date, timedelta
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from .models import Freezer, FreezerItem
+from backend.api import LIST_PREVIEW_ITEM_COUNT
+
+from .models import Aisle, Freezer, FreezerItem, Item, ListItem, ShoppingList, Store
 
 
 class FreezerModelTests(TestCase):
@@ -294,3 +296,118 @@ class FreezerAPITests(TestCase):
         )
         response = self.client.get("/api/freezeritemsexpiring?days=120")
         self.assertEqual([i["name"] for i in response.json()], ["Far off"])
+
+
+class ShoppingListCardTests(TestCase):
+    """
+    Tests for the progress counts and preview lines the dashboard cards render.
+    """
+
+    def setUp(self):
+        self.store = Store.objects.create(name="Kroger")
+        self.aisle = Aisle.objects.create(name="Dairy", order=1, store=self.store)
+        self.shoppinglist = ShoppingList.objects.create(
+            name="Weekly", store=self.store
+        )
+
+    def add_item(self, name, purchased=False):
+        item = Item.objects.create(name=name)
+        return ListItem.objects.create(
+            item=item,
+            aisle=self.aisle,
+            shopping_list=self.shoppinglist,
+            purchased=purchased,
+        )
+
+    def test_empty_list_reports_no_items_and_no_preview(self):
+        body = self.client.get("/api/shoppinglists").json()
+        self.assertEqual(body[0]["totalitems"], 0)
+        self.assertEqual(body[0]["totalpurchased"], 0)
+        self.assertEqual(body[0]["preview_items"], [])
+
+    def test_counts_track_purchased_items(self):
+        self.add_item("Milk", purchased=True)
+        self.add_item("Eggs")
+        self.add_item("Bread")
+
+        body = self.client.get("/api/shoppinglists").json()
+        self.assertEqual(body[0]["totalitems"], 3)
+        self.assertEqual(body[0]["totalpurchased"], 1)
+
+    def test_preview_puts_unpurchased_items_first(self):
+        self.add_item("Milk", purchased=True)
+        self.add_item("Eggs")
+
+        body = self.client.get("/api/shoppinglists").json()
+        self.assertEqual(
+            body[0]["preview_items"],
+            [
+                {"name": "Eggs", "purchased": False},
+                {"name": "Milk", "purchased": True},
+            ],
+        )
+
+    def test_preview_is_capped_but_counts_are_not(self):
+        for index in range(7):
+            self.add_item(f"Item {index}")
+
+        body = self.client.get("/api/shoppinglists").json()
+        self.assertEqual(body[0]["totalitems"], 7)
+        self.assertEqual(len(body[0]["preview_items"]), LIST_PREVIEW_ITEM_COUNT)
+
+    def test_single_list_endpoint_carries_the_same_counts(self):
+        self.add_item("Milk", purchased=True)
+        self.add_item("Eggs")
+
+        body = self.client.get(f"/api/shoppinglists/{self.shoppinglist.id}").json()
+        self.assertEqual(body["totalitems"], 2)
+        self.assertEqual(body["totalpurchased"], 1)
+        self.assertEqual([i["name"] for i in body["preview_items"]], ["Eggs", "Milk"])
+
+    def test_lists_by_store_endpoint_carries_the_same_counts(self):
+        self.add_item("Milk", purchased=True)
+
+        body = self.client.get(f"/api/listsbystore/{self.store.id}").json()
+        self.assertEqual(body[0]["totalitems"], 1)
+        self.assertEqual(body[0]["totalpurchased"], 1)
+
+    def test_counts_are_not_inflated_by_other_lists(self):
+        other = ShoppingList.objects.create(name="Party", store=self.store)
+        ListItem.objects.create(
+            item=Item.objects.create(name="Chips"),
+            aisle=self.aisle,
+            shopping_list=other,
+        )
+        self.add_item("Milk")
+
+        body = self.client.get("/api/shoppinglists").json()
+        by_name = {row["name"]: row for row in body}
+        self.assertEqual(by_name["Weekly"]["totalitems"], 1)
+        self.assertEqual(by_name["Party"]["totalitems"], 1)
+
+    def test_listing_does_not_query_per_list(self):
+        for index in range(5):
+            shoppinglist = ShoppingList.objects.create(
+                name=f"List {index}", store=self.store
+            )
+            ListItem.objects.create(
+                item=Item.objects.create(name=f"Item {index}"),
+                aisle=self.aisle,
+                shopping_list=shoppinglist,
+            )
+
+        # One query for the lists, one for the prefetched preview items — the count
+        # must not grow with the number of lists.
+        with self.assertNumQueries(2):
+            self.client.get("/api/shoppinglists")
+
+    def test_lists_are_ordered_by_store_then_name(self):
+        ShoppingList.objects.create(name="Anniversary", store=self.store)
+        aldi = Store.objects.create(name="Aldi")
+        ShoppingList.objects.create(name="Snacks", store=aldi)
+
+        body = self.client.get("/api/shoppinglists").json()
+        self.assertEqual(
+            [(row["store"]["name"], row["name"]) for row in body],
+            [("Aldi", "Snacks"), ("Kroger", "Anniversary"), ("Kroger", "Weekly")],
+        )

@@ -15,12 +15,44 @@ from ninja.errors import HttpError
 from django.core.management import call_command
 from datetime import date, timedelta
 from django.core.paginator import Paginator
-from django.db.models import F
+from django.db.models import F, Count, Prefetch, Q
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
 api.version = "1.9.0-alpha.1"
 api.description = "API documentation for LenoreShop"
+
+# Number of items previewed as ruled lines on a shopping list card.
+LIST_PREVIEW_ITEM_COUNT = 4
+
+
+def shoppinglist_queryset():
+    """
+    Returns the base ShoppingList queryset used by every endpoint that responds with
+    `ShoppingListOut`, so cards get their progress counts and preview lines without
+    an extra query per list.
+
+    Returns:
+        (QuerySet): ShoppingLists annotated with `totalitems` and `totalpurchased`,
+            with the store and the preview list items prefetched.
+    """
+    return (
+        ShoppingList.objects.select_related("store")
+        .annotate(
+            totalitems=Count("listitem", distinct=True),
+            totalpurchased=Count(
+                "listitem", filter=Q(listitem__purchased=True), distinct=True
+            ),
+        )
+        .prefetch_related(
+            Prefetch(
+                "listitem_set",
+                queryset=ListItem.objects.select_related("item").order_by(
+                    "purchased", "aisle__order", "id"
+                ),
+            )
+        )
+    )
 
 
 # The class VersionOut is a scheam for representing Version information.
@@ -224,6 +256,19 @@ class ShoppingListIn(Schema):
     store_id: int
 
 
+class ListPreviewItem(Schema):
+    """
+    Schema to represent a single ruled line previewed on a shopping list card.
+
+    Attributes:
+        name (str): The name of the item.
+        purchased (bool): Whether this list item has been purchased.
+    """
+
+    name: str
+    purchased: bool
+
+
 class ShoppingListOut(Schema):
     """
     Schema to represent a ShoppingList.
@@ -233,12 +278,34 @@ class ShoppingListOut(Schema):
         name (str): The name of the shopping list.
         store_id (int): The ID of the store for the shopping list.
         store (StoreOut): The Store object.
+        totalitems (int): The total number of items on the shopping list.
+        totalpurchased (int): The number of items marked purchased.
+        preview_items (List[ListPreviewItem]): The first few items, unpurchased first,
+            for previewing the list without fetching it in full.
     """
 
     id: int
     name: str
     store_id: int
     store: StoreOut
+    totalitems: int = 0
+    totalpurchased: int = 0
+    preview_items: List[ListPreviewItem] = []
+
+    @staticmethod
+    def resolve_preview_items(obj):
+        """
+        Returns the first few list items, already ordered unpurchased-first by the
+        prefetch in `shoppinglist_queryset`. Falls back to an empty list when the
+        object was not loaded through that queryset.
+        """
+        listitems = getattr(obj, "listitem_set", None)
+        if listitems is None:
+            return []
+        return [
+            ListPreviewItem(name=listitem.item.name, purchased=listitem.purchased)
+            for listitem in listitems.all()[:LIST_PREVIEW_ITEM_COUNT]
+        ]
 
 
 class AislesWithItems(Schema):
@@ -581,7 +648,7 @@ def get_shoppinglist(request, shoppinglist_id: int):
     Returns:
         (ShoppingListOut): returns a ShoppingList object.
     """
-    shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
+    shoppinglist = get_object_or_404(shoppinglist_queryset(), id=shoppinglist_id)
     return shoppinglist
 
 
@@ -817,7 +884,7 @@ def list_shoppinglists(request):
     Returns:
         (List[ShoppingListOut]): Returns a list of ShoppingList objects.
     """
-    qs = ShoppingList.objects.all()
+    qs = shoppinglist_queryset().order_by("store__name", "name")
     return qs
 
 
@@ -838,7 +905,7 @@ def list_listsbystore(request, store_id: int):
     Returns:
         (List[ShoppingListOut]): Returns a list of ShoppingList objects.
     """
-    qs = ShoppingList.objects.all().filter(store__id=store_id)
+    qs = shoppinglist_queryset().filter(store__id=store_id).order_by("name")
     return qs
 
 
