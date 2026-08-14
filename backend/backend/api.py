@@ -613,6 +613,52 @@ def create_item(request, payload: ItemIn):
     return item
 
 
+def merge_duplicate_listitem(listitem):
+    """
+    Folds a ListItem into another row for the same item on the same list that is
+    in the same purchased state, and returns whichever row survives.
+
+    A list is allowed at most one outstanding row and one bought row per item.
+    Two rows exist on purpose while an item is partly bought — one in the cart,
+    one still to find — because they mean different things and sit in different
+    sections of the list. Once a flag change puts them both in the same state
+    that distinction is gone, and leaving them apart shows the same item twice
+    in one section, which reads as a fault rather than as history.
+
+    Args:
+        listitem (ListItem): The row that has just changed state.
+
+    Returns:
+        (ListItem): The surviving row, which may be the one passed in.
+    """
+    duplicate = (
+        ListItem.objects.filter(
+            shopping_list_id=listitem.shopping_list_id,
+            item_id=listitem.item_id,
+            purchased=listitem.purchased,
+        )
+        .exclude(id=listitem.id)
+        .order_by("id")
+        .first()
+    )
+    if duplicate is None:
+        return listitem
+
+    duplicate.qty += listitem.qty
+    # Notes are only worth carrying over if the survivor has none; concatenating
+    # them would be worse than dropping one.
+    if listitem.notes and not duplicate.notes:
+        duplicate.notes = listitem.notes
+    # The later purchase is the one that describes the merged row.
+    if listitem.purch_date and (
+        duplicate.purch_date is None or listitem.purch_date > duplicate.purch_date
+    ):
+        duplicate.purch_date = listitem.purch_date
+    duplicate.save()
+    listitem.delete()
+    return duplicate
+
+
 @api.post("/listitems")
 def create_listitem(request, payload: ListItemIn):
     """
@@ -1088,6 +1134,11 @@ def update_listitem(request, listitem_id: int, payload: ListItemIn):
     listitem.aisle_id = payload.aisle_id
     listitem.shopping_list_id = payload.shopping_list_id
     listitem.save()
+    # Ticking off a row that was split out from a bought one puts both in the
+    # cart; unticking does the same in reverse. Either way they fold back into
+    # a single line. A no-op unless a genuine duplicate exists, so editing the
+    # notes or quantity of an ordinary row is unaffected.
+    merge_duplicate_listitem(listitem)
     broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
     return {"success": True}
 

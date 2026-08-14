@@ -636,3 +636,87 @@ class AddExistingListItemTests(TestCase):
         ]
         self.assertEqual([li["qty"] for li in unpurchased], [1])
         self.assertEqual([li["qty"] for li in purchased], [2])
+
+    def purchase(self, listitem, purchased=True, purch_date=None):
+        return self.client.put(
+            f"/api/listitems/{listitem.id}",
+            {
+                "qty": listitem.qty,
+                "purchased": purchased,
+                "notes": listitem.notes,
+                "purch_date": purch_date.isoformat() if purch_date else None,
+                "item_id": self.milk.id,
+                "aisle_id": self.aisle.id,
+                "shopping_list_id": self.shoppinglist.id,
+            },
+            content_type="application/json",
+        )
+
+    def test_buying_the_split_row_folds_it_back_into_the_bought_one(self):
+        bought = ListItem.objects.get(id=self.post_milk(1).json()["id"])
+        bought.purchased = True
+        bought.save()
+        extra = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+
+        self.purchase(extra)
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 1, "the cart shows Milk once, not twice")
+        self.assertEqual(rows[0].id, bought.id)
+        self.assertEqual(rows[0].qty, 3)
+        self.assertTrue(rows[0].purchased)
+
+    def test_unbuying_folds_into_an_outstanding_row_the_same_way(self):
+        bought = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+        bought.purchased = True
+        bought.save()
+        outstanding = ListItem.objects.get(id=self.post_milk(1).json()["id"])
+
+        self.purchase(bought, purchased=False)
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 1)
+        self.assertEqual(rows[0].id, outstanding.id)
+        self.assertEqual(rows[0].qty, 3)
+        self.assertFalse(rows[0].purchased)
+
+    def test_merging_keeps_the_later_purchase_date(self):
+        bought = ListItem.objects.get(id=self.post_milk(1).json()["id"])
+        bought.purchased = True
+        bought.purch_date = date(2026, 1, 1)
+        bought.save()
+        extra = ListItem.objects.get(id=self.post_milk(1).json()["id"])
+
+        self.purchase(extra, purch_date=date(2026, 3, 5))
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 1)
+        self.assertEqual(rows[0].purch_date, date(2026, 3, 5))
+
+    def test_editing_an_ordinary_row_does_not_merge_anything(self):
+        only = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+
+        response = self.purchase(only, purchased=False)
+        self.assertEqual(response.status_code, 200)
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 1)
+        self.assertEqual(rows[0].id, only.id)
+        self.assertEqual(rows[0].qty, 2)
+
+    def test_a_different_item_is_never_folded_in(self):
+        eggs = Item.objects.create(name="Eggs")
+        milk = ListItem.objects.get(id=self.post_milk(1).json()["id"])
+        ListItem.objects.create(
+            item=eggs,
+            aisle=self.aisle,
+            shopping_list=self.shoppinglist,
+            qty=1,
+            purchased=False,
+        )
+
+        self.purchase(milk, purchased=False)
+
+        self.assertEqual(
+            ListItem.objects.filter(shopping_list=self.shoppinglist).count(), 2
+        )
