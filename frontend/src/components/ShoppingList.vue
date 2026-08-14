@@ -27,7 +27,9 @@
                   ? 'mdi-checkbox-marked-outline'
                   : 'mdi-checkbox-blank-outline'
               "
-              :color="listItem.purchased ? 'var(--ls-done)' : 'var(--ls-ink-faint)'"
+              :color="
+                listItem.purchased ? 'var(--ls-done)' : 'var(--ls-ink-faint)'
+              "
               size="26"
             />
           </button>
@@ -106,7 +108,11 @@
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
-        <v-btn color="error" variant="text" @click="deleteItem(passedDeleteData)">
+        <v-btn
+          color="error"
+          variant="text"
+          @click="deleteItem(passedDeleteData)"
+        >
           Remove
         </v-btn>
       </v-card-actions>
@@ -115,195 +121,195 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import ListItemForm from "@/components/ListItemForm.vue";
+  import { ref } from "vue";
+  import ListItemForm from "@/components/ListItemForm.vue";
 
-defineProps({
-  listitems: {
-    type: Array,
-    default: () => [],
-  },
-  purchased: {
-    type: Boolean,
-    default: false,
-  },
-  emptyText: {
-    type: String,
-    default: "Nothing here yet",
-  },
-});
-
-const emit = defineEmits(["itemPurchased", "editListItem", "deleteListItem"]);
-
-const passedFormData = ref({
-  id: 0,
-  qty: 1,
-  purchased: false,
-  notes: "",
-  item_id: 0,
-  aisle_id: 0,
-  shopping_list_id: 0,
-});
-const passedDeleteData = ref({
-  id: 0,
-  name: null,
-});
-const listItemFormDialog = ref(false);
-const deleteDialog = ref(false);
-
-const updateDialog = () => {
-  listItemFormDialog.value = false;
-};
-
-const selectedDeleteItem = listItem => {
-  passedDeleteData.value.id = listItem.id;
-  passedDeleteData.value.name = listItem.item.name;
-  deleteDialog.value = true;
-};
-
-const selectedItem = listItem => {
-  passedFormData.value.id = listItem.id;
-  passedFormData.value.qty = listItem.qty;
-  passedFormData.value.purchased = listItem.purchased;
-  passedFormData.value.notes = listItem.notes;
-  passedFormData.value.item = listItem.item_id;
-  passedFormData.value.aisle_id = listItem.aisle_id;
-  passedFormData.value.shopping_list_id = listItem.shopping_list_id;
-
-  listItemFormDialog.value = true;
-};
-
-const editListItem = async listItem => {
-  emit("editListItem", listItem);
-};
-
-const purchaseItem = async listItem => {
-  emit("itemPurchased", {
-    id: listItem.id,
-    qty: listItem.qty,
-    purchased: !listItem.purchased,
-    notes: listItem.notes,
-    purch_date: null,
-    item: listItem.item_id,
-    aisle_id: listItem.aisle_id,
-    shopping_list_id: listItem.shopping_list_id,
+  defineProps({
+    listitems: {
+      type: Array,
+      default: () => [],
+    },
+    purchased: {
+      type: Boolean,
+      default: false,
+    },
+    emptyText: {
+      type: String,
+      default: "Nothing here yet",
+    },
   });
-};
 
-const deleteItem = async listItem => {
-  emit("deleteListItem", { id: listItem.id });
-  deleteDialog.value = false;
-};
+  const emit = defineEmits(["itemPurchased", "editListItem", "deleteListItem"]);
+
+  const passedFormData = ref({
+    id: 0,
+    qty: 1,
+    purchased: false,
+    notes: "",
+    item_id: 0,
+    aisle_id: 0,
+    shopping_list_id: 0,
+  });
+  const passedDeleteData = ref({
+    id: 0,
+    name: null,
+  });
+  const listItemFormDialog = ref(false);
+  const deleteDialog = ref(false);
+
+  const updateDialog = () => {
+    listItemFormDialog.value = false;
+  };
+
+  const selectedDeleteItem = listItem => {
+    passedDeleteData.value.id = listItem.id;
+    passedDeleteData.value.name = listItem.item.name;
+    deleteDialog.value = true;
+  };
+
+  const selectedItem = listItem => {
+    passedFormData.value.id = listItem.id;
+    passedFormData.value.qty = listItem.qty;
+    passedFormData.value.purchased = listItem.purchased;
+    passedFormData.value.notes = listItem.notes;
+    passedFormData.value.item = listItem.item_id;
+    passedFormData.value.aisle_id = listItem.aisle_id;
+    passedFormData.value.shopping_list_id = listItem.shopping_list_id;
+
+    listItemFormDialog.value = true;
+  };
+
+  const editListItem = async listItem => {
+    emit("editListItem", listItem);
+  };
+
+  const purchaseItem = async listItem => {
+    emit("itemPurchased", {
+      id: listItem.id,
+      qty: listItem.qty,
+      purchased: !listItem.purchased,
+      notes: listItem.notes,
+      purch_date: null,
+      item: listItem.item_id,
+      aisle_id: listItem.aisle_id,
+      shopping_list_id: listItem.shopping_list_id,
+    });
+  };
+
+  const deleteItem = async listItem => {
+    emit("deleteListItem", { id: listItem.id });
+    deleteDialog.value = false;
+  };
 </script>
 
 <style scoped>
-.shoplist__aisle + .shoplist__aisle {
-  margin-top: var(--ls-space-md);
-}
-
-/* Aisles are wayfinding, not content — small and quiet, so the item names stay
-   the thing your eye lands on. */
-.shoplist__aisle-name {
-  display: flex;
-  align-items: center;
-  gap: var(--ls-space-sm);
-  margin: 0 0 var(--ls-space-xs);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ls-ink-soft);
-}
-
-.shoplist__aisle-name::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--ls-rule);
-}
-
-.shoplist__row {
-  display: flex;
-  align-items: center;
-  gap: var(--ls-space-sm);
-  /* Two ruled lines tall, which is also comfortably over the 44px a thumb
-     needs. Rows with notes grow past it and rule themselves — see .ls-rows. */
-  min-height: calc(var(--ls-rule-height) * 2);
-  padding: var(--ls-space-xs) 0;
-}
-
-.shoplist__check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  margin-left: -10px;
-  border: 0;
-  border-radius: var(--ls-radius-pill);
-  background: transparent;
-  cursor: pointer;
-  transition: background var(--ls-duration) var(--ls-ease);
-}
-
-@media (hover: hover) {
-  .shoplist__check:hover {
-    background: var(--ls-paper-shade);
+  .shoplist__aisle + .shoplist__aisle {
+    margin-top: var(--ls-space-md);
   }
-}
 
-.shoplist__check:focus-visible {
-  outline: 3px solid var(--ls-navy);
-  outline-offset: -3px;
-}
+  /* Aisles are wayfinding, not content — small and quiet, so the item names stay
+   the thing your eye lands on. */
+  .shoplist__aisle-name {
+    display: flex;
+    align-items: center;
+    gap: var(--ls-space-sm);
+    margin: 0 0 var(--ls-space-xs);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ls-ink-soft);
+  }
 
-.shoplist__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
+  .shoplist__aisle-name::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--ls-rule);
+  }
 
-.shoplist__name {
-  font-size: 1rem;
-  line-height: 1.3;
-  color: var(--ls-ink);
-  overflow-wrap: anywhere;
-}
+  .shoplist__row {
+    display: flex;
+    align-items: center;
+    gap: var(--ls-space-sm);
+    /* Two ruled lines tall, which is also comfortably over the 44px a thumb
+     needs. Rows with notes grow past it and rule themselves — see .ls-rows. */
+    min-height: calc(var(--ls-rule-height) * 2);
+    padding: var(--ls-space-xs) 0;
+  }
 
-/* A quantity of one is the default and says nothing, so only a real count is
+  .shoplist__check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    margin-left: -10px;
+    border: 0;
+    border-radius: var(--ls-radius-pill);
+    background: transparent;
+    cursor: pointer;
+    transition: background var(--ls-duration) var(--ls-ease);
+  }
+
+  @media (hover: hover) {
+    .shoplist__check:hover {
+      background: var(--ls-paper-shade);
+    }
+  }
+
+  .shoplist__check:focus-visible {
+    outline: 3px solid var(--ls-navy);
+    outline-offset: -3px;
+  }
+
+  .shoplist__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .shoplist__name {
+    font-size: 1rem;
+    line-height: 1.3;
+    color: var(--ls-ink);
+    overflow-wrap: anywhere;
+  }
+
+  /* A quantity of one is the default and says nothing, so only a real count is
    worth the ink. */
-.shoplist__qty {
-  display: inline-block;
-  min-width: 1.5rem;
-  margin-right: 2px;
-  padding: 0 5px;
-  border-radius: var(--ls-radius-sm);
-  background: var(--ls-powder);
-  color: var(--ls-navy);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-align: center;
-}
+  .shoplist__qty {
+    display: inline-block;
+    min-width: 1.5rem;
+    margin-right: 2px;
+    padding: 0 5px;
+    border-radius: var(--ls-radius-sm);
+    background: var(--ls-powder);
+    color: var(--ls-navy);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-align: center;
+  }
 
-.shoplist__notes {
-  font-size: 0.8125rem;
-  line-height: 1.35;
-  color: var(--ls-ink-soft);
-  overflow-wrap: anywhere;
-}
+  .shoplist__notes {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--ls-ink-soft);
+    overflow-wrap: anywhere;
+  }
 
-.shoplist__menu {
-  flex-shrink: 0;
-  color: var(--ls-ink-faint);
-}
+  .shoplist__menu {
+    flex-shrink: 0;
+    color: var(--ls-ink-faint);
+  }
 
-.shoplist__empty {
-  margin: 0;
-  padding: var(--ls-space) 0;
-  color: var(--ls-ink-faint);
-  font-style: italic;
-}
+  .shoplist__empty {
+    margin: 0;
+    padding: var(--ls-space) 0;
+    color: var(--ls-ink-faint);
+    font-style: italic;
+  }
 </style>

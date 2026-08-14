@@ -16,7 +16,8 @@
         <span class="frzcontents__body">
           <span class="frzcontents__name">
             <span v-if="showQty(item)" class="frzcontents__qty">
-              {{ item.qty }}<template v-if="item.unit"> {{ item.unit }}</template>
+              {{ item.qty }}
+              <template v-if="item.unit">{{ item.unit }}</template>
             </span>
             {{ item.name }}
           </span>
@@ -88,7 +89,11 @@
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
-        <v-btn color="error" variant="text" @click="deleteItem(passedDeleteData)">
+        <v-btn
+          color="error"
+          variant="text"
+          @click="deleteItem(passedDeleteData)"
+        >
           Remove
         </v-btn>
       </v-card-actions>
@@ -97,206 +102,207 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import FreezerItemForm from "@/components/FreezerItemForm.vue";
+  import { computed, ref } from "vue";
+  import FreezerItemForm from "@/components/FreezerItemForm.vue";
 
-// Matches FREEZER_SOON_DAYS in backend/backend/api.py, which decides the
-// totalexpiring count shown on the freezer cards.
-const SOON_DAYS = 14;
+  // Matches FREEZER_SOON_DAYS in backend/backend/api.py, which decides the
+  // totalexpiring count shown on the freezer cards.
+  const SOON_DAYS = 14;
 
-const props = defineProps({
-  freezeritems: {
-    type: Array,
-    default: () => [],
-  },
-  freezers: {
-    type: Array,
-    default: () => [],
-  },
-});
+  const props = defineProps({
+    freezeritems: {
+      type: Array,
+      default: () => [],
+    },
+    freezers: {
+      type: Array,
+      default: () => [],
+    },
+  });
 
-const emit = defineEmits(["editFreezerItem", "deleteFreezerItem"]);
+  const emit = defineEmits(["editFreezerItem", "deleteFreezerItem"]);
 
-const passedFormData = ref({
-  id: 0,
-  name: "",
-  qty: 1,
-  unit: null,
-  date_added: null,
-  discard_date: null,
-  notes: "",
-  freezer_id: 0,
-});
-const passedDeleteData = ref({
-  id: 0,
-  name: null,
-});
-const freezerItemFormDialog = ref(false);
-const deleteDialog = ref(false);
+  const passedFormData = ref({
+    id: 0,
+    name: "",
+    qty: 1,
+    unit: null,
+    date_added: null,
+    discard_date: null,
+    notes: "",
+    freezer_id: 0,
+  });
+  const passedDeleteData = ref({
+    id: 0,
+    name: null,
+  });
+  const freezerItemFormDialog = ref(false);
+  const deleteDialog = ref(false);
 
-const hasItems = computed(() => (props.freezeritems?.length ?? 0) > 0);
+  const hasItems = computed(() => (props.freezeritems?.length ?? 0) > 0);
 
-const updateDialog = () => {
-  freezerItemFormDialog.value = false;
-};
-
-const selectedItem = item => {
-  passedFormData.value = {
-    id: item.id,
-    name: item.name,
-    qty: item.qty,
-    unit: item.unit,
-    date_added: item.date_added,
-    discard_date: item.discard_date,
-    notes: item.notes,
-    freezer_id: item.freezer_id,
+  const updateDialog = () => {
+    freezerItemFormDialog.value = false;
   };
 
-  freezerItemFormDialog.value = true;
-};
+  const selectedItem = item => {
+    passedFormData.value = {
+      id: item.id,
+      name: item.name,
+      qty: item.qty,
+      unit: item.unit,
+      date_added: item.date_added,
+      discard_date: item.discard_date,
+      notes: item.notes,
+      freezer_id: item.freezer_id,
+    };
 
-const selectedDeleteItem = item => {
-  passedDeleteData.value.id = item.id;
-  passedDeleteData.value.name = item.name;
-  deleteDialog.value = true;
-};
+    freezerItemFormDialog.value = true;
+  };
 
-const editFreezerItem = async item => {
-  emit("editFreezerItem", item);
-};
+  const selectedDeleteItem = item => {
+    passedDeleteData.value.id = item.id;
+    passedDeleteData.value.name = item.name;
+    deleteDialog.value = true;
+  };
 
-const deleteItem = async item => {
-  emit("deleteFreezerItem", { id: item.id });
-  deleteDialog.value = false;
-};
+  const editFreezerItem = async item => {
+    emit("editFreezerItem", item);
+  };
 
-// A single unitless portion is the default and says nothing; anything else is
-// worth showing.
-const showQty = item => item.qty > 1 || Boolean(item.unit);
+  const deleteItem = async item => {
+    emit("deleteFreezerItem", { id: item.id });
+    deleteDialog.value = false;
+  };
 
-const addedLabel = item => {
-  if (!item.date_added) return "date added unknown";
-  return `frozen ${item.date_added}`;
-};
+  // A single unitless portion is the default and says nothing; anything else is
+  // worth showing.
+  const showQty = item => item.qty > 1 || Boolean(item.unit);
 
-const discardLabel = item => {
-  const days = item.days_until_discard;
-  if (days === null || days === undefined) return "No throw out date";
-  if (days < 0) {
-    return `${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"} overdue`;
-  }
-  if (days === 0) return "Throw out today";
-  if (days === 1) return "Throw out tomorrow";
-  return `Throw out in ${days} days`;
-};
+  const addedLabel = item => {
+    if (!item.date_added) return "date added unknown";
+    return `frozen ${item.date_added}`;
+  };
 
-const discardColor = item => {
-  const days = item.days_until_discard;
-  if (days === null || days === undefined) return "var(--ls-frost-ink-faint)";
-  if (days < 0) return "var(--ls-alert)";
-  if (days <= SOON_DAYS) return "var(--ls-warn)";
-  return "var(--ls-frost-ink-faint)";
-};
+  const discardLabel = item => {
+    const days = item.days_until_discard;
+    if (days === null || days === undefined) return "No throw out date";
+    if (days < 0) {
+      return `${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"} overdue`;
+    }
+    if (days === 0) return "Throw out today";
+    if (days === 1) return "Throw out tomorrow";
+    return `Throw out in ${days} days`;
+  };
 
-const discardClass = item => {
-  const days = item.days_until_discard;
-  if (days === null || days === undefined) return "frzcontents__discard--none";
-  if (days < 0) return "frzcontents__discard--alert";
-  if (days <= SOON_DAYS) return "frzcontents__discard--warn";
-  return "frzcontents__discard--calm";
-};
+  const discardColor = item => {
+    const days = item.days_until_discard;
+    if (days === null || days === undefined) return "var(--ls-frost-ink-faint)";
+    if (days < 0) return "var(--ls-alert)";
+    if (days <= SOON_DAYS) return "var(--ls-warn)";
+    return "var(--ls-frost-ink-faint)";
+  };
 
-const discardIcon = item => {
-  const days = item.days_until_discard;
-  if (days === null || days === undefined) return "mdi-snowflake";
-  if (days < 0) return "mdi-alert-circle";
-  if (days <= SOON_DAYS) return "mdi-clock-alert-outline";
-  return "mdi-snowflake";
-};
+  const discardClass = item => {
+    const days = item.days_until_discard;
+    if (days === null || days === undefined)
+      return "frzcontents__discard--none";
+    if (days < 0) return "frzcontents__discard--alert";
+    if (days <= SOON_DAYS) return "frzcontents__discard--warn";
+    return "frzcontents__discard--calm";
+  };
+
+  const discardIcon = item => {
+    const days = item.days_until_discard;
+    if (days === null || days === undefined) return "mdi-snowflake";
+    if (days < 0) return "mdi-alert-circle";
+    if (days <= SOON_DAYS) return "mdi-clock-alert-outline";
+    return "mdi-snowflake";
+  };
 </script>
 
 <style scoped>
-.frzcontents__row {
-  display: flex;
-  align-items: center;
-  gap: var(--ls-space-sm);
-  min-height: calc(var(--ls-rule-height) * 2);
-  padding: var(--ls-space-xs) 0;
-}
+  .frzcontents__row {
+    display: flex;
+    align-items: center;
+    gap: var(--ls-space-sm);
+    min-height: calc(var(--ls-rule-height) * 2);
+    padding: var(--ls-space-xs) 0;
+  }
 
-.frzcontents__icon {
-  flex-shrink: 0;
-}
+  .frzcontents__icon {
+    flex-shrink: 0;
+  }
 
-.frzcontents__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
+  .frzcontents__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
 
-.frzcontents__name {
-  font-size: 1rem;
-  line-height: 1.3;
-  color: var(--ls-frost-ink);
-  overflow-wrap: anywhere;
-}
+  .frzcontents__name {
+    font-size: 1rem;
+    line-height: 1.3;
+    color: var(--ls-frost-ink);
+    overflow-wrap: anywhere;
+  }
 
-.frzcontents__qty {
-  display: inline-block;
-  margin-right: 2px;
-  padding: 0 6px;
-  border-radius: var(--ls-radius-sm);
-  background: var(--ls-frost-edge);
-  color: var(--ls-frost-ink);
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
+  .frzcontents__qty {
+    display: inline-block;
+    margin-right: 2px;
+    padding: 0 6px;
+    border-radius: var(--ls-radius-sm);
+    background: var(--ls-frost-edge);
+    color: var(--ls-frost-ink);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
 
-.frzcontents__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  font-size: 0.8125rem;
-  line-height: 1.35;
-}
+  .frzcontents__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
 
-.frzcontents__discard--alert {
-  color: var(--ls-alert);
-  font-weight: 700;
-}
+  .frzcontents__discard--alert {
+    color: var(--ls-alert);
+    font-weight: 700;
+  }
 
-.frzcontents__discard--warn {
-  color: var(--ls-warn);
-  font-weight: 600;
-}
+  .frzcontents__discard--warn {
+    color: var(--ls-warn);
+    font-weight: 600;
+  }
 
-.frzcontents__discard--calm,
-.frzcontents__discard--none {
-  color: var(--ls-frost-ink-soft);
-}
+  .frzcontents__discard--calm,
+  .frzcontents__discard--none {
+    color: var(--ls-frost-ink-soft);
+  }
 
-.frzcontents__added {
-  color: var(--ls-frost-ink-faint);
-}
+  .frzcontents__added {
+    color: var(--ls-frost-ink-faint);
+  }
 
-.frzcontents__notes {
-  font-size: 0.8125rem;
-  line-height: 1.35;
-  color: var(--ls-frost-ink-soft);
-  overflow-wrap: anywhere;
-}
+  .frzcontents__notes {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--ls-frost-ink-soft);
+    overflow-wrap: anywhere;
+  }
 
-.frzcontents__menu {
-  flex-shrink: 0;
-  color: var(--ls-frost-ink-faint);
-}
+  .frzcontents__menu {
+    flex-shrink: 0;
+    color: var(--ls-frost-ink-faint);
+  }
 
-.frzcontents__empty {
-  margin: 0;
-  padding: var(--ls-space) 0;
-  color: var(--ls-frost-ink-faint);
-  font-style: italic;
-}
+  .frzcontents__empty {
+    margin: 0;
+    padding: var(--ls-space) 0;
+    color: var(--ls-frost-ink-faint);
+    font-style: italic;
+  }
 </style>

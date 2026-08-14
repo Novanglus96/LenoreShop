@@ -16,7 +16,9 @@
         </v-list-item>
         <v-divider />
         <v-list-item disabled class="justify-center">
-          <v-list-item-title class="text-caption text-grey text-center">v{{ version }}</v-list-item-title>
+          <v-list-item-title class="text-caption text-grey text-center">
+            v{{ version }}
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
