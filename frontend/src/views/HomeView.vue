@@ -45,7 +45,7 @@
       <header class="dashboard__header">
         <h1 class="ls-hand ls-hand--title">Shopping Lists</h1>
         <v-btn
-          to="/lists"
+          to="/alllists"
           color="primary"
           variant="tonal"
           prepend-icon="mdi-playlist-plus"
@@ -72,7 +72,7 @@
         <p class="dashboard__welcome-text">
           Your stores are set up — now make a shopping list to fill them.
         </p>
-        <v-btn to="/lists" color="primary" variant="flat" prepend-icon="mdi-plus">
+        <v-btn to="/alllists" color="primary" variant="flat" prepend-icon="mdi-plus">
           Create a list
         </v-btn>
       </div>

@@ -1,56 +1,99 @@
 <template>
-  <button
-    type="button"
-    class="ls-paper ls-paper--torn ls-paper--liftable notepad"
-    :aria-label="ariaLabel"
-    @click="$emit('open', list)"
+  <div
+    :class="[
+      'ls-paper',
+      'ls-paper--torn',
+      'ls-paper--liftable',
+      'notepad',
+      { 'notepad--manageable': manageable },
+    ]"
   >
-    <span class="ls-tab">
-      <v-icon icon="mdi-storefront-outline" size="14" />
-      <span class="ls-tab__text">{{ list.store.name }}</span>
-    </span>
+    <!-- The sheet is a wrapper rather than the button itself, so the manage
+         menu can sit beside the open action instead of nested inside it. -->
+    <button
+      type="button"
+      class="notepad__open"
+      :aria-label="ariaLabel"
+      @click="$emit('open', list)"
+    >
+      <span class="ls-tab">
+        <v-icon icon="mdi-storefront-outline" size="14" />
+        <span class="ls-tab__text">{{ list.store.name }}</span>
+      </span>
 
-    <span class="ls-hand ls-hand--card notepad__name">{{ list.name }}</span>
+      <span class="ls-hand ls-hand--card notepad__name">{{ list.name }}</span>
 
-    <span class="ls-ruled ls-ruled--margin notepad__lines">
-      <span
-        v-for="(previewItem, index) in list.preview_items"
-        :key="index"
-        class="notepad__line"
-      >
-        <v-icon
-          :icon="
-            previewItem.purchased
-              ? 'mdi-check-circle'
-              : 'mdi-checkbox-blank-circle-outline'
-          "
-          :color="previewItem.purchased ? 'var(--ls-done)' : 'var(--ls-ink-faint)'"
-          size="15"
-        />
-        <span :class="['notepad__item', { 'ls-strike': previewItem.purchased }]">
-          {{ previewItem.name }}
+      <span class="ls-ruled ls-ruled--margin notepad__lines">
+        <span
+          v-for="(previewItem, index) in list.preview_items"
+          :key="index"
+          class="notepad__line"
+        >
+          <v-icon
+            :icon="
+              previewItem.purchased
+                ? 'mdi-check-circle'
+                : 'mdi-checkbox-blank-circle-outline'
+            "
+            :color="
+              previewItem.purchased ? 'var(--ls-done)' : 'var(--ls-ink-faint)'
+            "
+            size="15"
+          />
+          <span
+            :class="['notepad__item', { 'ls-strike': previewItem.purchased }]"
+          >
+            {{ previewItem.name }}
+          </span>
+        </span>
+
+        <span v-if="isEmpty" class="notepad__line notepad__line--empty">
+          Nothing on this list yet
+        </span>
+
+        <span v-else-if="hiddenCount > 0" class="notepad__line notepad__more">
+          +{{ hiddenCount }} more
         </span>
       </span>
 
-      <span v-if="isEmpty" class="notepad__line notepad__line--empty">
-        Nothing on this list yet
+      <span class="notepad__footer">
+        <span class="notepad__count">{{ countLabel }}</span>
+        <span class="ls-progress notepad__progress">
+          <span
+            :class="['ls-progress__fill', { 'ls-progress__fill--done': isComplete }]"
+            :style="{ width: percentComplete + '%' }"
+          />
+        </span>
       </span>
+    </button>
 
-      <span v-else-if="hiddenCount > 0" class="notepad__line notepad__more">
-        +{{ hiddenCount }} more
-      </span>
-    </span>
-
-    <span class="notepad__footer">
-      <span class="notepad__count">{{ countLabel }}</span>
-      <span class="ls-progress notepad__progress">
-        <span
-          :class="['ls-progress__fill', { 'ls-progress__fill--done': isComplete }]"
-          :style="{ width: percentComplete + '%' }"
+    <v-menu v-if="manageable" location="bottom end">
+      <template v-slot:activator="{ props: menuProps }">
+        <v-btn
+          icon="mdi-dots-vertical"
+          variant="text"
+          size="small"
+          density="comfortable"
+          class="notepad__menu"
+          :aria-label="`Actions for ${list.name}`"
+          v-bind="menuProps"
         />
-      </span>
-    </span>
-  </button>
+      </template>
+      <v-list density="compact">
+        <v-list-item
+          prepend-icon="mdi-pencil"
+          title="Edit"
+          @click="$emit('edit', list)"
+        />
+        <v-list-item
+          prepend-icon="mdi-delete-outline"
+          title="Delete"
+          base-color="error"
+          @click="$emit('remove', list)"
+        />
+      </v-list>
+    </v-menu>
+  </div>
 </template>
 
 <script setup>
@@ -61,9 +104,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  // The dashboard shows these read-only; the lists page adds the manage menu.
+  manageable: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-defineEmits(["open"]);
+defineEmits(["open", "edit", "remove"]);
 
 const isEmpty = computed(() => props.list.totalitems === 0);
 
@@ -96,9 +144,7 @@ const ariaLabel = computed(
 
 <style scoped>
 .notepad {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ls-space-sm);
+  position: relative;
   width: 100%;
   height: 100%;
   /* Longhand on purpose: the padding shorthand would also set padding-bottom,
@@ -107,12 +153,45 @@ const ariaLabel = computed(
   padding-top: var(--ls-space);
   padding-right: var(--ls-space);
   padding-left: var(--ls-space);
-  border: 0;
-  text-align: left;
-  font-family: var(--ls-font-body);
   /* Sheets sit at very slightly different angles so a grid of them reads as
      loose paper rather than a table. Overridden per-card by the dashboard. */
   transform: rotate(var(--notepad-tilt, 0deg));
+}
+
+.notepad__open {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ls-space-sm);
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-family: var(--ls-font-body);
+  cursor: pointer;
+}
+
+/* The ring goes on the button, not the sheet — the sheet is a plain div now,
+   and the torn mask would clip an outline drawn on it anyway. */
+.notepad__open:focus-visible {
+  outline: 3px solid var(--ls-navy);
+  outline-offset: 2px;
+}
+
+/* Pinned to the corner so adding it does not change the card's layout, and
+   sitting above the tab, which occupies the opposite corner. */
+.notepad__menu {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: var(--ls-ink-faint);
+}
+
+/* The tab and the menu share the top line, so give the tab back the width the
+   menu takes or a long store name runs underneath it. */
+.notepad--manageable .ls-tab {
+  max-width: calc(100% - 36px);
 }
 
 @media (hover: hover) {

@@ -6,7 +6,6 @@ import ListView from "@/views/ListView.vue";
 import ItemView from "@/views/ItemView.vue";
 import AisleView from "@/views/AisleView.vue";
 import AllListsView from "@/views/AllListsView.vue";
-import ListsView from "@/views/ListsView.vue";
 import FreezerView from "@/views/FreezerView.vue";
 import FreezerContentsView from "@/views/FreezerContentsView.vue";
 
@@ -27,9 +26,10 @@ const routes = [
     component: AllListsView,
   },
   {
+    // Merged into /alllists, which now both browses and manages lists. Kept as
+    // a redirect so bookmarks and an already-installed PWA still land somewhere.
     path: "/lists",
-    name: "lists",
-    component: ListsView,
+    redirect: "/alllists",
   },
   {
     path: "/list",

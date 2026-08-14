@@ -2,20 +2,20 @@
   <div class="alllists">
     <header class="alllists__header">
       <div>
-        <h1 class="ls-hand ls-hand--title">All Lists</h1>
+        <h1 class="ls-hand ls-hand--title">Shopping Lists</h1>
         <p v-if="hasLists" class="alllists__count">
           {{ shoppinglists.length }}
           {{ shoppinglists.length === 1 ? "list" : "lists" }}
         </p>
       </div>
       <v-btn
-        to="/lists"
         color="primary"
-        variant="tonal"
-        prepend-icon="mdi-playlist-edit"
-        class="alllists__manage"
+        variant="flat"
+        prepend-icon="mdi-plus"
+        class="alllists__add"
+        @click="openAdd"
       >
-        Manage lists
+        Add list
       </v-btn>
     </header>
 
@@ -31,8 +31,16 @@
 
     <div v-else-if="!hasLists" class="alllists__empty">
       <v-icon icon="mdi-clipboard-text-outline" size="44" color="primary" />
-      <p class="alllists__empty-text">No shopping lists yet.</p>
-      <v-btn to="/lists" color="primary" variant="flat" prepend-icon="mdi-plus">
+      <p class="alllists__empty-text">
+        No shopping lists yet. Make one and it'll show up here and on the
+        dashboard.
+      </p>
+      <v-btn
+        color="primary"
+        variant="flat"
+        prepend-icon="mdi-plus"
+        @click="openAdd"
+      >
         Create a list
       </v-btn>
     </div>
@@ -44,24 +52,68 @@
         v-for="(list, index) in rankedLists"
         :key="list.id"
         :list="list"
+        manageable
         :style="{ '--notepad-tilt': tiltFor(index) }"
         @open="openList"
+        @edit="openEdit"
+        @remove="openDelete"
       />
     </div>
+
+    <!-- Single instances, outside every v-for. -->
+    <ListForm
+      v-model="listFormDialog"
+      @add-list="createList"
+      @edit-list="updateList"
+      @update-dialog="updateDialog"
+      :isEdit="isEdit"
+      :passedFormData="passedFormData"
+      :key="`${isEdit}-${passedFormData.id}`"
+    />
+
+    <v-dialog v-model="deleteDialog" max-width="400">
+      <v-card>
+        <v-card-title>Delete list?</v-card-title>
+        <v-card-text>
+          "{{ selectedList?.name }}" and everything on it will be removed. The
+          store and its aisles stay.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
+          <v-btn color="error" variant="text" @click="confirmDelete">
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMainStore } from "@/stores/main";
 import { useShoppingLists } from "@/composables/listsComposable";
 import { rankShoppingLists } from "@/utils/listRanking";
 import { tiltFor } from "@/utils/paperTilt";
 import ListNotepadCard from "@/components/ListNotepadCard.vue";
+import ListForm from "@/components/ListForm.vue";
 
-const { shoppinglists, isLoading } = useShoppingLists();
+const { shoppinglists, isLoading, addShoppingList, editList, removeList } =
+  useShoppingLists();
 const router = useRouter();
+
+const listFormDialog = ref(false);
+const deleteDialog = ref(false);
+const isEdit = ref(false);
+const selectedList = ref(null);
+
+const passedFormData = ref({
+  id: null,
+  name: null,
+  store_id: null,
+});
 
 const hasLists = computed(() => shoppinglists.value?.length > 0);
 
@@ -72,6 +124,46 @@ const openList = list => {
   store.list_id = list.id;
   store.store_id = list.store_id;
   router.push("/list");
+};
+
+const openAdd = () => {
+  isEdit.value = false;
+  selectedList.value = null;
+  passedFormData.value = { id: null, name: null, store_id: null };
+  listFormDialog.value = true;
+};
+
+const openEdit = list => {
+  isEdit.value = true;
+  selectedList.value = list;
+  passedFormData.value = {
+    id: list.id,
+    name: list.name,
+    store_id: list.store_id,
+  };
+  listFormDialog.value = true;
+};
+
+const openDelete = list => {
+  selectedList.value = list;
+  deleteDialog.value = true;
+};
+
+const confirmDelete = async () => {
+  if (selectedList.value) await removeList(selectedList.value);
+  deleteDialog.value = false;
+};
+
+const createList = async newList => {
+  await addShoppingList(newList);
+};
+
+const updateList = async updatedList => {
+  await editList(updatedList);
+};
+
+const updateDialog = () => {
+  listFormDialog.value = false;
 };
 </script>
 
@@ -146,7 +238,7 @@ const openList = list => {
     --notepad-tilt: 0deg;
   }
 
-  .alllists__manage {
+  .alllists__add {
     width: 100%;
   }
 }

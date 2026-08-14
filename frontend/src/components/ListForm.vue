@@ -9,7 +9,7 @@
       <form @submit.prevent="submit">
         <v-card-title>
           <span class="text-h5" v-if="props.isEdit == false">Add List</span>
-          <span class="text-h5" v-else>Add List</span>
+          <span class="text-h5" v-else>Edit List</span>
         </v-card-title>
         <v-card-text>
           <v-container>
