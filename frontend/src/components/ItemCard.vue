@@ -1,69 +1,105 @@
 <template>
-  <v-card color="primary" variant="outlined">
-    <v-card-text>
-      {{ item.name }}
-      <v-btn size="x-small" variant="outlined" @click="selectedItem(item)">
-        edit
-      </v-btn>
-      <ItemForm
-        v-model="itemFormDialog"
-        @edit-item="updateItem"
-        :isEdit="true"
-        @update-dialog="updateDialog"
-        :passedFormData="passedFormData"
-      />
-      <v-btn size="x-small" variant="outlined" @click="deleteDialog = true">
-        delete
-      </v-btn>
-      <v-dialog v-model="deleteDialog" width="auto">
-        <v-card>
-          <v-card-text>Delete item {{ item.name }}?</v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="deleteItem(item)">Yes</v-btn>
-            <v-btn color="primary" @click="deleteDialog = false">No</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-card-text>
-  </v-card>
+  <li class="ls-row itemrow">
+    <span class="itemrow__body">
+      <span class="itemrow__name">{{ item.name }}</span>
+      <span v-if="item.aisle" class="itemrow__aisle">
+        {{ item.aisle.name }} · {{ item.aisle.store.name }}
+      </span>
+      <span v-else class="itemrow__aisle itemrow__aisle--none">
+        Not filed under an aisle yet
+      </span>
+      <span v-if="item.matches" class="itemrow__matches">
+        also matches: {{ item.matches }}
+      </span>
+    </span>
+
+    <v-menu location="bottom end">
+      <template v-slot:activator="{ props: menuProps }">
+        <v-btn
+          icon="mdi-dots-vertical"
+          variant="text"
+          size="small"
+          density="comfortable"
+          class="itemrow__menu"
+          :aria-label="`Actions for ${item.name}`"
+          v-bind="menuProps"
+        />
+      </template>
+      <v-list density="compact">
+        <v-list-item
+          prepend-icon="mdi-pencil"
+          title="Edit"
+          @click="$emit('edit', item)"
+        />
+        <v-list-item
+          prepend-icon="mdi-delete-outline"
+          title="Delete"
+          base-color="error"
+          @click="$emit('remove', item)"
+        />
+      </v-list>
+    </v-menu>
+  </li>
 </template>
 
 <script setup>
-  import { defineProps, defineEmits, ref } from "vue";
-  import ItemForm from "@/components/ItemForm.vue";
+// Presentational only. The edit form and the delete confirmation live once in
+// ItemView, driven by a selected-item ref — a dialog per row is the shape that
+// caused the mobile black screen, and it mounts one dialog per visible item.
+defineProps({
+  item: {
+    type: Object,
+    required: true,
+  },
+});
 
-  const emit = defineEmits(["editItem", "removeItem"]);
-  const itemFormDialog = ref(false);
-  const deleteDialog = ref(false);
-  const passedFormData = ref({
-    id: 0,
-    name: "",
-    matches: "",
-  });
-
-  const selectedItem = item => {
-    passedFormData.value.id = item.id;
-    passedFormData.value.name = item.name;
-    passedFormData.value.matches = item.matches;
-
-    itemFormDialog.value = true;
-  };
-
-  const updateItem = async item => {
-    emit("editItem", item);
-  };
-
-  const deleteItem = async item => {
-    emit("removeItem", item);
-
-    updateDialog();
-  };
-
-  const updateDialog = () => {
-    itemFormDialog.value = false;
-  };
-
-  defineProps({
-    item: Object,
-  });
+defineEmits(["edit", "remove"]);
 </script>
+
+<style scoped>
+.itemrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ls-space-sm);
+  min-height: calc(var(--ls-rule-height) * 2);
+  padding: var(--ls-space-xs) 0;
+}
+
+.itemrow__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.itemrow__name {
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--ls-ink);
+  overflow-wrap: anywhere;
+}
+
+.itemrow__aisle {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--ls-ink-soft);
+}
+
+.itemrow__aisle--none {
+  color: var(--ls-ink-faint);
+  font-style: italic;
+}
+
+.itemrow__matches {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--ls-ink-faint);
+  overflow-wrap: anywhere;
+}
+
+.itemrow__menu {
+  flex-shrink: 0;
+  color: var(--ls-ink-faint);
+}
+</style>
