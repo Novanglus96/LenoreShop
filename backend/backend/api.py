@@ -629,8 +629,15 @@ def create_listitem(request, payload: ListItemIn):
     Returns:
         id (int): returns the id of the created ListItem.
     """
+    # Only an item still to be found is a candidate to merge into. Adding
+    # something you have already put in the cart means you need more of it, so
+    # it starts a new line rather than reopening the old one — otherwise the
+    # quantities add together and the row silently reverts to unpurchased,
+    # which reads as the app forgetting you bought it.
     existing_item = ListItem.objects.filter(
-        shopping_list_id=payload.shopping_list_id, item_id=payload.item_id
+        shopping_list_id=payload.shopping_list_id,
+        item_id=payload.item_id,
+        purchased=False,
     ).first()
     if existing_item is None:
         listitem = ListItem.objects.create(**payload.dict())
@@ -641,7 +648,6 @@ def create_listitem(request, payload: ListItemIn):
         return {"id": listitem.id}
     else:
         existing_item.qty += payload.qty
-        existing_item.purchased = False
         existing_item.save()
         broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
         return {"id": existing_item.id}

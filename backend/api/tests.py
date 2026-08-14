@@ -523,3 +523,116 @@ class ShoppingListCardTests(TestCase):
             [(row["store"]["name"], row["name"]) for row in body],
             [("Aldi", "Snacks"), ("Kroger", "Anniversary"), ("Kroger", "Weekly")],
         )
+
+
+class AddExistingListItemTests(TestCase):
+    """
+    Tests for what POST /listitems does when the item is already on the list.
+
+    Adding more of something still to be found should add to that line. Adding
+    more of something already in the cart should start a new line instead, so
+    the purchased row is left alone rather than having its quantity added to
+    and being flipped back to unpurchased.
+    """
+
+    def setUp(self):
+        self.store = Store.objects.create(name="Kroger")
+        self.aisle = Aisle.objects.create(name="Dairy", order=1, store=self.store)
+        self.shoppinglist = ShoppingList.objects.create(
+            name="Weekly", store=self.store
+        )
+        self.milk = Item.objects.create(name="Milk")
+
+    def post_milk(self, qty):
+        return self.client.post(
+            "/api/listitems",
+            {
+                "qty": qty,
+                "item_id": self.milk.id,
+                "aisle_id": self.aisle.id,
+                "shopping_list_id": self.shoppinglist.id,
+            },
+            content_type="application/json",
+        )
+
+    def milk_rows(self):
+        return ListItem.objects.filter(
+            shopping_list=self.shoppinglist, item=self.milk
+        ).order_by("id")
+
+    def test_adding_to_an_unpurchased_item_sums_the_quantities(self):
+        self.post_milk(2)
+        self.post_milk(3)
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 1)
+        self.assertEqual(rows[0].qty, 5)
+        self.assertFalse(rows[0].purchased)
+
+    def test_adding_to_a_purchased_item_starts_a_new_row(self):
+        first = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+        first.purchased = True
+        first.save()
+
+        response = self.post_milk(1)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.json()["id"], first.id)
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 2)
+
+        first.refresh_from_db()
+        self.assertEqual(first.qty, 2, "the purchased row keeps its quantity")
+        self.assertTrue(first.purchased, "the purchased row stays purchased")
+
+        self.assertEqual(rows[1].qty, 1)
+        self.assertFalse(rows[1].purchased)
+
+    def test_counts_after_re_adding_a_purchased_item(self):
+        first = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+        first.purchased = True
+        first.save()
+        self.post_milk(1)
+
+        body = self.client.get("/api/shoppinglists").json()[0]
+        self.assertEqual(body["totalitems"], 2)
+        self.assertEqual(body["totalpurchased"], 1)
+
+    def test_a_purchased_row_is_skipped_in_favour_of_an_unpurchased_one(self):
+        """
+        With both a purchased and an unpurchased row present, more of the item
+        merges into the unpurchased one rather than creating a third row.
+        """
+        bought = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+        bought.purchased = True
+        bought.save()
+        still_needed = ListItem.objects.get(id=self.post_milk(1).json()["id"])
+
+        self.post_milk(4)
+
+        rows = self.milk_rows()
+        self.assertEqual(rows.count(), 2)
+        still_needed.refresh_from_db()
+        self.assertEqual(still_needed.qty, 5)
+        bought.refresh_from_db()
+        self.assertEqual(bought.qty, 2)
+        self.assertTrue(bought.purchased)
+
+    def test_the_full_list_shows_the_new_row_and_keeps_the_purchased_one(self):
+        bought = ListItem.objects.get(id=self.post_milk(2).json()["id"])
+        bought.purchased = True
+        bought.save()
+        self.post_milk(1)
+
+        body = self.client.get(
+            f"/api/shoppinglistfull/{self.shoppinglist.id}"
+        ).json()
+
+        unpurchased = [
+            li for aisle in body["aisles"] for li in aisle["listitems"]
+        ]
+        purchased = [
+            li for aisle in body["purchased_aisles"] for li in aisle["listitems"]
+        ]
+        self.assertEqual([li["qty"] for li in unpurchased], [1])
+        self.assertEqual([li["qty"] for li in purchased], [2])
