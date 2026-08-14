@@ -102,6 +102,20 @@
   );
 }
 
+/* -- Ruled rows ------------------------------------------------------------ */
+
+/* The frost counterpart to .ls-row. .ls-rows carries the structure and is
+   colour-neutral, so a frost list reuses it and swaps only the rule colour.
+   There is no .ls-sheet-margin equivalent — the red margin rule is notepaper's,
+   and a freezer note does not have one. */
+.ls-frost-row {
+  border-bottom: 1px solid var(--ls-frost-rule);
+}
+
+.ls-frost-row:last-child {
+  border-bottom: 0;
+}
+
 /* -- Status pills ---------------------------------------------------------- */
 
 .ls-pill {
