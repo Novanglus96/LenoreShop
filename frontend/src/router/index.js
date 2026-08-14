@@ -5,7 +5,7 @@ import StoreView from "@/views/StoreView.vue";
 import ListView from "@/views/ListView.vue";
 import ItemView from "@/views/ItemView.vue";
 import AisleView from "@/views/AisleView.vue";
-import ListsStoreView from "@/views/ListsStoreView.vue";
+import AllListsView from "@/views/AllListsView.vue";
 import ListsView from "@/views/ListsView.vue";
 import FreezerView from "@/views/FreezerView.vue";
 import FreezerContentsView from "@/views/FreezerContentsView.vue";
@@ -24,7 +24,7 @@ const routes = [
   {
     path: "/alllists",
     name: "alllists",
-    component: ListsStoreView,
+    component: AllListsView,
   },
   {
     path: "/lists",
