@@ -71,22 +71,16 @@
       :key="`${isEdit}-${passedFormData.id}`"
     />
 
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card>
-        <v-card-title>Delete list?</v-card-title>
-        <v-card-text>
-          "{{ selectedList?.name }}" and everything on it will be removed. The
-          store and its aisles stay.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn color="error" variant="text" @click="confirmDelete">
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="deleteDialog"
+      title="Delete list?"
+      confirm-label="Delete"
+      icon="mdi-delete-outline"
+      @confirm="confirmDelete"
+    >
+      "{{ selectedList?.name }}" and everything on it will be removed. The store
+      and its aisles stay.
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -99,7 +93,7 @@
   import { tiltFor } from "@/utils/paperTilt";
   import ListNotepadCard from "@/components/ListNotepadCard.vue";
   import ListForm from "@/components/ListForm.vue";
-
+  import ConfirmDialog from "@/components/ConfirmDialog.vue";
   const { shoppinglists, isLoading, addShoppingList, editList, removeList } =
     useShoppingLists();
   const router = useRouter();

@@ -60,26 +60,16 @@
       :key="passedFormData.id"
     />
 
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card>
-        <v-card-title>Delete freezer?</v-card-title>
-        <v-card-text>
-          "{{ passedDeleteData.name }}" will be removed, along with everything
-          recorded as being in it.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="deleteFreezer(passedDeleteData)"
-          >
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="deleteDialog"
+      title="Delete freezer?"
+      confirm-label="Delete"
+      icon="mdi-delete-outline"
+      @confirm="deleteFreezer(passedDeleteData)"
+    >
+      "{{ passedDeleteData.name }}" will be removed, along with everything
+      recorded as being in it.
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -88,7 +78,7 @@
   import FreezerCard from "@/components/FreezerCard.vue";
   import FreezerForm from "@/components/FreezerForm.vue";
   import { useFreezers } from "@/composables/freezersComposable";
-
+  import ConfirmDialog from "@/components/ConfirmDialog.vue";
   const freezerFormDialog = ref(false);
   const editFreezerFormDialog = ref(false);
   const deleteDialog = ref(false);

@@ -130,53 +130,27 @@
       :key="-1"
     />
 
-    <v-dialog v-model="clear_purchased_dialog" max-width="400">
-      <v-card>
-        <v-card-title>Clear purchased items?</v-card-title>
-        <v-card-text>
-          The {{ fullshoppinglist?.totalpurchased }} item{{
-            fullshoppinglist?.totalpurchased === 1 ? "" : "s"
-          }}
-          you have already picked up will be removed from this list.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="clear_purchased_dialog = false">
-            Cancel
-          </v-btn>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="clearPurchasedListFunction(fullshoppinglist?.id)"
-          >
-            Clear
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="clear_purchased_dialog"
+      title="Clear purchased items?"
+      confirm-label="Clear"
+      icon="mdi-broom"
+      @confirm="clearPurchasedListFunction(fullshoppinglist?.id)"
+    >
+      The {{ totalPurchased }} item{{ totalPurchased === 1 ? "" : "s" }} you
+      have already picked up will be removed from this list.
+    </ConfirmDialog>
 
-    <v-dialog v-model="clear_full_dialog" max-width="400">
-      <v-card>
-        <v-card-title>Clear the whole list?</v-card-title>
-        <v-card-text>
-          All {{ fullshoppinglist?.totalitems }} items will be removed,
-          purchased or not. The list itself stays.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="clear_full_dialog = false">
-            Cancel
-          </v-btn>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="clearListFunction(fullshoppinglist?.id)"
-          >
-            Clear all
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="clear_full_dialog"
+      title="Clear the whole list?"
+      confirm-label="Clear all"
+      icon="mdi-delete-sweep-outline"
+      @confirm="clearListFunction(fullshoppinglist?.id)"
+    >
+      All {{ totalItems }} items will be removed, purchased or not. The list
+      itself stays.
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -184,6 +158,7 @@
   import { computed, ref } from "vue";
   import ShoppingList from "@/components/ShoppingList.vue";
   import ListItemForm from "@/components/ListItemForm.vue";
+  import ConfirmDialog from "@/components/ConfirmDialog.vue";
   import { useFullShoppingList } from "@/composables/listsComposable";
   import { useMainStore } from "@/stores/main";
   import { useOffline } from "@/composables/offlineComposable";

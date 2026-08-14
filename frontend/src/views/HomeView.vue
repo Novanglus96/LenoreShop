@@ -138,21 +138,19 @@
       </section>
     </template>
 
-    <!-- Single instance, outside any v-for. -->
-    <v-dialog v-model="confirmDemo" max-width="400">
-      <v-card>
-        <v-card-title>Load Demo Data?</v-card-title>
-        <v-card-text>
-          This will create two sample stores (Grocery Store and Hardware Store)
-          with aisles, items, and starter shopping lists.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDemo = false">Cancel</v-btn>
-          <v-btn color="primary" variant="text" @click="onLoadDemo">Load</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!-- Single instance, outside any v-for. Not destructive, so it takes the
+         normal tone rather than the red one the delete confirmations use. -->
+    <ConfirmDialog
+      v-model="confirmDemo"
+      title="Load demo data?"
+      confirm-label="Load"
+      tone="normal"
+      icon="mdi-database-import-outline"
+      @confirm="onLoadDemo"
+    >
+      This will create two sample stores (Grocery Store and Hardware Store) with
+      aisles, items, and starter shopping lists.
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -168,6 +166,7 @@
   import { tiltFor } from "@/utils/paperTilt";
   import ListNotepadCard from "@/components/ListNotepadCard.vue";
   import FreezerFrostCard from "@/components/FreezerFrostCard.vue";
+  import ConfirmDialog from "@/components/ConfirmDialog.vue";
 
   // How many list cards the dashboard shows before handing off to /alllists.
   // Roughly two rows on a laptop, so the freezer section stays reachable.

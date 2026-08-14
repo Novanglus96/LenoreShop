@@ -60,22 +60,16 @@
       :key="`${isEdit}-${passedFormData.id}`"
     />
 
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card>
-        <v-card-title>Delete item?</v-card-title>
-        <v-card-text>
-          "{{ selectedItem?.name }}" will be removed from the catalog. Shopping
-          lists that use it lose the entry too.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn color="error" variant="text" @click="confirmDelete">
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="deleteDialog"
+      title="Delete item?"
+      confirm-label="Delete"
+      icon="mdi-delete-outline"
+      @confirm="confirmDelete"
+    >
+      "{{ selectedItem?.name }}" will be removed from the catalog. Shopping
+      lists that use it lose the entry too.
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -85,7 +79,7 @@
   import ItemForm from "@/components/ItemForm.vue";
   import { useItems } from "@/composables/itemsComposable";
   import { useItemStore } from "@/stores/item";
-
+  import ConfirmDialog from "@/components/ConfirmDialog.vue";
   const itemstore = useItemStore();
 
   const { items, isLoading, addItem, editItem, removeItem } = useItems(false);
