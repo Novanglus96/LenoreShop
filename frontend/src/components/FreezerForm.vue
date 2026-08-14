@@ -94,9 +94,14 @@
     clearFormData();
   };
 
+  // Reset to the defaults the parent supplied. The watchEffect above only
+  // re-runs when passedFormData changes, so clearing to hardcoded blanks would
+  // discard any prefill for the life of the view — see FreezerItemForm, where
+  // exactly that lost the selected freezer and the date_added default.
   const clearFormData = () => {
-    id.value.value = null;
-    name.value.value = null;
-    location.value.value = null;
+    const defaults = props.passedFormData ?? {};
+    id.value.value = defaults.id ?? null;
+    name.value.value = defaults.name ?? null;
+    location.value.value = defaults.location ?? null;
   };
 </script>

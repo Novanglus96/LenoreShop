@@ -182,14 +182,24 @@
     clearFormData();
   };
 
+  // Reset to the defaults the parent supplied, not to blanks.
+  //
+  // closeDialog() calls this on both Cancel and Save, and the watchEffect above
+  // only re-runs when passedFormData itself changes — which it doesn't, since
+  // the parent hands over the same object every time. Clearing to null
+  // therefore threw away the defaults permanently for the life of the view:
+  // the freezer you were standing in, and the date_added prefill of today.
+  // Losing that prefill is the quieter half, because a blank date_added is not
+  // "unset", it is recorded as "date added unknown".
   const clearFormData = () => {
-    id.value.value = null;
-    name.value.value = null;
-    qty.value.value = 1;
-    unit.value.value = null;
-    date_added.value.value = null;
-    discard_date.value.value = null;
-    notes.value.value = null;
-    freezer_id.value.value = null;
+    const defaults = props.passedFormData ?? {};
+    id.value.value = defaults.id ?? null;
+    name.value.value = defaults.name ?? null;
+    qty.value.value = defaults.qty ?? 1;
+    unit.value.value = defaults.unit ?? null;
+    date_added.value.value = defaults.date_added ?? null;
+    discard_date.value.value = defaults.discard_date ?? null;
+    notes.value.value = defaults.notes ?? null;
+    freezer_id.value.value = defaults.freezer_id ?? null;
   };
 </script>
