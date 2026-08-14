@@ -157,6 +157,49 @@
     );
 }
 
+/* -- Ruled rows ----------------------------------------------------------- */
+
+/* Rows that rule themselves.
+ *
+ * .ls-ruled paints ruling as a fixed-pitch background, which is right for
+ * preview lines of a known height but drifts out of step the moment a row wraps
+ * to two lines. These draw the line as part of the row instead, so it always
+ * lands under the text it separates however tall that row turns out to be.
+ */
+.ls-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The red margin rule down the left, at the same offset as .ls-ruled--margin.
+ * Kept separate from .ls-rows so it can be drawn once down a block containing
+ * several row groups — restarting it under every subheading reads as a broken
+ * line rather than a margin.
+ */
+.ls-sheet-margin {
+  position: relative;
+  padding-left: var(--ls-space-md);
+}
+
+.ls-sheet-margin::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--ls-space-md) - 9px);
+  width: 1px;
+  background: var(--ls-margin-rule);
+}
+
+.ls-row {
+  border-bottom: 1px solid var(--ls-rule);
+}
+
+.ls-row:last-child {
+  border-bottom: 0;
+}
+
 /* -- Folded tab ----------------------------------------------------------- */
 
 /* A small label that reads as a tab folded over the top of the sheet. */
