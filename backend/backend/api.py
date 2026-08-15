@@ -21,7 +21,7 @@ from django.db.models import F, Count, Prefetch, Q
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
-api.version = "1.9.0-alpha.2"
+api.version = "1.9.0-alpha.3"
 api.description = "API documentation for LenoreShop"
 
 # Number of items previewed as ruled lines on a shopping list card.

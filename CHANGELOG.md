@@ -1,3 +1,17 @@
+# [1.9.0-alpha.3](https://github.com/Novanglus96/LenoreShop/compare/v1.9.0-alpha.2...v1.9.0-alpha.3) (2026-08-15)
+
+
+### Bug Fixes
+
+* add Pillow to the CI test requirements ([98dddf6](https://github.com/Novanglus96/LenoreShop/commit/98dddf6eb957246f4c5c65bec134d324e5200023))
+* offer the camera as its own control when adding a photo ([65c72ec](https://github.com/Novanglus96/LenoreShop/commit/65c72ecc0d267782449e539b3123a5b67db7b7b4))
+
+
+### Features
+
+* add a photo to an item from a shopping list row ([2d2dcd9](https://github.com/Novanglus96/LenoreShop/commit/2d2dcd97b09a4d1eabcc0e517f7683123a492946))
+* add photos to items and freezer foods ([40cdc81](https://github.com/Novanglus96/LenoreShop/commit/40cdc8172c4d27fa4b0a9952eda77c80d9bd04a7))
+
 # [1.9.0-alpha.2](https://github.com/Novanglus96/LenoreShop/compare/v1.9.0-alpha.1...v1.9.0-alpha.2) (2026-08-15)
 
 
