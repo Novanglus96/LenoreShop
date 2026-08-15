@@ -1,0 +1,11 @@
+/**
+ * Entry point for the shared design layer. Imported once from main.js, before
+ * Vuetify's own styles are applied by the plugin, so component styles can rely
+ * on the tokens being present.
+ */
+
+@import "./fonts.css";
+@import "./tokens.css";
+@import "./paper.css";
+@import "./frost.css";
+@import "./forms.css";

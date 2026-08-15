@@ -17,6 +17,13 @@ these files are ~10 lines each.
 | `docs-release.yml` | `docs.yml@v1` (`mode: release`) | `release: published`, or dispatch by tag |
 | `announce.yml` | `announce.yml@v1` (`target: reddit`) | `release: published`, or dispatch by tag |
 | `pr-title-lint.yml` | `pr-title-lint.yml@v1` | `pull_request` |
+| `tests.yml` | `tests.yml@v1` | `pull_request` |
+
+`tests.yml` overrides all three of the reusable workflow's defaults, which
+assume LenoreChore's setup: this repo runs Django's test runner rather than
+pytest, installs `backend/requirements-test.txt` rather than `-test`'s usual
+full set (mysqlclient will not build on the job image), and has no `npm test`
+script, so the frontend job lints and builds instead.
 
 ## 🔴 `.github/workflows/` is gone, and it must stay gone
 

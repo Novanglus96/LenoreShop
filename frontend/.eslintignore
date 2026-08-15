@@ -1,0 +1,4 @@
+node_modules/
+# Build output, including the generated PWA service worker and workbox bundle.
+# Linting it produced ~500 errors and made `npm run lint` unusable.
+dist/
