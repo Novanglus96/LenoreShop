@@ -19,7 +19,7 @@ RUN npm run build
 FROM python:3.11.4-slim-bookworm
 
 LABEL maintainer="John Adams"
-LABEL version="1.9.0-alpha.3"
+LABEL version="1.9.0-beta.1"
 
 # Install system dependencies: nginx, supervisord, db clients, netcat
 RUN apt-get update && apt-get install -y --no-install-recommends \
