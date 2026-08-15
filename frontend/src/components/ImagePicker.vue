@@ -14,11 +14,22 @@
       </span>
 
       <div class="imagepicker__actions">
-        <!-- No `capture` attribute on purpose: with it, the OS goes straight to
-             the camera and the photo library becomes unreachable. Without it,
-             a phone offers both and a desktop offers a file picker. -->
+        <!-- Two inputs, because one cannot do both jobs. `capture` sends the
+             OS straight to the camera; without it the picker opens the photo
+             library. Relying on a single bare input to offer a choice sheet
+             does not hold up on device — tested on mobile, only the library
+             was offered and the camera was unreachable. Each source therefore
+             gets its own control. -->
         <input
-          ref="input"
+          ref="cameraInput"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          class="imagepicker__input"
+          @change="pick"
+        />
+        <input
+          ref="libraryInput"
           type="file"
           accept="image/*"
           class="imagepicker__input"
@@ -26,14 +37,22 @@
         />
 
         <v-btn
+          v-if="canCapture"
           variant="tonal"
           size="small"
-          :prepend-icon="
-            previewUrl ? 'mdi-image-edit-outline' : 'mdi-camera-plus-outline'
-          "
-          @click="input.click()"
+          prepend-icon="mdi-camera-outline"
+          @click="cameraInput.click()"
         >
-          {{ previewUrl ? "Change" : "Add photo" }}
+          {{ previewUrl ? "Retake" : "Take photo" }}
+        </v-btn>
+
+        <v-btn
+          variant="tonal"
+          size="small"
+          prepend-icon="mdi-image-outline"
+          @click="libraryInput.click()"
+        >
+          {{ previewUrl ? "Choose another" : "Choose photo" }}
         </v-btn>
 
         <v-btn
@@ -80,9 +99,20 @@
 
   const emit = defineEmits(["update:modelValue"]);
 
-  const input = ref(null);
+  const cameraInput = ref(null);
+  const libraryInput = ref(null);
   const localUrl = ref(null);
   const error = ref("");
+
+  // A coarse pointer means a phone or tablet, which is where a camera intent
+  // makes sense and where this feature is actually used. Deliberately a
+  // capability query rather than a viewport breakpoint: a narrow desktop window
+  // is still a desktop. Defaults to showing the button if matchMedia is
+  // missing, since losing the camera is the worse failure.
+  const canCapture =
+    typeof window === "undefined" || !window.matchMedia
+      ? true
+      : window.matchMedia("(pointer: coarse)").matches;
 
   // Mirrors the backend's own ceiling, so an oversized photo is caught before
   // it is uploaded rather than after a round trip.
@@ -103,8 +133,17 @@
     }
   };
 
+  // An input holds on to its last selection, so picking the same file twice
+  // fires no change event. Clearing after every read keeps re-picking working,
+  // and covers switching between the camera and the library.
+  const resetInputs = () => {
+    if (cameraInput.value) cameraInput.value.value = "";
+    if (libraryInput.value) libraryInput.value.value = "";
+  };
+
   const pick = event => {
     const file = event.target.files?.[0];
+    resetInputs();
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -125,9 +164,7 @@
   const clear = () => {
     error.value = "";
     releaseLocalUrl();
-    // The file input keeps its last selection, so re-picking the same file
-    // after a Remove would not fire a change event without this.
-    if (input.value) input.value.value = "";
+    resetInputs();
     // Only worth a delete call if there was something stored to begin with.
     emit("update:modelValue", {
       file: null,
