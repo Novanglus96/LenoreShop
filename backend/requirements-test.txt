@@ -1,0 +1,20 @@
+# Dependencies needed to run `manage.py test` in CI, and nothing else.
+#
+# Deliberately NOT `-r requirements.txt`:
+#   - mysqlclient needs libmysqlclient-dev system headers, which the CI job
+#     image does not carry, so installing it would fail the job outright.
+#   - psycopg2-binary, gunicorn and channels-redis are runtime-only. Tests run
+#     on sqlite with the InMemory channel layer (settings.py picks those when
+#     SQL_ENGINE and REDIS_URL are unset), so none of them are imported.
+#
+# Keep the pins in step with requirements.txt.
+Django==4.2.3
+django-ninja==0.22.2
+channels==4.0.0
+daphne==4.0.0
+django-cors-headers==4.2.0
+django-filter==23.2
+django-jazzmin==3.0.0
+# Not runtime-only: ImageField needs it at import, and the image tests encode
+# real photos through it rather than faking the upload.
+Pillow==10.4.0

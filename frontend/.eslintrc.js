@@ -4,6 +4,9 @@ module.exports = {
     node: true, // Enable Node.js global variables and scope
     browser: true, // Enable browser global variables
     es2021: true, // Enable modern JavaScript syntax
+    "vue/setup-compiler-macros": true, // defineProps/defineEmits are compiler
+    // macros in <script setup>; without this they read as undefined globals and
+    // each file has to import them from "vue", which Vue 3.3+ deprecates.
   },
   extends: [
     "plugin:vue/vue3-essential", // Essential rules for Vue 3

@@ -2,44 +2,31 @@
   <v-dialog
     v-model="show"
     persistent
-    :width="isMobile ? undefined : '1024'"
+    :width="isMobile ? undefined : 460"
     :fullscreen="isMobile"
   >
-    <v-card>
-      <form @submit.prevent="submit">
-        <v-card-title>
-          <span class="text-h5" v-if="props.isEdit == false">Add Store</span>
-          <span class="text-h5" v-else>Edit Store</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Store Name*"
-                  v-model="name.value.value"
-                  :error-messages="name.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="closeDialog">
-            Close
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" type="submit">Save</v-btn>
-        </v-card-actions>
-      </form>
-    </v-card>
+    <FormSheet
+      :title="props.isEdit ? 'Edit Store' : 'Add Store'"
+      eyebrow="Store"
+      icon="mdi-storefront-outline"
+      :fullscreen="isMobile"
+      required-note
+      @submit="submit"
+      @close="closeDialog"
+    >
+      <v-text-field
+        label="Store Name*"
+        v-model="name.value.value"
+        :error-messages="name.errorMessage.value"
+      ></v-text-field>
+    </FormSheet>
   </v-dialog>
 </template>
 <script setup>
   import { ref, defineEmits, defineProps, onMounted, watchEffect } from "vue";
   import { useDisplay } from "vuetify";
   import { useField, useForm } from "vee-validate";
+  import FormSheet from "@/components/FormSheet.vue";
 
   const { handleSubmit } = useForm({
     validationSchema: {
@@ -99,8 +86,13 @@
     clearFormData();
   };
 
+  // Reset to the defaults the parent supplied. The watchEffect above only
+  // re-runs when passedFormData changes, so clearing to hardcoded blanks would
+  // discard any prefill for the life of the view — see FreezerItemForm, where
+  // exactly that lost the selected freezer and the date_added default.
   const clearFormData = () => {
-    id.value.value = null;
-    name.value.value = null;
+    const defaults = props.passedFormData ?? {};
+    id.value.value = defaults.id ?? null;
+    name.value.value = defaults.name ?? null;
   };
 </script>

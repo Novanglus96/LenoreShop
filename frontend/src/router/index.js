@@ -5,8 +5,9 @@ import StoreView from "@/views/StoreView.vue";
 import ListView from "@/views/ListView.vue";
 import ItemView from "@/views/ItemView.vue";
 import AisleView from "@/views/AisleView.vue";
-import ListsStoreView from "@/views/ListsStoreView.vue";
-import ListsView from "@/views/ListsView.vue";
+import AllListsView from "@/views/AllListsView.vue";
+import FreezerView from "@/views/FreezerView.vue";
+import FreezerContentsView from "@/views/FreezerContentsView.vue";
 
 const routes = [
   {
@@ -22,12 +23,13 @@ const routes = [
   {
     path: "/alllists",
     name: "alllists",
-    component: ListsStoreView,
+    component: AllListsView,
   },
   {
+    // Merged into /alllists, which now both browses and manages lists. Kept as
+    // a redirect so bookmarks and an already-installed PWA still land somewhere.
     path: "/lists",
-    name: "lists",
-    component: ListsView,
+    redirect: "/alllists",
   },
   {
     path: "/list",
@@ -48,6 +50,16 @@ const routes = [
     path: "/aisles/:store",
     name: "aislefilter",
     component: AisleView,
+  },
+  {
+    path: "/freezers",
+    name: "freezers",
+    component: FreezerView,
+  },
+  {
+    path: "/freezer",
+    name: "freezer",
+    component: FreezerContentsView,
   },
   {
     path: "/:catchAll(.*)",

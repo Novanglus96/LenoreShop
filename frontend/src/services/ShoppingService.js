@@ -1,25 +1,25 @@
-import axios from 'axios'
+import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: "/api",
   withCredentials: false,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
-})
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+});
 
 export default {
-    createItem(newItem) {
-        return apiClient.post('/items', newItem)
-    },
-    updateItem(updatedItem) {
-        return apiClient.put('/items/' + updatedItem.id, updatedItem)
-    },
-    deleteItem(deletedItem) {
-        return apiClient.delete('/items/' + deletedItem.id)
-    },
-    getItems() {
-        return apiClient.call("get", "/items")
-    }
-}
+  createItem(newItem) {
+    return apiClient.post("/items", newItem);
+  },
+  updateItem(updatedItem) {
+    return apiClient.put("/items/" + updatedItem.id, updatedItem);
+  },
+  deleteItem(deletedItem) {
+    return apiClient.delete("/items/" + deletedItem.id);
+  },
+  getItems() {
+    return apiClient.call("get", "/items");
+  },
+};
