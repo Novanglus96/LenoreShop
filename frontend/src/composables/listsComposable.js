@@ -229,15 +229,18 @@ function applyOptimisticPurchase(old, updatedListItem) {
   if (!old) return old;
   const { id, purchased } = updatedListItem;
 
-  const removeFromAisles = (aisles) => {
+  const removeFromAisles = aisles => {
     let removedItem = null;
     let sourceAisle = null;
-    const updated = aisles.map((aisle) => {
-      const idx = aisle.listitems.findIndex((i) => i.id === id);
+    const updated = aisles.map(aisle => {
+      const idx = aisle.listitems.findIndex(i => i.id === id);
       if (idx !== -1) {
         removedItem = { ...aisle.listitems[idx], purchased };
         sourceAisle = aisle;
-        return { ...aisle, listitems: aisle.listitems.filter((i) => i.id !== id) };
+        return {
+          ...aisle,
+          listitems: aisle.listitems.filter(i => i.id !== id),
+        };
       }
       return aisle;
     });
@@ -245,9 +248,9 @@ function applyOptimisticPurchase(old, updatedListItem) {
   };
 
   const addToAisles = (aisles, item, sourceAisle) => {
-    const existing = aisles.find((a) => a.id === sourceAisle.id);
+    const existing = aisles.find(a => a.id === sourceAisle.id);
     if (existing) {
-      return aisles.map((a) =>
+      return aisles.map(a =>
         a.id === sourceAisle.id
           ? { ...a, listitems: [...a.listitems, item] }
           : a,
@@ -257,16 +260,28 @@ function applyOptimisticPurchase(old, updatedListItem) {
   };
 
   if (purchased) {
-    const { updated: newAisles, removedItem, sourceAisle } = removeFromAisles(old.aisles);
+    const {
+      updated: newAisles,
+      removedItem,
+      sourceAisle,
+    } = removeFromAisles(old.aisles);
     if (!removedItem) return old;
     return {
       ...old,
       aisles: newAisles,
-      purchased_aisles: addToAisles(old.purchased_aisles, removedItem, sourceAisle),
+      purchased_aisles: addToAisles(
+        old.purchased_aisles,
+        removedItem,
+        sourceAisle,
+      ),
       totalpurchased: old.totalpurchased + 1,
     };
   } else {
-    const { updated: newPurchasedAisles, removedItem, sourceAisle } = removeFromAisles(old.purchased_aisles);
+    const {
+      updated: newPurchasedAisles,
+      removedItem,
+      sourceAisle,
+    } = removeFromAisles(old.purchased_aisles);
     if (!removedItem) return old;
     return {
       ...old,
@@ -305,10 +320,15 @@ export function useFullShoppingList(listID) {
 
   const updateListItemMutation = useMutation({
     mutationFn: updateListItemFunction,
-    onMutate: async (updatedListItem) => {
-      await queryClient.cancelQueries({ queryKey: ["fullshoppinglist", listID] });
-      const previousList = queryClient.getQueryData(["fullshoppinglist", listID]);
-      queryClient.setQueryData(["fullshoppinglist", listID], (old) =>
+    onMutate: async updatedListItem => {
+      await queryClient.cancelQueries({
+        queryKey: ["fullshoppinglist", listID],
+      });
+      const previousList = queryClient.getQueryData([
+        "fullshoppinglist",
+        listID,
+      ]);
+      queryClient.setQueryData(["fullshoppinglist", listID], old =>
         applyOptimisticPurchase(old, updatedListItem),
       );
       return { previousList };
@@ -320,7 +340,10 @@ export function useFullShoppingList(listID) {
         return;
       }
       if (context?.previousList) {
-        queryClient.setQueryData(["fullshoppinglist", listID], context.previousList);
+        queryClient.setQueryData(
+          ["fullshoppinglist", listID],
+          context.previousList,
+        );
       }
       console.error("Error updating list item");
     },
@@ -347,7 +370,7 @@ export function useFullShoppingList(listID) {
   });
 
   // Flush pending updates when connection is restored
-  watch(isOffline, async (offline) => {
+  watch(isOffline, async offline => {
     if (offline) return;
     const pending = loadPendingUpdates();
     for (const item of pending) {

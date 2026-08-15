@@ -2,97 +2,72 @@
   <v-dialog
     v-model="show"
     persistent
-    :width="isMobile ? undefined : '1024'"
+    :width="isMobile ? undefined : 560"
     :fullscreen="isMobile"
   >
-    <v-card>
-      <form @submit.prevent="submit">
-        <v-card-title>
-          <span class="text-h5" v-if="props.isEdit == false">Add Item</span>
-          <span class="text-h5" v-else>Edit Item</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  label="qty"
-                  v-model="qty.value.value"
-                  variant="outlined"
-                  type="number"
-                  :error-messages="qty.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  label="new item"
-                  variant="outlined"
-                  v-model="newItemField"
-                  @update:model-value="newItemTextChanged()"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="1">
-                <v-btn
-                  icon="mdi-plus"
-                  variant="plain"
-                  @click="itemChanged"
-                  :disabled="!newItemEntered"
-                ></v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-autocomplete
-                  clearable
-                  label="Item*"
-                  :items="items.items"
-                  item-title="name"
-                  item-value="id"
-                  v-model="item.value.value"
-                  :return-object="true"
-                  :error-messages="item.errorMessage.value"
-                  chips
-                  @update:model-value="itemSelected()"
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-autocomplete
-                  label="Aisle*"
-                  :items="aisles"
-                  item-title="name"
-                  item-value="id"
-                  v-model="aisle_id.value.value"
-                  :error-messages="aisle_id.errorMessage.value"
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  label="notes"
-                  v-model="notes.value.value"
-                  variant="outlined"
-                  type="text"
-                  :error-messages="notes.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="closeDialog()">
-            Close
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" type="submit">Save</v-btn>
-        </v-card-actions>
-      </form>
-    </v-card>
+    <FormSheet
+      :title="props.isEdit ? 'Edit Item' : 'Add Item'"
+      eyebrow="Item"
+      icon="mdi-cart-plus"
+      :fullscreen="isMobile"
+      required-note
+      @submit="submit"
+      @close="closeDialog"
+    >
+      <!-- Picking the item comes first: choosing one fills in its usual aisle,
+           so the field below is normally already correct. -->
+      <v-autocomplete
+        clearable
+        chips
+        label="Item*"
+        :items="items.items"
+        item-title="name"
+        item-value="id"
+        v-model="item.value.value"
+        :return-object="true"
+        :error-messages="item.errorMessage.value"
+        @update:model-value="itemSelected()"
+      ></v-autocomplete>
+
+      <v-autocomplete
+        label="Aisle*"
+        :items="aisles"
+        item-title="name"
+        item-value="id"
+        v-model="aisle_id.value.value"
+        :error-messages="aisle_id.errorMessage.value"
+      ></v-autocomplete>
+
+      <v-text-field
+        class="ls-form-half"
+        label="Quantity*"
+        type="number"
+        min="1"
+        v-model="qty.value.value"
+        :error-messages="qty.errorMessage.value"
+      ></v-text-field>
+
+      <v-text-field
+        class="ls-form-half"
+        label="Notes"
+        v-model="notes.value.value"
+        :error-messages="notes.errorMessage.value"
+      ></v-text-field>
+
+      <!-- The escape hatch for something not in the catalog yet. The add
+           button is an affordance on the field itself rather than a separate
+           icon button in its own grid column. -->
+      <v-text-field
+        label="Not in the list? Add a new item"
+        v-model="newItemField"
+        append-inner-icon="mdi-plus-circle"
+        hint="Adds it to the catalog and selects it above"
+        persistent-hint
+        @update:model-value="newItemTextChanged()"
+        @click:append-inner="itemChanged"
+        @keydown.enter.prevent="itemChanged"
+      ></v-text-field>
+    </FormSheet>
   </v-dialog>
 </template>
 <script setup>
@@ -102,6 +77,7 @@
   import { useAisles } from "@/composables/aislesComposable";
   import { useDisplay } from "vuetify";
   import { useField, useForm } from "vee-validate";
+  import FormSheet from "@/components/FormSheet.vue";
 
   const { handleSubmit } = useForm({
     validationSchema: {
@@ -228,6 +204,10 @@
   };
 
   const itemChanged = async () => {
+    // The add affordance lives on the field itself now, so it can be triggered
+    // with nothing typed; the old separate button was disabled instead.
+    if (!newItemEntered.value) return;
+
     const newItem = {
       name: newItemField.value,
     };

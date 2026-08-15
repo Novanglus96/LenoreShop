@@ -22,7 +22,7 @@ export function loadPendingUpdates() {
 
 export function savePendingUpdate(listItem) {
   const pending = loadPendingUpdates();
-  const idx = pending.findIndex((p) => p.id === listItem.id);
+  const idx = pending.findIndex(p => p.id === listItem.id);
   if (idx !== -1) {
     pending[idx] = listItem;
   } else {
@@ -32,7 +32,7 @@ export function savePendingUpdate(listItem) {
 }
 
 export function removePendingUpdate(id) {
-  const pending = loadPendingUpdates().filter((p) => p.id !== id);
+  const pending = loadPendingUpdates().filter(p => p.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(pending));
 }
 

@@ -200,3 +200,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+# Local UI-refresh working status (not for commit)
+STATUS-ui-refresh.md

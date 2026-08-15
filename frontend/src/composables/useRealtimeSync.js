@@ -19,11 +19,11 @@ export function useRealtimeSync() {
       }
     };
 
-    ws.onmessage = (event) => {
+    ws.onmessage = event => {
       try {
         const data = JSON.parse(event.data);
         if (data.type === "invalidate" && Array.isArray(data.keys)) {
-          data.keys.forEach((key) =>
+          data.keys.forEach(key =>
             queryClient.invalidateQueries({ queryKey: [key] }),
           );
         }

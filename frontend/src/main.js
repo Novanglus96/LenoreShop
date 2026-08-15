@@ -6,6 +6,7 @@ import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 import vuetify from "./plugins/vuetify";
 import { loadFonts } from "./plugins/webfontloader";
 import { VueQueryPlugin } from "@tanstack/vue-query";
+import "./styles/index.css";
 
 loadFonts();
 
