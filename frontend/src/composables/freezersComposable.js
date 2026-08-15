@@ -1,0 +1,295 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
+import axios from "axios";
+import { useMainStore } from "@/stores/main";
+
+const apiClient = axios.create({
+  baseURL: "/api",
+  withCredentials: false,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+});
+
+function handleApiError(error, message) {
+  const mainstore = useMainStore();
+  if (error.response) {
+    console.error("Response error:", error.response.data);
+    console.error("Status code:", error.response.status);
+    console.error("Headers", error.response.headers);
+  } else if (error.request) {
+    console.error("No response received:", error.request);
+  } else {
+    console.error("Error during request setup:", error.message);
+  }
+  mainstore.showSnackbar(message + "Error #" + error.response.status, "error");
+  throw error;
+}
+
+async function createFreezer(newFreezer) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post("/freezers", newFreezer);
+    mainstore.showSnackbar("Freezer created successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezer not created: ");
+  }
+}
+
+async function updateFreezerFunction(updatedFreezer) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.put(
+      "/freezers/" + updatedFreezer.id,
+      updatedFreezer,
+    );
+    mainstore.showSnackbar("Freezer updated successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezer not updated: ");
+  }
+}
+
+async function deleteFreezerFunction(deletedFreezer) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete("/freezers/" + deletedFreezer.id);
+    mainstore.showSnackbar("Freezer deleted successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezer not deleted: ");
+  }
+}
+
+async function getFreezersFunction() {
+  try {
+    const response = await apiClient.get("/freezers");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezers not fetched: ");
+  }
+}
+
+async function getFreezerFullFunction(freezerID) {
+  try {
+    const response = await apiClient.get("/freezerfull/" + freezerID);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezer contents not fetched: ");
+  }
+}
+
+async function getExpiringFunction(days) {
+  try {
+    const response = await apiClient.get("/freezeritemsexpiring?days=" + days);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Expiring foods not fetched: ");
+  }
+}
+
+async function createFreezerItemFunction(newFreezerItem) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post("/freezeritems", newFreezerItem);
+    mainstore.showSnackbar("Food added successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Food not added: ");
+  }
+}
+
+async function updateFreezerItemFunction(updatedFreezerItem) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.put(
+      "/freezeritems/" + updatedFreezerItem.id,
+      updatedFreezerItem,
+    );
+    mainstore.showSnackbar("Food updated successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Food not updated: ");
+  }
+}
+
+async function deleteFreezerItemFunction(deletedFreezerItem) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.delete(
+      "/freezeritems/" + deletedFreezerItem.id,
+    );
+    mainstore.showSnackbar("Food removed successfully!", "success");
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Food not removed: ");
+  }
+}
+
+/**
+ * Uploads or clears a freezer item's photo.
+ *
+ * Separate from the item PUT because a file has to go up as multipart while the
+ * rest of the API is JSON.
+ *
+ * @param {number} freezerItemId The freezer item to attach the photo to.
+ * @param {Object} image The `{ file, remove }` staged by ImagePicker.
+ */
+async function saveFreezerItemImage(freezerItemId, image) {
+  if (!freezerItemId || !image) return;
+
+  try {
+    if (image.file) {
+      const body = new FormData();
+      body.append("image", image.file);
+      // See itemsComposable: apiClient defaults to application/json, and axios
+      // turns a FormData body into JSON when it sees that, silently dropping
+      // the file. The browser replaces this value with the multipart boundary.
+      await apiClient.post(`/freezeritems/${freezerItemId}/image`, body, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } else if (image.remove) {
+      await apiClient.delete(`/freezeritems/${freezerItemId}/image`);
+    }
+  } catch (error) {
+    handleApiError(error, "Photo not saved: ");
+  }
+}
+
+export function useFreezers() {
+  const queryClient = useQueryClient();
+
+  const { data: freezers, isLoading } = useQuery({
+    queryKey: ["freezers"],
+    queryFn: getFreezersFunction,
+    select: response => response,
+    client: queryClient,
+  });
+
+  const createFreezerMutation = useMutation({
+    mutationFn: createFreezer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["freezers"] });
+    },
+  });
+
+  const updateFreezerMutation = useMutation({
+    mutationFn: updateFreezerFunction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["freezers"] });
+      queryClient.invalidateQueries({ queryKey: ["freezerfull"] });
+    },
+  });
+
+  const deleteFreezerMutation = useMutation({
+    mutationFn: deleteFreezerFunction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["freezers"] });
+      queryClient.invalidateQueries({ queryKey: ["freezerfull"] });
+    },
+  });
+
+  async function addFreezer(newFreezer) {
+    createFreezerMutation.mutate(newFreezer);
+  }
+
+  async function editFreezer(updatedFreezer) {
+    updateFreezerMutation.mutate(updatedFreezer);
+  }
+
+  async function removeFreezer(deletedFreezer) {
+    deleteFreezerMutation.mutate(deletedFreezer);
+  }
+
+  return {
+    freezers,
+    isLoading,
+    addFreezer,
+    editFreezer,
+    removeFreezer,
+  };
+}
+
+export function useFreezerFull(freezerID) {
+  const queryClient = useQueryClient();
+
+  const { data: freezerfull, isLoading } = useQuery({
+    queryKey: ["freezerfull", freezerID],
+    queryFn: () => getFreezerFullFunction(freezerID),
+    select: response => response,
+    client: queryClient,
+  });
+
+  function invalidate() {
+    queryClient.invalidateQueries({ queryKey: ["freezerfull", freezerID] });
+    queryClient.invalidateQueries({ queryKey: ["freezeritems"] });
+    // The freezer list carries the dashboard's item and expiry counts, so
+    // changing an item's contents or its discard date changes them too.
+    queryClient.invalidateQueries({ queryKey: ["freezers"] });
+  }
+
+  const createFreezerItemMutation = useMutation({
+    mutationFn: createFreezerItemFunction,
+    onSuccess: invalidate,
+  });
+
+  const updateFreezerItemMutation = useMutation({
+    mutationFn: updateFreezerItemFunction,
+    onSuccess: invalidate,
+  });
+
+  const deleteFreezerItemMutation = useMutation({
+    mutationFn: deleteFreezerItemFunction,
+    onSuccess: invalidate,
+  });
+
+  // A photo is saved on its own request after the food itself, because a new
+  // freezer item has no id to upload against until it has been created.
+  // `image` is the ImagePicker's staged `{ file, remove }`.
+  async function saveImageFor(freezerItemId, image) {
+    if (!freezerItemId || !(image?.file || image?.remove)) return;
+    await saveFreezerItemImage(freezerItemId, image);
+    invalidate();
+  }
+
+  async function addFreezerItem(newFreezerItem) {
+    const { image, ...fields } = newFreezerItem;
+    const created = await createFreezerItemMutation.mutateAsync(fields);
+    await saveImageFor(created?.id, image);
+  }
+
+  async function editFreezerItem(updatedFreezerItem) {
+    const { image, ...fields } = updatedFreezerItem;
+    await updateFreezerItemMutation.mutateAsync(fields);
+    await saveImageFor(fields.id, image);
+  }
+
+  async function removeFreezerItem(deletedFreezerItem) {
+    deleteFreezerItemMutation.mutate(deletedFreezerItem);
+  }
+
+  return {
+    freezerfull,
+    isLoading,
+    addFreezerItem,
+    editFreezerItem,
+    removeFreezerItem,
+  };
+}
+
+export function useExpiringFreezerItems(days = 14) {
+  const queryClient = useQueryClient();
+
+  const { data: expiringItems, isLoading } = useQuery({
+    queryKey: ["freezeritems", "expiring", days],
+    queryFn: () => getExpiringFunction(days),
+    select: response => response,
+    client: queryClient,
+  });
+
+  return {
+    expiringItems,
+    isLoading,
+  };
+}

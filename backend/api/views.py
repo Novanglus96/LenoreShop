@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from rest_framework import viewsets
 #from .serializers import ModelSerializer
 #from .models import Model
 
