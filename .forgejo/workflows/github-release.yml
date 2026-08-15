@@ -1,0 +1,24 @@
+name: GitHub Release
+# GitHub is the PUBLIC FRONT for this app, so it keeps carrying release objects.
+#
+# The forge is the writer, and @saithodev/semantic-release-gitea writes only
+# there. A push mirror carries refs, NOT release objects — so without this stub
+# the tag reaches GitHub and the release does not. See lenore-ci's
+# github-release.yml for the full account.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish to GitHub (e.g. v1.8.1)"
+        required: true
+jobs:
+  github-release:
+    uses: lenore/lenore-ci/.forgejo/workflows/github-release.yml@v1
+    with:
+      # The GitHub idiom; it arrives EMPTY inside a reusable workflow, and the
+      # reusable one re-resolves it from github.ref. Kept for the dispatch path.
+      tag: ${{ github.event.release.tag_name || inputs.tag }}
+      dry_run: false
+    secrets: inherit

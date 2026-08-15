@@ -2,61 +2,39 @@
   <v-dialog
     v-model="show"
     persistent
-    :width="isMobile ? undefined : '1024'"
+    :width="isMobile ? undefined : 520"
     :fullscreen="isMobile"
   >
-    <v-card>
-      <form @submit.prevent="submit">
-        <v-card-title>
-          <span class="text-h5" v-if="props.isEdit == false">Add Aisle</span>
-          <span class="text-h5" v-else>Edit Aisle</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-select
-                  label="Store*"
-                  :items="stores"
-                  item-title="name"
-                  item-value="id"
-                  v-model="store_id.value.value"
-                  :error-messages="store_id.errorMessage.value"
-                ></v-select>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Aisle Name*"
-                  required
-                  v-model="name.value.value"
-                  :error-messages="name.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row v-if="props.isEdit == true">
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Order*"
-                  v-model="order.value.value"
-                  :error-messages="order.errorMessage.value"
-                  type="number"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="closeDialog">
-            Close
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" type="submit">Save</v-btn>
-        </v-card-actions>
-      </form>
-    </v-card>
+    <FormSheet
+      :title="props.isEdit ? 'Edit Aisle' : 'Add Aisle'"
+      eyebrow="Aisle"
+      icon="mdi-view-list-outline"
+      :fullscreen="isMobile"
+      required-note
+      @submit="submit"
+      @close="closeDialog"
+    >
+      <v-select
+        label="Store*"
+        :items="stores"
+        item-title="name"
+        item-value="id"
+        v-model="store_id.value.value"
+        :error-messages="store_id.errorMessage.value"
+      ></v-select>
+      <v-text-field
+        label="Aisle Name*"
+        required
+        v-model="name.value.value"
+        :error-messages="name.errorMessage.value"
+      ></v-text-field>
+      <v-text-field
+        label="Order*"
+        v-model="order.value.value"
+        :error-messages="order.errorMessage.value"
+        type="number"
+      ></v-text-field>
+    </FormSheet>
   </v-dialog>
 </template>
 <script setup>
@@ -65,6 +43,7 @@
   import { useStores } from "@/composables/storesComposable";
   import { useDisplay } from "vuetify";
   import { useField, useForm } from "vee-validate";
+  import FormSheet from "@/components/FormSheet.vue";
 
   const { handleSubmit } = useForm({
     validationSchema: {

@@ -9,6 +9,7 @@ if [ -z "$VERSION" ]; then
 fi
 
 VERSION_FILE="scripts/version.txt"
+APP_DOCKER_FILE="Dockerfile"
 BACKEND_DOCKER_FILE="backend/Dockerfile"
 FRONTEND_DOCKER_FILE="frontend/Dockerfile"
 MODEL_VERSION_FILE="backend/api/fixtures/version.json"
@@ -17,6 +18,7 @@ PACKAGE_JSON_FILE="frontend/package.json"
 APP_VUE_FILE="frontend/src/App.vue"
 
 echo "$VERSION" > "$VERSION_FILE"
+sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$VERSION\"/" "$APP_DOCKER_FILE"
 sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$VERSION\"/" "$BACKEND_DOCKER_FILE"
 sed -i -r "s/^LABEL version=\"[^\"]*\"/LABEL version=\"$VERSION\"/" "$FRONTEND_DOCKER_FILE"
 sed -i -r "s/\"version_number\": \"[^\"]*\"/\"version_number\": \"$VERSION\"/" "$MODEL_VERSION_FILE"

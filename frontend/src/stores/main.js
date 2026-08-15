@@ -17,6 +17,7 @@ export const useMainStore = defineStore("main", {
     listsbystore: [],
     store_id: null,
     list_id: null,
+    freezer_id: null,
   }),
   getters: {
     getStores(state) {

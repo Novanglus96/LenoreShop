@@ -1,0 +1,29 @@
+/**
+ * Form layout for dialog sheets.
+ *
+ * Global rather than scoped to FormSheet.vue on purpose: these classes are put
+ * on slotted fields, which carry the *consumer's* scope id, so a scoped rule in
+ * FormSheet would never match them.
+ */
+
+/* One field per line by default. The old forms used a 12-column grid with
+   md="4" on single text fields, which in a right-sized dialog left a name
+   input occupying a third of the width with nothing beside it. */
+.ls-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ls-space-sm) var(--ls-space);
+  align-items: start;
+}
+
+.ls-form-grid > * {
+  grid-column: span 2;
+}
+
+/* Opt in for fields that genuinely pair up — an amount and its unit, a pair of
+   dates. Collapses back to full width when there isn't room for two. */
+@media (min-width: 480px) {
+  .ls-form-grid > .ls-form-half {
+    grid-column: span 1;
+  }
+}
