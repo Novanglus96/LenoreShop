@@ -1,3 +1,34 @@
+# [1.9.0-rc.1](https://github.com/Novanglus96/LenoreShop/compare/v1.8.1...v1.9.0-rc.1) (2026-08-15)
+
+
+### Bug Fixes
+
+* add Pillow to the CI test requirements ([98dddf6](https://github.com/Novanglus96/LenoreShop/commit/98dddf6eb957246f4c5c65bec134d324e5200023))
+* adding a purchased item again no longer un-buys it ([05be699](https://github.com/Novanglus96/LenoreShop/commit/05be699493f31012e6975dc0b9dcace4028e6706))
+* fold a list item back together once both rows are in the same state ([48ab9dc](https://github.com/Novanglus96/LenoreShop/commit/48ab9dc4464e5505322cc20326df968a0d0d9488))
+* keep form defaults after cancelling a dialog ([3e827d1](https://github.com/Novanglus96/LenoreShop/commit/3e827d1571cfa10c5701b0217839217ca3f96ae5))
+* make the torn and iced card edges actually visible ([4d7503f](https://github.com/Novanglus96/LenoreShop/commit/4d7503f16b887053d996a607b36f50118a2646c1))
+* offer the camera as its own control when adding a photo ([65c72ec](https://github.com/Novanglus96/LenoreShop/commit/65c72ecc0d267782449e539b3123a5b67db7b7b4))
+* rebuild the broken /alllists route as a list index ([aa77125](https://github.com/Novanglus96/LenoreShop/commit/aa77125161e80482bdd499ef70e3b4f7dbd3d633))
+* tear the bottom off the sheet instead of notching above it ([ba8be11](https://github.com/Novanglus96/LenoreShop/commit/ba8be115e260595c394a2b900cb89868fcb3139b))
+
+
+### Features
+
+* add a freezer section to the dashboard ([f5a7d26](https://github.com/Novanglus96/LenoreShop/commit/f5a7d2669869c51483e5112eed3ea94d1509dd8a))
+* add a photo to an item from a shopping list row ([2d2dcd9](https://github.com/Novanglus96/LenoreShop/commit/2d2dcd97b09a4d1eabcc0e517f7683123a492946))
+* add photos to items and freezer foods ([40cdc81](https://github.com/Novanglus96/LenoreShop/commit/40cdc8172c4d27fa4b0a9952eda77c80d9bd04a7))
+* allow the freezer date added to be unknown ([345d686](https://github.com/Novanglus96/LenoreShop/commit/345d68653d52a51204587bd67935f7124975513f))
+* bring the dialogs and the nav menu into the new design ([3d5a7cb](https://github.com/Novanglus96/LenoreShop/commit/3d5a7cb5ab91c5e4b6696e48106f0238a5109382))
+* cap the dashboard and hoist the freezer warning above the lists ([25993fd](https://github.com/Novanglus96/LenoreShop/commit/25993fdff28f1238bb1333b7a95237819b1d8790))
+* expose list progress and preview items on shopping list responses ([304423c](https://github.com/Novanglus96/LenoreShop/commit/304423c474e90634fc253b1d84a5a4498ecf525a))
+* merge the two shopping list pages into one ([2e53a3f](https://github.com/Novanglus96/LenoreShop/commit/2e53a3f6207c0891823465d059d799bfefbb4a0c))
+* rebuild the active shopping list as a paper sheet ([699b6ec](https://github.com/Novanglus96/LenoreShop/commit/699b6ec8e3b95879055feea75221f6cc6e8295f3))
+* rebuild the dashboard as paper notepad cards ([627ad5a](https://github.com/Novanglus96/LenoreShop/commit/627ad5ac1d090ef136568950a590d9989a5733d1))
+* rebuild the items and aisles pages as paper sheets ([46286c2](https://github.com/Novanglus96/LenoreShop/commit/46286c2fdf2f130a8133116f92712d6e2811fa8e))
+* rebuild the stores and freezer pages ([73bdaca](https://github.com/Novanglus96/LenoreShop/commit/73bdacadde158e6cf27d3b3f04c570ce8f7ea5d6))
+* track frozen foods by freezer with throw out dates ([8ed31cb](https://github.com/Novanglus96/LenoreShop/commit/8ed31cb33d785ddd67a2ca3f3a6b4ebf021a7934))
+
 # [1.9.0-beta.1](https://github.com/Novanglus96/LenoreShop/compare/v1.8.1...v1.9.0-beta.1) (2026-08-15)
 
 
