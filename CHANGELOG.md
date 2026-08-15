@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/Novanglus96/LenoreShop/compare/v1.9.0...v1.9.1) (2026-08-15)
+
+
+### Bug Fixes
+
+* post to Reddit instead of silently skipping every release ([974d841](https://github.com/Novanglus96/LenoreShop/commit/974d8416cc95770d6264889050eef2e20c542b3c))
+
 ## [1.9.1-rc.1](https://github.com/Novanglus96/LenoreShop/compare/v1.9.0...v1.9.1-rc.1) (2026-08-15)
 
 
