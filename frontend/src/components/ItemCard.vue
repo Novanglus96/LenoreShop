@@ -1,5 +1,14 @@
 <template>
   <li class="ls-row itemrow">
+    <!-- Placeholder shown here but not on a shopping list: in the catalog the
+         empty frame is the hint that an item can have a photo. -->
+    <ItemThumb
+      :thumbnail-url="item.thumbnail_url"
+      :image-url="item.image_url"
+      :name="item.name"
+      placeholder
+    />
+
     <span class="itemrow__body">
       <span class="itemrow__name">{{ item.name }}</span>
       <span v-if="item.aisle" class="itemrow__aisle">
@@ -46,6 +55,10 @@
   // Presentational only. The edit form and the delete confirmation live once in
   // ItemView, driven by a selected-item ref — a dialog per row is the shape that
   // caused the mobile black screen, and it mounts one dialog per visible item.
+  // The photo overlay follows the same rule: ItemThumb calls a shared lightbox
+  // mounted once in App.vue rather than rendering an overlay per row.
+  import ItemThumb from "@/components/ItemThumb.vue";
+
   defineProps({
     item: {
       type: Object,

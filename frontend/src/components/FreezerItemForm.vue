@@ -67,6 +67,11 @@
         v-model="notes.value.value"
         :error-messages="notes.errorMessage.value"
       ></v-textarea>
+
+      <ImagePicker
+        v-model="image.value.value"
+        :current-url="props.passedFormData?.thumbnail_url"
+      />
     </FormSheet>
   </v-dialog>
 </template>
@@ -75,6 +80,11 @@
   import { useDisplay } from "vuetify";
   import { useField, useForm } from "vee-validate";
   import FormSheet from "@/components/FormSheet.vue";
+  import ImagePicker from "@/components/ImagePicker.vue";
+
+  // What ImagePicker starts from, and what it is reset to on cancel. A fresh
+  // object each time, so two dialogs never share one staged photo.
+  const noImageChange = () => ({ file: null, remove: false });
 
   const { handleSubmit } = useForm({
     validationSchema: {
@@ -112,6 +122,7 @@
   const notes = useField("notes");
   const freezer_id = useField("freezer_id");
   const id = useField("id");
+  const image = useField("image", undefined, { initialValue: noImageChange() });
 
   const { smAndDown } = useDisplay();
   const isMobile = smAndDown;
@@ -201,5 +212,8 @@
     discard_date.value.value = defaults.discard_date ?? null;
     notes.value.value = defaults.notes ?? null;
     freezer_id.value.value = defaults.freezer_id ?? null;
+    // Cancelling has to drop a staged photo too, or reopening the dialog would
+    // show a preview of a file the user backed out of.
+    image.value.value = noImageChange();
   };
 </script>

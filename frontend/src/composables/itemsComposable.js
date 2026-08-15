@@ -63,6 +63,39 @@ async function deleteItemFunction(deletedItem) {
   }
 }
 
+/**
+ * Uploads or clears an item's photo.
+ *
+ * Kept separate from updateItemFunction because the rest of the API is JSON and
+ * a file has to go up as multipart — and because saving a rename should not
+ * re-send a photo that has not changed.
+ *
+ * @param {number} itemId The item to attach the photo to.
+ * @param {Object} image The `{ file, remove }` staged by ImagePicker.
+ */
+async function saveItemImage(itemId, image) {
+  if (!itemId || !image) return;
+
+  try {
+    if (image.file) {
+      const body = new FormData();
+      body.append("image", image.file);
+      // The Content-Type override is load-bearing, not decoration. apiClient
+      // defaults to application/json, and axios silently converts a FormData
+      // body to JSON when it sees a JSON content type — the file would be
+      // dropped with no error. The value set here is then replaced by the
+      // browser with the same type plus the multipart boundary.
+      await apiClient.post(`/items/${itemId}/image`, body, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } else if (image.remove) {
+      await apiClient.delete(`/items/${itemId}/image`);
+    }
+  } catch (error) {
+    handleApiError(error, "Photo not saved: ");
+  }
+}
+
 async function getItemsFunction(pageinfo, full) {
   try {
     let params =
@@ -114,13 +147,29 @@ export function useItems(full) {
     },
   });
 
+  // A photo is saved on its own request after the item itself, because a new
+  // item has no id to upload against until it has been created. `image` is the
+  // ImagePicker's staged `{ file, remove }`; it never goes to the item endpoint.
+  async function saveImageFor(itemId, image) {
+    if (!itemId || !(image?.file || image?.remove)) return;
+    await saveItemImage(itemId, image);
+    // The row on a shopping list renders the photo too, so the list keys have to
+    // drop as well as the catalog's.
+    queryClient.invalidateQueries({ queryKey: ["items"] });
+    queryClient.invalidateQueries({ queryKey: ["fullshoppinglist"] });
+  }
+
   async function addItem(newItem) {
-    const item = await createItemMutation.mutateAsync(newItem);
+    const { image, ...fields } = newItem;
+    const item = await createItemMutation.mutateAsync(fields);
+    await saveImageFor(item?.id, image);
     return item;
   }
 
   async function editItem(updatedItem) {
-    updateItemMutation.mutate(updatedItem);
+    const { image, ...fields } = updatedItem;
+    await updateItemMutation.mutateAsync(fields);
+    await saveImageFor(fields.id, image);
   }
 
   async function removeItem(deletedItem) {

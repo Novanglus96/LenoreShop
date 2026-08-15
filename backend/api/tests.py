@@ -1,8 +1,16 @@
+import io
+import tempfile
 from datetime import date, timedelta
+from pathlib import Path
+from unittest import mock
 
+from PIL import Image
+from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.utils import IntegrityError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from api.images import FULL_MAX_EDGE, THUMB_MAX_EDGE
 from backend.api import (
     FREEZER_PREVIEW_ITEM_COUNT,
     FREEZER_SOON_DAYS,
@@ -720,3 +728,193 @@ class AddExistingListItemTests(TestCase):
         self.assertEqual(
             ListItem.objects.filter(shopping_list=self.shoppinglist).count(), 2
         )
+
+
+def photo_bytes(size=(600, 400), mode="RGB", fmt="JPEG"):
+    """
+    Builds a real encoded image in memory, so upload tests exercise the actual
+    Pillow path rather than a byte string that only claims to be a photo.
+
+    Args:
+        size (tuple): Width and height in px.
+        mode (str): Pillow image mode.
+        fmt (str): The format to encode as.
+
+    Returns:
+        (bytes): The encoded image.
+    """
+    buffer = io.BytesIO()
+    Image.new(mode, size, (120, 160, 200) if mode == "RGB" else None).save(
+        buffer, format=fmt
+    )
+    return buffer.getvalue()
+
+
+def upload(name="photo.jpg", content=None, content_type="image/jpeg"):
+    """
+    Wraps image bytes in the upload object the test client posts.
+    """
+    return SimpleUploadedFile(
+        name, content if content is not None else photo_bytes(), content_type
+    )
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class ItemImageTests(TestCase):
+    """
+    Tests for uploading, replacing and removing item photos.
+
+    MEDIA_ROOT is redirected at a temp directory so a test run never writes into
+    the real media volume.
+    """
+
+    def setUp(self):
+        self.item = Item.objects.create(name="Milk")
+
+    def post_image(self, item_id, **kwargs):
+        return self.client.post(
+            f"/api/items/{item_id}/image", {"image": upload(**kwargs)}
+        )
+
+    def test_uploading_a_photo_returns_both_paths(self):
+        response = self.post_image(self.item.id)
+        self.assertEqual(response.status_code, 200)
+
+        body = response.json()
+        self.assertTrue(body["image_url"].startswith("/media/items/"))
+        self.assertTrue(body["thumbnail_url"].startswith("/media/items/thumbs/"))
+
+    def test_an_item_without_a_photo_reports_none(self):
+        response = self.client.get(f"/api/items/{self.item.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()["image_url"])
+        self.assertIsNone(response.json()["thumbnail_url"])
+
+    def test_the_thumbnail_is_bounded_and_the_full_size_is_downscaled(self):
+        self.post_image(self.item.id, content=photo_bytes(size=(3000, 2000)))
+        self.item.refresh_from_db()
+
+        self.assertEqual(
+            max(self.item.image.width, self.item.image.height), FULL_MAX_EDGE
+        )
+        self.assertEqual(
+            max(self.item.thumbnail.width, self.item.thumbnail.height), THUMB_MAX_EDGE
+        )
+
+    def test_a_small_photo_is_never_upscaled(self):
+        self.post_image(self.item.id, content=photo_bytes(size=(80, 60)))
+        self.item.refresh_from_db()
+        self.assertEqual((self.item.image.width, self.item.image.height), (80, 60))
+
+    def test_a_png_with_transparency_is_stored_as_jpeg(self):
+        response = self.post_image(
+            self.item.id,
+            name="photo.png",
+            content=photo_bytes(mode="RGBA", fmt="PNG"),
+            content_type="image/png",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["image_url"].endswith(".jpg"))
+
+    def test_replacing_a_photo_deletes_the_old_files(self):
+        first = self.post_image(self.item.id).json()
+        old = Path(settings.MEDIA_ROOT) / first["image_url"].replace("/media/", "")
+        self.assertTrue(old.exists())
+
+        second = self.post_image(self.item.id).json()
+        self.assertNotEqual(first["image_url"], second["image_url"])
+        self.assertFalse(old.exists())
+
+    def test_removing_a_photo_clears_the_fields_and_the_files(self):
+        body = self.post_image(self.item.id).json()
+        stored = Path(settings.MEDIA_ROOT) / body["image_url"].replace("/media/", "")
+
+        response = self.client.delete(f"/api/items/{self.item.id}/image")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()["image_url"])
+        self.assertFalse(stored.exists())
+
+        self.item.refresh_from_db()
+        self.assertFalse(self.item.image)
+        self.assertFalse(self.item.thumbnail)
+
+    def test_deleting_the_item_deletes_its_photo_files(self):
+        body = self.post_image(self.item.id).json()
+        stored = Path(settings.MEDIA_ROOT) / body["image_url"].replace("/media/", "")
+
+        self.client.delete(f"/api/items/{self.item.id}")
+        self.assertFalse(stored.exists())
+
+    def test_a_file_that_is_not_an_image_is_rejected(self):
+        response = self.post_image(self.item.id, content=b"this is not a photo")
+        self.assertEqual(response.status_code, 400)
+
+    def test_an_oversized_upload_is_rejected(self):
+        with mock.patch("api.images.MAX_UPLOAD_BYTES", 10):
+            response = self.post_image(self.item.id)
+        self.assertEqual(response.status_code, 400)
+
+    def test_uploading_to_a_missing_item_returns_404(self):
+        self.assertEqual(self.post_image(9999).status_code, 404)
+
+    def test_a_photo_reaches_the_shopping_list_row(self):
+        store = Store.objects.create(name="Market")
+        aisle = Aisle.objects.create(name="Dairy", store=store)
+        shoppinglist = ShoppingList.objects.create(name="Weekly", store=store)
+        ListItem.objects.create(item=self.item, aisle=aisle, shopping_list=shoppinglist)
+        self.post_image(self.item.id)
+
+        response = self.client.get(f"/api/shoppinglistfull/{shoppinglist.id}")
+        self.assertEqual(response.status_code, 200)
+
+        row = response.json()["aisles"][0]["listitems"][0]
+        self.assertTrue(row["item"]["thumbnail_url"].startswith("/media/items/thumbs/"))
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class FreezerItemImageTests(TestCase):
+    """
+    Tests for freezer item photos, which use a separate field and upload path
+    because FreezerItem has no Item FK.
+    """
+
+    def setUp(self):
+        self.freezer = Freezer.objects.create(name="Garage")
+        self.freezeritem = FreezerItem.objects.create(
+            name="Chili", freezer=self.freezer
+        )
+
+    def post_image(self, freezeritem_id):
+        return self.client.post(
+            f"/api/freezeritems/{freezeritem_id}/image", {"image": upload()}
+        )
+
+    def test_uploading_a_photo_returns_both_paths(self):
+        response = self.post_image(self.freezeritem.id)
+        self.assertEqual(response.status_code, 200)
+
+        body = response.json()
+        self.assertTrue(body["image_url"].startswith("/media/freezeritems/"))
+        self.assertTrue(body["thumbnail_url"].startswith("/media/freezeritems/thumbs/"))
+
+    def test_removing_a_photo_clears_the_fields(self):
+        self.post_image(self.freezeritem.id)
+        response = self.client.delete(f"/api/freezeritems/{self.freezeritem.id}/image")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()["image_url"])
+
+    def test_deleting_the_freezeritem_deletes_its_photo_files(self):
+        body = self.post_image(self.freezeritem.id).json()
+        stored = Path(settings.MEDIA_ROOT) / body["image_url"].replace("/media/", "")
+
+        self.client.delete(f"/api/freezeritems/{self.freezeritem.id}")
+        self.assertFalse(stored.exists())
+
+    def test_a_photo_reaches_the_freezer_contents(self):
+        self.post_image(self.freezeritem.id)
+        response = self.client.get(f"/api/freezerfull/{self.freezer.id}")
+
+        self.assertEqual(response.status_code, 200)
+        row = response.json()["freezeritems"][0]
+        self.assertTrue(row["thumbnail_url"].startswith("/media/freezeritems/thumbs/"))

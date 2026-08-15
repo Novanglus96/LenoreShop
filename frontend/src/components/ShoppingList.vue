@@ -34,6 +34,14 @@
             />
           </button>
 
+          <!-- No placeholder: an empty frame beside every unphotographed row
+               would be clutter on the page you actually shop from. -->
+          <ItemThumb
+            :thumbnail-url="listItem.item.thumbnail_url"
+            :image-url="listItem.item.image_url"
+            :name="listItem.item.name"
+          />
+
           <span class="shoplist__body">
             <span
               :class="['shoplist__name', { 'ls-strike': listItem.purchased }]"
@@ -114,6 +122,7 @@
   import { ref } from "vue";
   import ListItemForm from "@/components/ListItemForm.vue";
   import ConfirmDialog from "@/components/ConfirmDialog.vue";
+  import ItemThumb from "@/components/ItemThumb.vue";
 
   defineProps({
     listitems: {

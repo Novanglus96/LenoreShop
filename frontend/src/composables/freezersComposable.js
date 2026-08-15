@@ -127,6 +127,36 @@ async function deleteFreezerItemFunction(deletedFreezerItem) {
   }
 }
 
+/**
+ * Uploads or clears a freezer item's photo.
+ *
+ * Separate from the item PUT because a file has to go up as multipart while the
+ * rest of the API is JSON.
+ *
+ * @param {number} freezerItemId The freezer item to attach the photo to.
+ * @param {Object} image The `{ file, remove }` staged by ImagePicker.
+ */
+async function saveFreezerItemImage(freezerItemId, image) {
+  if (!freezerItemId || !image) return;
+
+  try {
+    if (image.file) {
+      const body = new FormData();
+      body.append("image", image.file);
+      // See itemsComposable: apiClient defaults to application/json, and axios
+      // turns a FormData body into JSON when it sees that, silently dropping
+      // the file. The browser replaces this value with the multipart boundary.
+      await apiClient.post(`/freezeritems/${freezerItemId}/image`, body, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } else if (image.remove) {
+      await apiClient.delete(`/freezeritems/${freezerItemId}/image`);
+    }
+  } catch (error) {
+    handleApiError(error, "Photo not saved: ");
+  }
+}
+
 export function useFreezers() {
   const queryClient = useQueryClient();
 
@@ -214,12 +244,25 @@ export function useFreezerFull(freezerID) {
     onSuccess: invalidate,
   });
 
+  // A photo is saved on its own request after the food itself, because a new
+  // freezer item has no id to upload against until it has been created.
+  // `image` is the ImagePicker's staged `{ file, remove }`.
+  async function saveImageFor(freezerItemId, image) {
+    if (!freezerItemId || !(image?.file || image?.remove)) return;
+    await saveFreezerItemImage(freezerItemId, image);
+    invalidate();
+  }
+
   async function addFreezerItem(newFreezerItem) {
-    createFreezerItemMutation.mutate(newFreezerItem);
+    const { image, ...fields } = newFreezerItem;
+    const created = await createFreezerItemMutation.mutateAsync(fields);
+    await saveImageFor(created?.id, image);
   }
 
   async function editFreezerItem(updatedFreezerItem) {
-    updateFreezerItemMutation.mutate(updatedFreezerItem);
+    const { image, ...fields } = updatedFreezerItem;
+    await updateFreezerItemMutation.mutateAsync(fields);
+    await saveImageFor(fields.id, image);
   }
 
   async function removeFreezerItem(deletedFreezerItem) {
