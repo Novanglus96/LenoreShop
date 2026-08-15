@@ -15,12 +15,95 @@ from ninja.errors import HttpError
 from django.core.management import call_command
 from datetime import date, timedelta
 from django.core.paginator import Paginator
-from django.db.models import F
+from django.db.models import F, Count, Prefetch, Q
 
 api = NinjaAPI()
 api.title = "LenoreShop API"
 api.version = "1.9.0-alpha.1"
 api.description = "API documentation for LenoreShop"
+
+# Number of items previewed as ruled lines on a shopping list card.
+LIST_PREVIEW_ITEM_COUNT = 4
+
+# Number of items previewed on a freezer card.
+FREEZER_PREVIEW_ITEM_COUNT = 4
+
+# How far ahead counts as "expiring soon" for a freezer. Shared with the
+# /freezeritemsexpiring endpoint so the dashboard and that list agree on what
+# is urgent.
+FREEZER_SOON_DAYS = 14
+
+
+def freezer_queryset():
+    """
+    Returns the base Freezer queryset used by every endpoint that responds with
+    `FreezerOut`, so freezer cards get their counts and preview lines without an
+    extra query per freezer.
+
+    Expired and expiring are kept separate rather than lumped together the way
+    /freezeritemsexpiring does it, because a card needs to distinguish "throw
+    this out now" from "use this up soon".
+
+    Returns:
+        (QuerySet): Freezers annotated with `totalitems`, `totalexpired` and
+            `totalexpiring`, with the preview items prefetched.
+    """
+    today = date.today()
+    soon = today + timedelta(days=FREEZER_SOON_DAYS)
+    return Freezer.objects.annotate(
+        totalitems=Count("freezeritem", distinct=True),
+        totalexpired=Count(
+            "freezeritem",
+            filter=Q(freezeritem__discard_date__lt=today),
+            distinct=True,
+        ),
+        totalexpiring=Count(
+            "freezeritem",
+            filter=Q(
+                freezeritem__discard_date__gte=today,
+                freezeritem__discard_date__lte=soon,
+            ),
+            distinct=True,
+        ),
+    ).prefetch_related(
+        Prefetch(
+            "freezeritem_set",
+            # Soonest to go off first, undated last — the same order the
+            # freezer detail view uses.
+            queryset=FreezerItem.objects.order_by(
+                F("discard_date").asc(nulls_last=True), "name"
+            ),
+        )
+    )
+
+
+def shoppinglist_queryset():
+    """
+    Returns the base ShoppingList queryset used by every endpoint that responds with
+    `ShoppingListOut`, so cards get their progress counts and preview lines without
+    an extra query per list.
+
+    Returns:
+        (QuerySet): ShoppingLists annotated with `totalitems` and `totalpurchased`,
+            with the store and the preview list items prefetched.
+    """
+    return (
+        ShoppingList.objects.select_related("store")
+        .annotate(
+            totalitems=Count("listitem", distinct=True),
+            totalpurchased=Count(
+                "listitem", filter=Q(listitem__purchased=True), distinct=True
+            ),
+        )
+        .prefetch_related(
+            Prefetch(
+                "listitem_set",
+                queryset=ListItem.objects.select_related("item").order_by(
+                    "purchased", "aisle__order", "id"
+                ),
+            )
+        )
+    )
 
 
 # The class VersionOut is a scheam for representing Version information.
@@ -224,6 +307,19 @@ class ShoppingListIn(Schema):
     store_id: int
 
 
+class ListPreviewItem(Schema):
+    """
+    Schema to represent a single ruled line previewed on a shopping list card.
+
+    Attributes:
+        name (str): The name of the item.
+        purchased (bool): Whether this list item has been purchased.
+    """
+
+    name: str
+    purchased: bool
+
+
 class ShoppingListOut(Schema):
     """
     Schema to represent a ShoppingList.
@@ -233,12 +329,34 @@ class ShoppingListOut(Schema):
         name (str): The name of the shopping list.
         store_id (int): The ID of the store for the shopping list.
         store (StoreOut): The Store object.
+        totalitems (int): The total number of items on the shopping list.
+        totalpurchased (int): The number of items marked purchased.
+        preview_items (List[ListPreviewItem]): The first few items, unpurchased first,
+            for previewing the list without fetching it in full.
     """
 
     id: int
     name: str
     store_id: int
     store: StoreOut
+    totalitems: int = 0
+    totalpurchased: int = 0
+    preview_items: List[ListPreviewItem] = []
+
+    @staticmethod
+    def resolve_preview_items(obj):
+        """
+        Returns the first few list items, already ordered unpurchased-first by the
+        prefetch in `shoppinglist_queryset`. Falls back to an empty list when the
+        object was not loaded through that queryset.
+        """
+        listitems = getattr(obj, "listitem_set", None)
+        if listitems is None:
+            return []
+        return [
+            ListPreviewItem(name=listitem.item.name, purchased=listitem.purchased)
+            for listitem in listitems.all()[:LIST_PREVIEW_ITEM_COUNT]
+        ]
 
 
 class AislesWithItems(Schema):
@@ -299,6 +417,22 @@ class FreezerIn(Schema):
     location: str = None
 
 
+class FreezerPreviewItem(Schema):
+    """
+    Schema to represent a single item previewed on a freezer card.
+
+    Attributes:
+        name (str): The name of the frozen food.
+        days_until_discard (int): Days left before discard_date, negative once
+            past it. None when no discard_date is set.
+        is_expired (bool): True if the discard date has passed.
+    """
+
+    name: str
+    days_until_discard: int = None
+    is_expired: bool = False
+
+
 class FreezerOut(Schema):
     """
     Schema to represent a Freezer.
@@ -307,11 +441,40 @@ class FreezerOut(Schema):
         id (int): ID integer. Unique.
         name (str): The name of the freezer.
         location (str): Where the freezer is. Default = None.
+        totalitems (int): The total number of frozen foods in this freezer.
+        totalexpired (int): How many are already past their discard date.
+        totalexpiring (int): How many reach their discard date within
+            FREEZER_SOON_DAYS days, not counting the ones already past it.
+        preview_items (List[FreezerPreviewItem]): The items closest to their
+            discard date, for previewing the freezer without fetching it whole.
     """
 
     id: int
     name: str
     location: str = None
+    totalitems: int = 0
+    totalexpired: int = 0
+    totalexpiring: int = 0
+    preview_items: List[FreezerPreviewItem] = []
+
+    @staticmethod
+    def resolve_preview_items(obj):
+        """
+        Returns the items closest to their discard date, already ordered by the
+        prefetch in `freezer_queryset`. Falls back to an empty list when the
+        object was not loaded through that queryset.
+        """
+        freezeritems = getattr(obj, "freezeritem_set", None)
+        if freezeritems is None:
+            return []
+        return [
+            FreezerPreviewItem(
+                name=freezeritem.name,
+                days_until_discard=freezeritem.days_until_discard,
+                is_expired=freezeritem.is_expired,
+            )
+            for freezeritem in freezeritems.all()[:FREEZER_PREVIEW_ITEM_COUNT]
+        ]
 
 
 class FreezerItemIn(Schema):
@@ -450,6 +613,52 @@ def create_item(request, payload: ItemIn):
     return item
 
 
+def merge_duplicate_listitem(listitem):
+    """
+    Folds a ListItem into another row for the same item on the same list that is
+    in the same purchased state, and returns whichever row survives.
+
+    A list is allowed at most one outstanding row and one bought row per item.
+    Two rows exist on purpose while an item is partly bought — one in the cart,
+    one still to find — because they mean different things and sit in different
+    sections of the list. Once a flag change puts them both in the same state
+    that distinction is gone, and leaving them apart shows the same item twice
+    in one section, which reads as a fault rather than as history.
+
+    Args:
+        listitem (ListItem): The row that has just changed state.
+
+    Returns:
+        (ListItem): The surviving row, which may be the one passed in.
+    """
+    duplicate = (
+        ListItem.objects.filter(
+            shopping_list_id=listitem.shopping_list_id,
+            item_id=listitem.item_id,
+            purchased=listitem.purchased,
+        )
+        .exclude(id=listitem.id)
+        .order_by("id")
+        .first()
+    )
+    if duplicate is None:
+        return listitem
+
+    duplicate.qty += listitem.qty
+    # Notes are only worth carrying over if the survivor has none; concatenating
+    # them would be worse than dropping one.
+    if listitem.notes and not duplicate.notes:
+        duplicate.notes = listitem.notes
+    # The later purchase is the one that describes the merged row.
+    if listitem.purch_date and (
+        duplicate.purch_date is None or listitem.purch_date > duplicate.purch_date
+    ):
+        duplicate.purch_date = listitem.purch_date
+    duplicate.save()
+    listitem.delete()
+    return duplicate
+
+
 @api.post("/listitems")
 def create_listitem(request, payload: ListItemIn):
     """
@@ -466,8 +675,15 @@ def create_listitem(request, payload: ListItemIn):
     Returns:
         id (int): returns the id of the created ListItem.
     """
+    # Only an item still to be found is a candidate to merge into. Adding
+    # something you have already put in the cart means you need more of it, so
+    # it starts a new line rather than reopening the old one — otherwise the
+    # quantities add together and the row silently reverts to unpurchased,
+    # which reads as the app forgetting you bought it.
     existing_item = ListItem.objects.filter(
-        shopping_list_id=payload.shopping_list_id, item_id=payload.item_id
+        shopping_list_id=payload.shopping_list_id,
+        item_id=payload.item_id,
+        purchased=False,
     ).first()
     if existing_item is None:
         listitem = ListItem.objects.create(**payload.dict())
@@ -478,7 +694,6 @@ def create_listitem(request, payload: ListItemIn):
         return {"id": listitem.id}
     else:
         existing_item.qty += payload.qty
-        existing_item.purchased = False
         existing_item.save()
         broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
         return {"id": existing_item.id}
@@ -581,7 +796,7 @@ def get_shoppinglist(request, shoppinglist_id: int):
     Returns:
         (ShoppingListOut): returns a ShoppingList object.
     """
-    shoppinglist = get_object_or_404(ShoppingList, id=shoppinglist_id)
+    shoppinglist = get_object_or_404(shoppinglist_queryset(), id=shoppinglist_id)
     return shoppinglist
 
 
@@ -817,7 +1032,7 @@ def list_shoppinglists(request):
     Returns:
         (List[ShoppingListOut]): Returns a list of ShoppingList objects.
     """
-    qs = ShoppingList.objects.all()
+    qs = shoppinglist_queryset().order_by("store__name", "name")
     return qs
 
 
@@ -838,7 +1053,7 @@ def list_listsbystore(request, store_id: int):
     Returns:
         (List[ShoppingListOut]): Returns a list of ShoppingList objects.
     """
-    qs = ShoppingList.objects.all().filter(store__id=store_id)
+    qs = shoppinglist_queryset().filter(store__id=store_id).order_by("name")
     return qs
 
 
@@ -919,6 +1134,11 @@ def update_listitem(request, listitem_id: int, payload: ListItemIn):
     listitem.aisle_id = payload.aisle_id
     listitem.shopping_list_id = payload.shopping_list_id
     listitem.save()
+    # Ticking off a row that was split out from a bought one puts both in the
+    # cart; unticking does the same in reverse. Either way they fold back into
+    # a single line. A no-op unless a genuine duplicate exists, so editing the
+    # notes or quantity of an ordinary row is unaffected.
+    merge_duplicate_listitem(listitem)
     broadcast_invalidate(["fullshoppinglist", "shoppinglists"])
     return {"success": True}
 
@@ -1227,7 +1447,7 @@ def get_freezer(request, freezer_id: int):
     Returns:
         (FreezerOut): A Freezer object.
     """
-    freezer = get_object_or_404(Freezer, id=freezer_id)
+    freezer = get_object_or_404(freezer_queryset(), id=freezer_id)
     return freezer
 
 
@@ -1246,7 +1466,7 @@ def list_freezers(request):
     Returns:
         (List[FreezerOut]): A list of Freezer objects.
     """
-    qs = Freezer.objects.all().order_by("name")
+    qs = freezer_queryset().order_by("name")
     return qs
 
 
@@ -1350,7 +1570,9 @@ def create_freezeritem(request, payload: FreezerItemIn):
         id (int): The ID of the added FreezerItem.
     """
     freezeritem = FreezerItem.objects.create(**payload.dict())
-    broadcast_invalidate(["freezeritems", "freezerfull"])
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"id": freezeritem.id}
 
 
@@ -1419,7 +1641,7 @@ def list_freezeritemsbyfreezer(request, freezer_id: int):
 
 
 @api.get("/freezeritemsexpiring", response=List[FreezerItemOut])
-def list_freezeritemsexpiring(request, days: int = 14):
+def list_freezeritemsexpiring(request, days: int = FREEZER_SOON_DAYS):
     """
     The function `list_freezeritemsexpiring` returns FreezerItems that are
     already past their discard date or reach it within `days` days.
@@ -1470,7 +1692,9 @@ def update_freezeritem(request, freezeritem_id: int, payload: FreezerItemIn):
     freezeritem.notes = payload.notes
     freezeritem.freezer_id = payload.freezer_id
     freezeritem.save()
-    broadcast_invalidate(["freezeritems", "freezerfull"])
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"success": True}
 
 
@@ -1492,7 +1716,9 @@ def delete_freezeritem(request, freezeritem_id: int):
     """
     freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
     freezeritem.delete()
-    broadcast_invalidate(["freezeritems", "freezerfull"])
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"success": True}
 
 

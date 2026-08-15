@@ -1,83 +1,131 @@
 <template>
-  <v-card color="primary" variant="outlined">
-    <v-card-title class="text-h6">
-      {{ store.name }}
-    </v-card-title>
+  <li class="ls-row storerow">
+    <!-- The row itself goes to the store's aisles, which is the only thing a
+         store really contains. Edit and delete sit in the menu beside it, as
+         siblings rather than nested inside the button. -->
+    <button type="button" class="storerow__main" @click="showAisles">
+      <v-icon icon="mdi-storefront-outline" size="20" class="storerow__icon" />
+      <span class="storerow__name">{{ store.name }}</span>
+      <span class="storerow__go">
+        Aisles
+        <v-icon icon="mdi-chevron-right" size="18" />
+      </span>
+    </button>
 
-    <v-card-actions>
-      <v-btn size="x-small" variant="outlined" @click="showAisle(store.id)">
-        aisles
-      </v-btn>
-      <v-btn size="x-small" variant="outlined" @click="selectedStore(store)">
-        edit
-      </v-btn>
-      <StoreForm
-        v-model="storeFormDialog"
-        @edit-store="updateStore"
-        :isEdit="true"
-        @update-dialog="updateDialog"
-        :passedFormData="passedFormData"
-      />
-      <v-btn size="x-small" variant="outlined" @click="deleteDialog = true">
-        delete
-      </v-btn>
-      <v-dialog v-model="deleteDialog" width="auto">
-        <v-card>
-          <v-card-text>Delete store {{ store.name }}?</v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="deleteStore(store)">Yes</v-btn>
-            <v-btn color="primary" @click="deleteDialog = false">No</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-card-actions>
-  </v-card>
+    <v-menu location="bottom end">
+      <template v-slot:activator="{ props: menuProps }">
+        <v-btn
+          icon="mdi-dots-vertical"
+          variant="text"
+          size="small"
+          density="comfortable"
+          class="storerow__menu"
+          :aria-label="`Actions for ${store.name}`"
+          v-bind="menuProps"
+        />
+      </template>
+      <v-list density="compact">
+        <v-list-item
+          prepend-icon="mdi-pencil"
+          title="Edit"
+          @click="$emit('edit', store)"
+        />
+        <v-list-item
+          prepend-icon="mdi-delete-outline"
+          title="Delete"
+          base-color="error"
+          @click="$emit('remove', store)"
+        />
+      </v-list>
+    </v-menu>
+  </li>
 </template>
 
 <script setup>
-  import { defineProps, defineEmits, ref } from "vue";
-  import { useMainStore } from "@/stores/main";
   import { useRouter } from "vue-router";
-  import StoreForm from "@/components/StoreForm.vue";
+  import { useMainStore } from "@/stores/main";
 
-  const emit = defineEmits(["editStore", "removeStore"]);
-  const storeFormDialog = ref(false);
-  const deleteDialog = ref(false);
-  const passedFormData = ref({
-    id: 0,
-    name: "",
+  // Presentational apart from the navigation. The edit form and the delete
+  // confirmation live once in StoreView, driven by a selected-store ref.
+  const props = defineProps({
+    store: {
+      type: Object,
+      required: true,
+    },
   });
 
-  const selectedStore = store => {
-    passedFormData.value.id = store.id;
-    passedFormData.value.name = store.name;
-
-    storeFormDialog.value = true;
-  };
-
-  const updateStore = async store => {
-    emit("editStore", store);
-  };
-
-  const deleteStore = async store => {
-    emit("removeStore", store);
-
-    updateDialog();
-  };
-
-  const updateDialog = () => {
-    storeFormDialog.value = false;
-  };
-
-  defineProps({
-    store: Object,
-  });
+  defineEmits(["edit", "remove"]);
 
   const router = useRouter();
 
-  const showAisle = async store_id => {
-    const store = useMainStore();
-    store.store_id = store_id;
+  const showAisles = () => {
+    const mainStore = useMainStore();
+    mainStore.store_id = props.store.id;
     router.push("/aisles");
   };
 </script>
+
+<style scoped>
+  .storerow {
+    display: flex;
+    align-items: center;
+    gap: var(--ls-space-sm);
+    min-height: calc(var(--ls-rule-height) * 2);
+  }
+
+  .storerow__main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--ls-space-sm);
+    min-width: 0;
+    padding: var(--ls-space-sm) 0;
+    border: 0;
+    background: transparent;
+    font-family: var(--ls-font-body);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .storerow__main:focus-visible {
+    outline: 3px solid var(--ls-navy);
+    outline-offset: 2px;
+  }
+
+  .storerow__icon {
+    flex-shrink: 0;
+    color: var(--ls-navy-300);
+  }
+
+  .storerow__name {
+    flex: 1;
+    min-width: 0;
+    font-size: 1rem;
+    color: var(--ls-ink);
+    overflow-wrap: anywhere;
+  }
+
+  .storerow__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ls-navy-300);
+  }
+
+  @media (hover: hover) {
+    .storerow__main:hover .storerow__go,
+    .storerow__main:hover .storerow__icon {
+      color: var(--ls-navy);
+    }
+  }
+
+  .storerow__menu {
+    flex-shrink: 0;
+    color: var(--ls-ink-faint);
+  }
+</style>

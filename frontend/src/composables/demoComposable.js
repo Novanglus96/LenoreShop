@@ -27,9 +27,8 @@ export function useDemo() {
       queryClient.invalidateQueries({ queryKey: ["shoppinglists"] });
       mainstore.showSnackbar("Demo data loaded!", "success");
     },
-    onError: (error) => {
-      const msg =
-        error.response?.data?.detail || "Could not load demo data.";
+    onError: error => {
+      const msg = error.response?.data?.detail || "Could not load demo data.";
       mainstore.showSnackbar(msg, "error");
     },
   });

@@ -2,100 +2,79 @@
   <v-dialog
     v-model="show"
     persistent
-    :width="isMobile ? undefined : '1024'"
+    :width="isMobile ? undefined : 680"
     :fullscreen="isMobile"
   >
-    <v-card>
-      <form @submit.prevent="submit">
-        <v-card-title>
-          <span class="text-h5" v-if="props.isEdit == false">Add Food</span>
-          <span class="text-h5" v-else>Edit Food</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Food*"
-                  placeholder="Chicken breasts"
-                  v-model="name.value.value"
-                  :error-messages="name.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6" sm="3" md="2">
-                <v-text-field
-                  label="Amount*"
-                  v-model="qty.value.value"
-                  type="number"
-                  min="1"
-                  :error-messages="qty.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6" sm="3" md="2">
-                <v-text-field
-                  label="Unit"
-                  placeholder="lbs"
-                  v-model="unit.value.value"
-                  :error-messages="unit.errorMessage.value"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-select
-                  label="Freezer*"
-                  v-model="freezer_id.value.value"
-                  :items="freezers"
-                  item-title="name"
-                  item-value="id"
-                  :error-messages="freezer_id.errorMessage.value"
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Date Added"
-                  type="date"
-                  v-model="date_added.value.value"
-                  :error-messages="date_added.errorMessage.value"
-                  hint="Leave blank if unknown"
-                  persistent-hint
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  label="Throw Out By"
-                  type="date"
-                  v-model="discard_date.value.value"
-                  :error-messages="discard_date.errorMessage.value"
-                  hint="Leave blank if it does not expire"
-                  persistent-hint
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-textarea
-                  label="Notes"
-                  rows="2"
-                  v-model="notes.value.value"
-                  :error-messages="notes.errorMessage.value"
-                ></v-textarea>
-              </v-col>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="closeDialog">
-            Close
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" type="submit">Save</v-btn>
-        </v-card-actions>
-      </form>
-    </v-card>
+    <FormSheet
+      :title="props.isEdit ? 'Edit Food' : 'Add Food'"
+      eyebrow="Food"
+      icon="mdi-food-drumstick-outline"
+      :fullscreen="isMobile"
+      required-note
+      @submit="submit"
+      @close="closeDialog"
+    >
+      <v-text-field
+        label="Food*"
+        placeholder="Chicken breasts"
+        v-model="name.value.value"
+        :error-messages="name.errorMessage.value"
+      ></v-text-field>
+      <v-text-field
+        class="ls-form-half"
+        label="Amount*"
+        v-model="qty.value.value"
+        type="number"
+        min="1"
+        :error-messages="qty.errorMessage.value"
+      ></v-text-field>
+      <v-text-field
+        class="ls-form-half"
+        label="Unit"
+        placeholder="lbs"
+        v-model="unit.value.value"
+        :error-messages="unit.errorMessage.value"
+      ></v-text-field>
+      <v-select
+        label="Freezer*"
+        v-model="freezer_id.value.value"
+        :items="freezers"
+        item-title="name"
+        item-value="id"
+        :error-messages="freezer_id.errorMessage.value"
+      ></v-select>
+      <v-text-field
+        class="ls-form-half"
+        label="Date Added"
+        type="date"
+        v-model="date_added.value.value"
+        :error-messages="date_added.errorMessage.value"
+        hint="Leave blank if unknown"
+        persistent-hint
+      ></v-text-field>
+      <v-text-field
+        class="ls-form-half"
+        label="Throw Out By"
+        type="date"
+        v-model="discard_date.value.value"
+        :error-messages="discard_date.errorMessage.value"
+        hint="Leave blank if it does not expire"
+        persistent-hint
+      ></v-text-field>
+      <v-textarea
+        label="Notes"
+        rows="2"
+        v-model="notes.value.value"
+        :error-messages="notes.errorMessage.value"
+      ></v-textarea>
+    </FormSheet>
   </v-dialog>
 </template>
 <script setup>
   import { ref, defineEmits, defineProps, onMounted, watchEffect } from "vue";
   import { useDisplay } from "vuetify";
   import { useField, useForm } from "vee-validate";
+  import FormSheet from "@/components/FormSheet.vue";
 
   const { handleSubmit } = useForm({
     validationSchema: {
@@ -203,14 +182,24 @@
     clearFormData();
   };
 
+  // Reset to the defaults the parent supplied, not to blanks.
+  //
+  // closeDialog() calls this on both Cancel and Save, and the watchEffect above
+  // only re-runs when passedFormData itself changes — which it doesn't, since
+  // the parent hands over the same object every time. Clearing to null
+  // therefore threw away the defaults permanently for the life of the view:
+  // the freezer you were standing in, and the date_added prefill of today.
+  // Losing that prefill is the quieter half, because a blank date_added is not
+  // "unset", it is recorded as "date added unknown".
   const clearFormData = () => {
-    id.value.value = null;
-    name.value.value = null;
-    qty.value.value = 1;
-    unit.value.value = null;
-    date_added.value.value = null;
-    discard_date.value.value = null;
-    notes.value.value = null;
-    freezer_id.value.value = null;
+    const defaults = props.passedFormData ?? {};
+    id.value.value = defaults.id ?? null;
+    name.value.value = defaults.name ?? null;
+    qty.value.value = defaults.qty ?? 1;
+    unit.value.value = defaults.unit ?? null;
+    date_added.value.value = defaults.date_added ?? null;
+    discard_date.value.value = defaults.discard_date ?? null;
+    notes.value.value = defaults.notes ?? null;
+    freezer_id.value.value = defaults.freezer_id ?? null;
   };
 </script>

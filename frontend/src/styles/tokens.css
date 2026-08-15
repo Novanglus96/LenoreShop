@@ -1,0 +1,104 @@
+/**
+ * Design tokens for the LenoreShop UI.
+ *
+ * The brand palette is unchanged — navy, powder blue and yellow are the same
+ * values configured in plugins/vuetify.js. Everything else here derives from
+ * them, so the app keeps its existing identity while picking up a warmer,
+ * papery Material 3 feel.
+ *
+ * Naming: --ls-<group>-<role>. Prefer these over hard-coded colours so a later
+ * page restyle is a token change rather than a sweep through components.
+ */
+
+:root {
+  /* -- Brand ------------------------------------------------------------- */
+  --ls-navy: #002255;
+  --ls-navy-600: #0b3a7d;
+  --ls-navy-300: #6c8cbb;
+  --ls-powder: #bfe7ff;
+  --ls-powder-soft: #e3f4ff;
+  --ls-yellow: #ffeb3b;
+  --ls-yellow-soft: #fff6b8;
+
+  /* -- Paper surfaces ---------------------------------------------------- */
+  /* Warm off-white rather than pure white: reads as paper next to the navy. */
+  --ls-paper: #fffdf6;
+  --ls-paper-shade: #f7f1e2;
+  --ls-paper-edge: #ebe3cf;
+  /* The desk the sheets lie on. This has to sit clearly darker than --ls-paper
+     or the torn and iced edges have no silhouette to read against — at the
+     original #f7f4ec the contrast was 1.08:1 and the shaping was invisible.
+     1.59:1 is enough for the eye to trace an edge without the page turning
+     into a dark surface the sheets fight with.
+
+     Keep the frost gradient light rather than deepening it to match: against a
+     ground this warm, a paler blue reads *more* strongly, not less. */
+  --ls-ground: #d6cab4;
+  /* Ruled lines and the red margin rule down the left of a notepad sheet. */
+  --ls-rule: rgba(0, 34, 85, 0.13);
+  --ls-rule-strong: rgba(0, 34, 85, 0.22);
+  --ls-margin-rule: rgba(211, 96, 96, 0.5);
+
+  /* -- Ink --------------------------------------------------------------- */
+  --ls-ink: #14263f;
+  --ls-ink-soft: #566a83;
+  --ls-ink-faint: #93a2b4;
+  --ls-ink-on-navy: #f4f9ff;
+
+  /* -- Frost surfaces ---------------------------------------------------- */
+  /* The freezer's counterpart to the paper tokens: same structure, cold end of
+     the palette, so a freezer card is legible as a different material at a
+     glance without introducing a second colour scheme. */
+  --ls-frost: #f1fafe;
+  --ls-frost-shade: #e2f3fc;
+  --ls-frost-edge: #c9e8f7;
+  --ls-frost-rule: rgba(10, 78, 116, 0.13);
+  --ls-frost-ink: #0c3b55;
+  --ls-frost-ink-soft: #4a7893;
+  --ls-frost-ink-faint: #8caec2;
+
+  /* -- Status ------------------------------------------------------------ */
+  --ls-done: #3f8f4f;
+  --ls-warn: #b8791a;
+  --ls-warn-bg: #fdf0d6;
+  --ls-alert: #b23c2e;
+  --ls-alert-bg: #fbe0dc;
+
+  /* -- Shape ------------------------------------------------------------- */
+  --ls-radius-sm: 8px;
+  --ls-radius: 14px;
+  --ls-radius-lg: 22px;
+  --ls-radius-pill: 999px;
+
+  /* -- Elevation --------------------------------------------------------- */
+  /* Two-part shadows: a tight contact shadow plus a soft ambient one. */
+  --ls-elev-1: 0 1px 2px rgba(0, 34, 85, 0.1), 0 2px 8px rgba(0, 34, 85, 0.06);
+  --ls-elev-2: 0 2px 4px rgba(0, 34, 85, 0.12), 0 8px 20px rgba(0, 34, 85, 0.1);
+  --ls-elev-3:
+    0 6px 12px rgba(0, 34, 85, 0.14), 0 16px 32px rgba(0, 34, 85, 0.12);
+
+  /* -- Rhythm ------------------------------------------------------------ */
+  --ls-space-xs: 4px;
+  --ls-space-sm: 8px;
+  --ls-space: 16px;
+  --ls-space-md: 24px;
+  --ls-space-lg: 32px;
+  /* Height of one ruled line; the ruling gradient and the preview rows both
+     key off this so the text sits on the lines instead of drifting. */
+  --ls-rule-height: 26px;
+
+  /* -- Type -------------------------------------------------------------- */
+  --ls-font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --ls-font-body: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* -- Motion ------------------------------------------------------------ */
+  --ls-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ls-duration: 180ms;
+}
+
+/* Respect a user's reduced-motion preference across every custom transition. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ls-duration: 0ms;
+  }
+}
