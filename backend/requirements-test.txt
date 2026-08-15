@@ -15,3 +15,6 @@ daphne==4.0.0
 django-cors-headers==4.2.0
 django-filter==23.2
 django-jazzmin==3.0.0
+# Not runtime-only: ImageField needs it at import, and the image tests encode
+# real photos through it rather than faking the upload.
+Pillow==10.4.0
