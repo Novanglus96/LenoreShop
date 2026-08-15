@@ -68,6 +68,24 @@ export default defineConfig(({ mode }) => ({
               },
             },
           },
+          {
+            // Item photos. CacheFirst rather than NetworkFirst because an
+            // upload writes a new uuid filename, so a stored photo at a given
+            // URL never changes — and the reason to have photos at all is the
+            // back corner of a shop where the connection drops.
+            urlPattern: /^\/media\//,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "media-cache",
+              expiration: {
+                maxEntries: 300,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
         ],
       },
     }),
@@ -78,6 +96,14 @@ export default defineConfig(({ mode }) => ({
         target: "https://back-dev.danielleandjohn.love/api", // Backend API server
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ""),
+      },
+      "/media": {
+        // Item photos. In production nginx serves these off the media volume;
+        // in dev they come from the backend, so the paths in an API response
+        // resolve the same way on both.
+        target: "https://back-dev.danielleandjohn.love/media",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/media/, ""),
       },
       "/ws": {
         target: "ws://backend:8001", // Local backend WebSocket (Docker service name)

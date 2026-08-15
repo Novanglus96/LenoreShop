@@ -13,6 +13,15 @@
           class="frzcontents__icon"
         />
 
+        <!-- No placeholder: an empty frame beside every unphotographed row
+             would be clutter on a freezer you are digging through. -->
+        <ItemThumb
+          :thumbnail-url="item.thumbnail_url"
+          :image-url="item.image_url"
+          :name="item.name"
+          variant="frost"
+        />
+
         <span class="frzcontents__body">
           <span class="frzcontents__name">
             <span v-if="showQty(item)" class="frzcontents__qty">
@@ -99,6 +108,7 @@
   // totalexpiring count shown on the freezer cards.
   const SOON_DAYS = 14;
   import ConfirmDialog from "@/components/ConfirmDialog.vue";
+  import ItemThumb from "@/components/ItemThumb.vue";
   const props = defineProps({
     freezeritems: {
       type: Array,
@@ -121,6 +131,7 @@
     discard_date: null,
     notes: "",
     freezer_id: 0,
+    thumbnail_url: null,
   });
   const passedDeleteData = ref({
     id: 0,
@@ -145,6 +156,9 @@
       discard_date: item.discard_date,
       notes: item.notes,
       freezer_id: item.freezer_id,
+      // ImagePicker shows this as the existing photo, and only calls for a
+      // delete when there was one to begin with.
+      thumbnail_url: item.thumbnail_url,
     };
 
     freezerItemFormDialog.value = true;

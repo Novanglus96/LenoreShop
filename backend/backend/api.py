@@ -1,4 +1,5 @@
-from ninja import NinjaAPI, Schema, Query
+from ninja import NinjaAPI, Schema, Query, File
+from ninja.files import UploadedFile
 from api.models import (
     Store,
     Aisle,
@@ -9,6 +10,7 @@ from api.models import (
     FreezerItem,
 )
 from api.broadcast import broadcast_invalidate
+from api.images import ImageUploadError, build_renditions, delete_renditions
 from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
@@ -32,6 +34,24 @@ FREEZER_PREVIEW_ITEM_COUNT = 4
 # /freezeritemsexpiring endpoint so the dashboard and that list agree on what
 # is urgent.
 FREEZER_SOON_DAYS = 14
+
+
+def image_path(stored):
+    """
+    Returns the media path of an ImageField, or None when nothing is stored.
+
+    The path is left relative (`/media/...`) rather than made absolute: Vite
+    proxies /media in dev and nginx serves it in prod, so a relative path is the
+    one form that works in both without the backend knowing its own hostname.
+
+    Args:
+        stored (ImageFieldFile): The field to read.
+
+    Returns:
+        (str): The media path, or None.
+    """
+    # An unset ImageField is falsy but still has a .url that raises.
+    return stored.url if stored else None
 
 
 def freezer_queryset():
@@ -219,12 +239,34 @@ class ItemOut(Schema):
         name (str): The name of the item.
         matches (str): Names that macth this item.
         aisle (AisleOut): Last aisle used for this item. Optional.
+        image_url (str): Path to the full photo, for tap-to-enlarge. None when
+            the item has no photo.
+        thumbnail_url (str): Path to the thumbnail shown on rows. None when the
+            item has no photo.
     """
 
     id: int
     name: str
     matches: str = None
     aisle: Optional[AisleOut]
+    image_url: str = None
+    thumbnail_url: str = None
+
+    @staticmethod
+    def resolve_image_url(obj):
+        """
+        Returns:
+            (str): The media path of the full photo, or None.
+        """
+        return image_path(obj.image)
+
+    @staticmethod
+    def resolve_thumbnail_url(obj):
+        """
+        Returns:
+            (str): The media path of the thumbnail, or None.
+        """
+        return image_path(obj.thumbnail)
 
 
 class PaginatedItems(Schema):
@@ -518,6 +560,10 @@ class FreezerItemOut(Schema):
         days_until_discard (int): Days left before discard_date, negative once
             past it. None when no discard_date is set.
         is_expired (bool): True if the discard date has passed.
+        image_url (str): Path to the full photo, for tap-to-enlarge. None when
+            the frozen food has no photo.
+        thumbnail_url (str): Path to the thumbnail shown on rows. None when the
+            frozen food has no photo.
     """
 
     id: int
@@ -530,6 +576,24 @@ class FreezerItemOut(Schema):
     freezer_id: int
     days_until_discard: int = None
     is_expired: bool = False
+    image_url: str = None
+    thumbnail_url: str = None
+
+    @staticmethod
+    def resolve_image_url(obj):
+        """
+        Returns:
+            (str): The media path of the full photo, or None.
+        """
+        return image_path(obj.image)
+
+    @staticmethod
+    def resolve_thumbnail_url(obj):
+        """
+        Returns:
+            (str): The media path of the thumbnail, or None.
+        """
+        return image_path(obj.thumbnail)
 
 
 class FreezerFull(Schema):
@@ -848,12 +912,18 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
         )
         for aisle in purchasedaisles
     }
-    listitems = ListItem.objects.filter(
-        shopping_list=shoppinglist, purchased=False
-    ).order_by("purchased", "item__name")
-    purchasedlistitems = ListItem.objects.filter(
-        shopping_list=shoppinglist, purchased=True
-    ).order_by("purchased", "item__name")
+    # select_related because every row below reads listitem.item and
+    # listitem.aisle; without it a full list costs two extra queries per row.
+    listitems = (
+        ListItem.objects.filter(shopping_list=shoppinglist, purchased=False)
+        .select_related("item", "aisle")
+        .order_by("purchased", "item__name")
+    )
+    purchasedlistitems = (
+        ListItem.objects.filter(shopping_list=shoppinglist, purchased=True)
+        .select_related("item", "aisle")
+        .order_by("purchased", "item__name")
+    )
     total_purchased_count = ListItem.objects.filter(
         shopping_list=shoppinglist, purchased=True
     ).count()
@@ -874,10 +944,17 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
                 item_id=listitem.item.id,
                 aisle_id=listitem.aisle_id,
                 shopping_list_id=listitem.shopping_list.id,
+                # Built by hand rather than from_orm so the item's aisle is left
+                # off: it is redundant here (the row already sits under an aisle)
+                # and resolving it would cost two queries per row. The image
+                # paths have to be passed explicitly for the same reason — the
+                # ItemOut resolvers only run under from_orm.
                 item=ItemOut(
                     id=listitem.item.id,
                     name=listitem.item.name,
                     matches=listitem.item.matches,
+                    image_url=image_path(listitem.item.image),
+                    thumbnail_url=image_path(listitem.item.thumbnail),
                 ),
             )
         )
@@ -893,10 +970,17 @@ def get_shoppinglistfull(request, shoppinglist_id: int):
                 item_id=listitem.item.id,
                 aisle_id=listitem.aisle_id,
                 shopping_list_id=listitem.shopping_list.id,
+                # Built by hand rather than from_orm so the item's aisle is left
+                # off: it is redundant here (the row already sits under an aisle)
+                # and resolving it would cost two queries per row. The image
+                # paths have to be passed explicitly for the same reason — the
+                # ItemOut resolvers only run under from_orm.
                 item=ItemOut(
                     id=listitem.item.id,
                     name=listitem.item.name,
                     matches=listitem.item.matches,
+                    image_url=image_path(listitem.item.image),
+                    thumbnail_url=image_path(listitem.item.thumbnail),
                 ),
             )
         )
@@ -1210,6 +1294,160 @@ def delete_item(request, item_id: int):
     item.delete()
     broadcast_invalidate(["items"])
     return {"success": True}
+
+
+# Photos are uploaded on their own endpoints rather than folded into the item
+# PUT, because the rest of the API is JSON and a file has to arrive as
+# multipart. Keeping them separate also means the frontend can save a rename
+# without re-sending a 1MB photo.
+#
+# A photo on an Item shows up on shopping list rows, so writing one has to
+# invalidate the list keys as well as "items" — the row is rendered from
+# ListItemOut.item, not from a separate items fetch.
+ITEM_IMAGE_KEYS = ["items", "fullshoppinglist", "shoppinglists"]
+FREEZERITEM_IMAGE_KEYS = ["freezers", "freezeritems", "freezerfull"]
+
+
+def store_upload(obj, upload):
+    """
+    Replaces an object's photo with a newly uploaded one.
+
+    Args:
+        obj (Model): An Item or FreezerItem.
+        upload (UploadedFile): The uploaded photo.
+
+    Returns:
+        (Model): The saved object.
+
+    Raises:
+        HttpError: 400 if the upload is not a usable image.
+    """
+    try:
+        full, thumb = build_renditions(upload)
+    except ImageUploadError as error:
+        raise HttpError(400, str(error))
+
+    # The old files are dropped first so replacing a photo does not strand the
+    # previous pair on the media volume. save=False because the field
+    # assignments below are about to write the row anyway.
+    delete_renditions(obj)
+
+    obj.image.save(full.name, full, save=False)
+    obj.thumbnail.save(thumb.name, thumb, save=False)
+    obj.save()
+    return obj
+
+
+def clear_upload(obj):
+    """
+    Removes an object's photo, leaving the object itself alone.
+
+    Args:
+        obj (Model): An Item or FreezerItem.
+
+    Returns:
+        (Model): The saved object.
+    """
+    delete_renditions(obj)
+    obj.image = None
+    obj.thumbnail = None
+    obj.save()
+    return obj
+
+
+@api.post("/items/{item_id}/image", response=ItemOut)
+def upload_item_image(request, item_id: int, image: UploadedFile = File(...)):
+    """
+    The function `upload_item_image` sets the photo for an Item, replacing any
+    photo already on it.
+
+    Endpoint:
+        - **Path**: `/api/items/{item_id}/image`
+        - **Method**: `POST`
+
+    Args:
+        request ():
+        item_id (int): ID of the Item to attach the photo to.
+        image (UploadedFile): The uploaded photo, as multipart form data.
+
+    Returns:
+        (ItemOut): The Item, with its new image paths.
+    """
+    item = get_object_or_404(Item, id=item_id)
+    item = store_upload(item, image)
+    broadcast_invalidate(ITEM_IMAGE_KEYS)
+    return item
+
+
+@api.delete("/items/{item_id}/image", response=ItemOut)
+def delete_item_image(request, item_id: int):
+    """
+    The function `delete_item_image` removes the photo from an Item.
+
+    Endpoint:
+        - **Path**: `/api/items/{item_id}/image`
+        - **Method**: `DELETE`
+
+    Args:
+        request ():
+        item_id (int): ID of the Item to remove the photo from.
+
+    Returns:
+        (ItemOut): The Item, with its image paths cleared.
+    """
+    item = get_object_or_404(Item, id=item_id)
+    item = clear_upload(item)
+    broadcast_invalidate(ITEM_IMAGE_KEYS)
+    return item
+
+
+@api.post("/freezeritems/{freezeritem_id}/image", response=FreezerItemOut)
+def upload_freezeritem_image(
+    request, freezeritem_id: int, image: UploadedFile = File(...)
+):
+    """
+    The function `upload_freezeritem_image` sets the photo for a FreezerItem,
+    replacing any photo already on it.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}/image`
+        - **Method**: `POST`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of the FreezerItem to attach the photo to.
+        image (UploadedFile): The uploaded photo, as multipart form data.
+
+    Returns:
+        (FreezerItemOut): The FreezerItem, with its new image paths.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    freezeritem = store_upload(freezeritem, image)
+    broadcast_invalidate(FREEZERITEM_IMAGE_KEYS)
+    return freezeritem
+
+
+@api.delete("/freezeritems/{freezeritem_id}/image", response=FreezerItemOut)
+def delete_freezeritem_image(request, freezeritem_id: int):
+    """
+    The function `delete_freezeritem_image` removes the photo from a
+    FreezerItem.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}/image`
+        - **Method**: `DELETE`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of the FreezerItem to remove the photo from.
+
+    Returns:
+        (FreezerItemOut): The FreezerItem, with its image paths cleared.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    freezeritem = clear_upload(freezeritem)
+    broadcast_invalidate(FREEZERITEM_IMAGE_KEYS)
+    return freezeritem
 
 
 @api.delete("/listitems/{listitem_id}")

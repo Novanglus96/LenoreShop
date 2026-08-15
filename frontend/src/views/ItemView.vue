@@ -94,6 +94,7 @@
     id: null,
     name: null,
     matches: null,
+    thumbnail_url: null,
   });
 
   const pageItems = computed(() => items.value?.items ?? []);
@@ -114,7 +115,12 @@
   const openAdd = () => {
     isEdit.value = false;
     selectedItem.value = null;
-    passedFormData.value = { id: null, name: null, matches: null };
+    passedFormData.value = {
+      id: null,
+      name: null,
+      matches: null,
+      thumbnail_url: null,
+    };
     itemFormDialog.value = true;
   };
 
@@ -125,6 +131,9 @@
       id: item.id,
       name: item.name,
       matches: item.matches,
+      // ImagePicker shows this as the existing photo, and only calls for a
+      // delete when there was one to begin with.
+      thumbnail_url: item.thumbnail_url,
     };
     itemFormDialog.value = true;
   };

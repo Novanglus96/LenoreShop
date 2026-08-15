@@ -41,6 +41,8 @@
 #### ::: backend.api.list_items
 #### ::: backend.api.update_item
 #### ::: backend.api.delete_item
+#### ::: backend.api.upload_item_image
+#### ::: backend.api.delete_item_image
 ### Schemas
 #### ::: backend.api.ItemIn
 #### ::: backend.api.ItemOut
@@ -95,6 +97,8 @@
 #### ::: backend.api.list_freezeritemsexpiring
 #### ::: backend.api.update_freezeritem
 #### ::: backend.api.delete_freezeritem
+#### ::: backend.api.upload_freezeritem_image
+#### ::: backend.api.delete_freezeritem_image
 ### Schemas
 #### ::: backend.api.FreezerItemIn
 #### ::: backend.api.FreezerItemOut

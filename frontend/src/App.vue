@@ -42,10 +42,16 @@
         You're offline. Changes will sync when connection is restored.
       </v-snackbar>
     </v-main>
+
+    <!-- One overlay for every photo in the app. Mounted here rather than per
+         list, because a viewer inside a v-for is the shape that stacked into a
+         black screen on mobile. -->
+    <ImageLightbox />
   </v-app>
 </template>
 <script setup>
   import AppNavigation from "@/components/AppNavigation.vue";
+  import ImageLightbox from "@/components/ImageLightbox.vue";
   import { useMainStore } from "@/stores/main";
   import { onMounted, computed, ref, watch, onUnmounted } from "vue";
   import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
