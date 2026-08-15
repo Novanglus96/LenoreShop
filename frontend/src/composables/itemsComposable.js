@@ -112,9 +112,35 @@ async function getItemsFunction(pageinfo, full) {
   }
 }
 
+/**
+ * Just the photo half of an item, with no items query attached.
+ *
+ * The shopping list needs to save a photo but has no use for the paginated
+ * catalog that useItems() fetches, and taking useItems() there would run that
+ * query on the page you use most.
+ */
+export function useItemImage() {
+  const queryClient = useQueryClient();
+
+  // A photo is saved on its own request, separately from the item, because a
+  // new item has no id to upload against until it has been created. `image` is
+  // the ImagePicker's staged `{ file, remove }`.
+  async function saveImageFor(itemId, image) {
+    if (!itemId || !(image?.file || image?.remove)) return;
+    await saveItemImage(itemId, image);
+    // A photo lives on the catalog item, so it shows up on the catalog page and
+    // on every list row using that item. Both sets of keys have to drop.
+    queryClient.invalidateQueries({ queryKey: ["items"] });
+    queryClient.invalidateQueries({ queryKey: ["fullshoppinglist"] });
+  }
+
+  return { saveImageFor };
+}
+
 export function useItems(full) {
   const queryClient = useQueryClient();
   const itemstore = useItemStore();
+  const { saveImageFor } = useItemImage();
   const { data: items, isLoading } = useQuery({
     queryKey: ["items", itemstore.pageinfo, full],
     queryFn: () => getItemsFunction(itemstore.pageinfo, full),
@@ -146,18 +172,6 @@ export function useItems(full) {
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },
   });
-
-  // A photo is saved on its own request after the item itself, because a new
-  // item has no id to upload against until it has been created. `image` is the
-  // ImagePicker's staged `{ file, remove }`; it never goes to the item endpoint.
-  async function saveImageFor(itemId, image) {
-    if (!itemId || !(image?.file || image?.remove)) return;
-    await saveItemImage(itemId, image);
-    // The row on a shopping list renders the photo too, so the list keys have to
-    // drop as well as the catalog's.
-    queryClient.invalidateQueries({ queryKey: ["items"] });
-    queryClient.invalidateQueries({ queryKey: ["fullshoppinglist"] });
-  }
 
   async function addItem(newItem) {
     const { image, ...fields } = newItem;

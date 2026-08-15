@@ -77,6 +77,19 @@
                 title="Edit"
                 @click="selectedItem(listItem)"
               />
+              <!-- The aisle is where you are stood in front of the product, so
+                   this is the moment a photo is worth taking. -->
+              <v-list-item
+                :prepend-icon="
+                  listItem.item.thumbnail_url
+                    ? 'mdi-image-edit-outline'
+                    : 'mdi-camera-plus-outline'
+                "
+                :title="
+                  listItem.item.thumbnail_url ? 'Change photo' : 'Add photo'
+                "
+                @click="selectedPhotoItem(listItem)"
+              />
               <v-list-item
                 v-if="!purchased"
                 prepend-icon="mdi-delete-outline"
@@ -107,6 +120,14 @@
     :key="passedFormData.id"
   />
 
+  <ItemPhotoDialog
+    v-model="photoDialog"
+    :item-id="photoItem.id"
+    :item-name="photoItem.name"
+    :current-url="photoItem.thumbnail_url"
+    @save="saveItemPhoto"
+  />
+
   <ConfirmDialog
     v-model="deleteDialog"
     title="Remove item?"
@@ -123,6 +144,8 @@
   import ListItemForm from "@/components/ListItemForm.vue";
   import ConfirmDialog from "@/components/ConfirmDialog.vue";
   import ItemThumb from "@/components/ItemThumb.vue";
+  import ItemPhotoDialog from "@/components/ItemPhotoDialog.vue";
+  import { useItemImage } from "@/composables/itemsComposable";
 
   defineProps({
     listitems: {
@@ -157,6 +180,13 @@
   const listItemFormDialog = ref(false);
   const deleteDialog = ref(false);
 
+  // The photo hangs off the catalog item, not the list row, so this holds the
+  // item rather than the listItem. Saved here rather than emitted up to the
+  // view: the photo endpoints are the item's, and ListView deals in list items.
+  const photoDialog = ref(false);
+  const photoItem = ref({ id: null, name: "", thumbnail_url: null });
+  const { saveImageFor } = useItemImage();
+
   const updateDialog = () => {
     listItemFormDialog.value = false;
   };
@@ -177,6 +207,19 @@
     passedFormData.value.shopping_list_id = listItem.shopping_list_id;
 
     listItemFormDialog.value = true;
+  };
+
+  const selectedPhotoItem = listItem => {
+    photoItem.value = {
+      id: listItem.item.id,
+      name: listItem.item.name,
+      thumbnail_url: listItem.item.thumbnail_url,
+    };
+    photoDialog.value = true;
+  };
+
+  const saveItemPhoto = async ({ itemId, image }) => {
+    await saveImageFor(itemId, image);
   };
 
   const editListItem = async listItem => {
