@@ -11,6 +11,14 @@
 
 ### Bug Fixes
 
+* keep a history of what happened to frozen food ([bcb825f](https://github.com/Novanglus96/LenoreShop/commit/bcb825f28a7107b3851ad76d0578267d85b4b292))
+* use food from the freezer and move it between freezers ([3828891](https://github.com/Novanglus96/LenoreShop/commit/382889114ba0288c420a295b2a0e7062a7002658))
+
+## [1.9.2-alpha.1](https://github.com/Novanglus96/LenoreShop/compare/v1.9.1...v1.9.2-alpha.1) (2026-08-17)
+
+
+### Bug Fixes
+
 * use food from the freezer and move it between freezers ([3828891](https://github.com/Novanglus96/LenoreShop/commit/382889114ba0288c420a295b2a0e7062a7002658))
 
 ## [1.9.1](https://github.com/Novanglus96/LenoreShop/compare/v1.9.0...v1.9.1) (2026-08-15)
