@@ -62,6 +62,11 @@
     { title: "Shopping Lists", url: "/alllists", icon: "mdi-cart-outline" },
     { title: "Items", url: "/items", icon: "mdi-food-apple-outline" },
     { title: "Freezers", url: "/freezers", icon: "mdi-snowflake" },
+    {
+      title: "Freezer History",
+      url: "/freezerlog",
+      icon: "mdi-history",
+    },
   ];
 </script>
 

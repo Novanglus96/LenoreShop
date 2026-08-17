@@ -252,6 +252,119 @@ class FreezerItem(models.Model):
         return f"{self.freezer.name} | {self.name}"
 
 
+class FreezerLog(models.Model):
+    """
+    Model representing something that happened to a frozen food.
+
+    Answers "what happened to that meatloaf?" months later, so it is written to
+    be readable on its own: the food's name, its unit and the freezer names are
+    **copied in as text** rather than followed through a FK. A FreezerItem is
+    deleted the moment the last of it is used, which is precisely when its log
+    entries become interesting, so a cascade would erase the answer along with
+    the question.
+
+    The FKs are kept as a convenience for as long as the rows survive, and go
+    null rather than taking the log with them.
+
+    Attributes:
+        action (CharField): What happened — one of ACTION_CHOICES.
+        name (CharField): The food's name when the event happened.
+        qty (IntegerField): How many the event concerned. For a use or a move
+            this is the number used or moved, not the number remaining.
+        unit (CharField): The unit for qty, copied from the food. Optional.
+        freezer_name (CharField): The freezer this happened in, as text.
+        to_freezer_name (CharField): Where a move sent it, as text. None for
+            every other action.
+        freezer (Freezer): The freezer, while it still exists. Optional.
+        freezeritem (FreezerItem): The food, while it still exists. Optional,
+            and null for anything used up, thrown out or since deleted.
+        occurred (DateTimeField): When it happened. Set once, on write.
+    """
+
+    ACTION_ADDED = "added"
+    ACTION_USED = "used"
+    ACTION_MOVED = "moved"
+    ACTION_DISCARDED = "discarded"
+
+    ACTION_CHOICES = [
+        (ACTION_ADDED, "Added"),
+        (ACTION_USED, "Used"),
+        (ACTION_MOVED, "Moved"),
+        (ACTION_DISCARDED, "Thrown out"),
+    ]
+
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    name = models.CharField(max_length=50)
+    qty = models.IntegerField(default=1)
+    unit = models.CharField(max_length=20, null=True, blank=True)
+    freezer_name = models.CharField(max_length=50)
+    to_freezer_name = models.CharField(max_length=50, null=True, blank=True)
+    freezer = models.ForeignKey(
+        Freezer, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    freezeritem = models.ForeignKey(
+        FreezerItem, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    occurred = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Newest first, with id breaking ties: several entries can share a
+        # timestamp, and without the tiebreak their order is undefined and the
+        # history page shuffles between reads.
+        ordering = ["-occurred", "-id"]
+        indexes = [
+            # The history page's two access patterns: the unfiltered feed, and
+            # a name search.
+            models.Index(fields=["-occurred"]),
+            models.Index(fields=["name"]),
+        ]
+
+    @classmethod
+    def record(cls, action, freezeritem, qty=None, freezer=None, to_freezer=None):
+        """
+        Writes one entry for something that just happened to a food.
+
+        Called from the API handlers rather than a post_delete signal, so that a
+        cascade — deleting a whole freezer — does not read as having thrown out
+        everything inside it. The tradeoff is that admin-side deletes go
+        unlogged, which is the right way round: the log is a record of what was
+        done to the food, not of every row that left the table.
+
+        Args:
+            action (str): One of the ACTION_* values.
+            freezeritem (FreezerItem): The food the event concerns.
+            qty (int): How many the event concerned. Defaults to the food's
+                whole quantity, which is what "added" and "thrown out" mean.
+            freezer (Freezer): The freezer it happened in. Defaults to the
+                food's own, which is wrong once a move has reassigned it — pass
+                the source explicitly there.
+            to_freezer (Freezer): Where a move sent it.
+
+        Returns:
+            (FreezerLog): The entry written.
+        """
+        source = freezer or freezeritem.freezer
+        return cls.objects.create(
+            action=action,
+            name=freezeritem.name,
+            qty=freezeritem.qty if qty is None else qty,
+            unit=freezeritem.unit,
+            freezer_name=source.name if source else "",
+            to_freezer_name=to_freezer.name if to_freezer else None,
+            freezer=source,
+            # A row being used up is deleted right after this is written, which
+            # nulls the FK — by design.
+            freezeritem=freezeritem if freezeritem.pk else None,
+        )
+
+    def __str__(self):
+        """
+        Returns:
+            (String): The FreezerLog Object description.
+        """
+        return f"{self.occurred:%Y-%m-%d} | {self.action} {self.name}"
+
+
 class Version(SingletonModel):
     """
     Model representing app version.

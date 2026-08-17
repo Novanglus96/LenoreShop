@@ -17,7 +17,16 @@ from backend.api import (
     LIST_PREVIEW_ITEM_COUNT,
 )
 
-from .models import Aisle, Freezer, FreezerItem, Item, ListItem, ShoppingList, Store
+from .models import (
+    Aisle,
+    Freezer,
+    FreezerItem,
+    FreezerLog,
+    Item,
+    ListItem,
+    ShoppingList,
+    Store,
+)
 
 
 class FreezerModelTests(TestCase):
@@ -1170,3 +1179,170 @@ class SplitFreezerItemPhotoTests(TestCase):
         self.client.delete(f"/api/freezeritems/{self.freezeritem.id}")
 
         self.assertFalse(self.stored.exists())
+
+
+class FreezerLogTests(TestCase):
+    """
+    Tests for the freezer history — what was written, and that it survives the
+    food it describes.
+    """
+
+    def setUp(self):
+        self.garage = Freezer.objects.create(name="Garage")
+        self.kitchen = Freezer.objects.create(name="Kitchen")
+
+    def add(self, name="Meatloaf", qty=3, freezer=None):
+        response = self.client.post(
+            "/api/freezeritems",
+            {
+                "name": name,
+                "qty": qty,
+                "unit": "portions",
+                "freezer_id": (freezer or self.garage).id,
+            },
+            content_type="application/json",
+        )
+        return FreezerItem.objects.get(id=response.json()["id"])
+
+    def use(self, item, qty):
+        return self.client.post(
+            f"/api/freezeritems/{item.id}/use",
+            {"qty": qty},
+            content_type="application/json",
+        )
+
+    def entries(self, **params):
+        response = self.client.get("/api/freezerlog", params)
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def test_adding_food_is_logged(self):
+        self.add()
+        entry = FreezerLog.objects.get()
+
+        self.assertEqual(entry.action, FreezerLog.ACTION_ADDED)
+        self.assertEqual(entry.name, "Meatloaf")
+        self.assertEqual(entry.qty, 3)
+        self.assertEqual(entry.freezer_name, "Garage")
+        self.assertIsNone(entry.to_freezer_name)
+
+    def test_using_some_logs_the_amount_used_not_the_amount_left(self):
+        item = self.add(qty=3)
+        self.use(item, 1)
+
+        entry = FreezerLog.objects.filter(action=FreezerLog.ACTION_USED).get()
+        self.assertEqual(entry.qty, 1)
+
+    def test_throwing_food_out_is_logged_as_discarded(self):
+        item = self.add()
+        self.client.delete(f"/api/freezeritems/{item.id}")
+
+        entry = FreezerLog.objects.filter(
+            action=FreezerLog.ACTION_DISCARDED
+        ).get()
+        self.assertEqual(entry.name, "Meatloaf")
+        self.assertEqual(entry.qty, 3)
+
+    def test_moving_food_records_both_freezers(self):
+        item = self.add()
+        self.client.post(
+            f"/api/freezeritems/{item.id}/transfer",
+            {"freezer_id": self.kitchen.id},
+            content_type="application/json",
+        )
+
+        entry = FreezerLog.objects.filter(action=FreezerLog.ACTION_MOVED).get()
+        self.assertEqual(entry.freezer_name, "Garage")
+        self.assertEqual(entry.to_freezer_name, "Kitchen")
+
+    def test_the_log_outlives_the_food_it_describes(self):
+        item = self.add(qty=2)
+        self.use(item, 2)
+
+        self.assertFalse(FreezerItem.objects.filter(id=item.id).exists())
+
+        used = FreezerLog.objects.filter(action=FreezerLog.ACTION_USED).get()
+        self.assertEqual(used.name, "Meatloaf")
+        self.assertEqual(used.freezer_name, "Garage")
+        # The row is gone, so the convenience FK is null — the text fields are
+        # what keep the entry readable.
+        used.refresh_from_db()
+        self.assertIsNone(used.freezeritem_id)
+
+    def test_the_log_survives_the_freezer_being_deleted(self):
+        self.add()
+        self.client.delete(f"/api/freezers/{self.garage.id}")
+
+        entry = FreezerLog.objects.filter(action=FreezerLog.ACTION_ADDED).get()
+        self.assertEqual(entry.freezer_name, "Garage")
+        self.assertIsNone(entry.freezer_id)
+
+    def test_deleting_a_freezer_does_not_log_its_contents_as_thrown_out(self):
+        self.add()
+        self.client.delete(f"/api/freezers/{self.garage.id}")
+
+        self.assertFalse(
+            FreezerLog.objects.filter(
+                action=FreezerLog.ACTION_DISCARDED
+            ).exists()
+        )
+
+    def test_editing_food_is_not_logged(self):
+        item = self.add()
+        self.client.put(
+            f"/api/freezeritems/{item.id}",
+            {"name": "Meatloaf", "qty": 9, "freezer_id": self.garage.id},
+            content_type="application/json",
+        )
+
+        self.assertEqual(FreezerLog.objects.count(), 1)
+
+    def test_the_history_reads_newest_first(self):
+        item = self.add()
+        self.use(item, 1)
+
+        actions = [e["action"] for e in self.entries()["entries"]]
+        self.assertEqual(actions, ["used", "added"])
+
+    def test_searching_by_name_finds_food_that_is_long_gone(self):
+        item = self.add(name="Meatloaf", qty=1)
+        self.use(item, 1)
+        self.add(name="Peas")
+
+        body = self.entries(search="meat")
+
+        self.assertEqual(body["total_records"], 2)
+        self.assertTrue(all(e["name"] == "Meatloaf" for e in body["entries"]))
+
+    def test_filtering_by_action(self):
+        item = self.add()
+        self.use(item, 1)
+
+        body = self.entries(action="used")
+
+        self.assertEqual(body["total_records"], 1)
+        self.assertEqual(body["entries"][0]["action"], "used")
+
+    def test_the_history_paginates(self):
+        for index in range(7):
+            self.add(name=f"Food {index}")
+
+        body = self.entries(page=1, page_size=5)
+
+        self.assertEqual(body["total_records"], 7)
+        self.assertEqual(body["total_pages"], 2)
+        self.assertEqual(len(body["entries"]), 5)
+
+    def test_a_page_past_the_end_is_clamped_rather_than_erroring(self):
+        self.add()
+
+        body = self.entries(page=9, page_size=5)
+
+        self.assertEqual(len(body["entries"]), 1)
+
+    def test_an_empty_history_reports_zero_rather_than_erroring(self):
+        body = self.entries()
+
+        self.assertEqual(body["total_records"], 0)
+        self.assertEqual(body["total_pages"], 0)
+        self.assertEqual(body["entries"], [])

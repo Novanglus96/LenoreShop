@@ -7,6 +7,7 @@ from .models import (
     ListItem,
     Freezer,
     FreezerItem,
+    FreezerLog,
     Version,
 )
 
@@ -89,6 +90,43 @@ class FreezerItemAdmin(admin.ModelAdmin):
     ordering = ["freezer", "discard_date", "name"]
 
 
+class FreezerLogAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "occurred",
+        "action",
+        "name",
+        "qty",
+        "unit",
+        "freezer_name",
+        "to_freezer_name",
+    ]
+
+    list_filter = ["action", "freezer_name"]
+
+    search_fields = ["name"]
+
+    # The history is a record of what happened, so the admin reads it rather
+    # than rewrites it. Entries are written by the API handlers only.
+    readonly_fields = [
+        "action",
+        "name",
+        "qty",
+        "unit",
+        "freezer_name",
+        "to_freezer_name",
+        "freezer",
+        "freezeritem",
+        "occurred",
+    ]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 class VersionAdmin(admin.ModelAdmin):
     list_display = ["version_number"]
 
@@ -116,4 +154,5 @@ admin.site.register(ShoppingList, ShoppingListAdmin)
 admin.site.register(ListItem, ListItemAdmin)
 admin.site.register(Freezer, FreezerAdmin)
 admin.site.register(FreezerItem, FreezerItemAdmin)
+admin.site.register(FreezerLog, FreezerLogAdmin)
 admin.site.register(Version, VersionAdmin)

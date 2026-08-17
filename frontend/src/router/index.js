@@ -8,6 +8,7 @@ import AisleView from "@/views/AisleView.vue";
 import AllListsView from "@/views/AllListsView.vue";
 import FreezerView from "@/views/FreezerView.vue";
 import FreezerContentsView from "@/views/FreezerContentsView.vue";
+import FreezerLogView from "@/views/FreezerLogView.vue";
 
 const routes = [
   {
@@ -60,6 +61,11 @@ const routes = [
     path: "/freezer",
     name: "freezer",
     component: FreezerContentsView,
+  },
+  {
+    path: "/freezerlog",
+    name: "freezerlog",
+    component: FreezerLogView,
   },
   {
     path: "/:catchAll(.*)",

@@ -107,3 +107,10 @@
 #### ::: backend.api.FreezerItemUseIn
 #### ::: backend.api.FreezerItemTransferIn
 #### ::: backend.api.FreezerItemChangeOut
+
+## FreezerLog
+### Views
+#### ::: backend.api.list_freezerlog
+### Schemas
+#### ::: backend.api.FreezerLogOut
+#### ::: backend.api.PaginatedFreezerLog
