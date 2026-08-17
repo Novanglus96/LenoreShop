@@ -8,6 +8,7 @@ from api.models import (
     ShoppingList,
     Freezer,
     FreezerItem,
+    FreezerLog,
 )
 from api.broadcast import broadcast_invalidate
 from api.images import ImageUploadError, build_renditions, delete_renditions
@@ -15,7 +16,7 @@ from typing import List, Optional
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 from django.core.management import call_command
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import F, Count, Prefetch, Q
@@ -646,6 +647,59 @@ class FreezerItemChangeOut(Schema):
     remaining: int = 0
     item: FreezerItemOut = None
     created: FreezerItemOut = None
+
+
+class FreezerLogOut(Schema):
+    """
+    Schema to represent one entry in the freezer history.
+
+    The freezer names are the stored text, not a lookup, so an entry still reads
+    correctly after the food and even the freezer it names have been deleted.
+
+    Attributes:
+        id (int): The ID of the log entry.
+        action (str): What happened — "added", "used", "moved" or "discarded".
+        name (str): The food's name when the event happened.
+        qty (int): How many the event concerned.
+        unit (str): The unit for qty. Default = None.
+        freezer_name (str): The freezer it happened in.
+        to_freezer_name (str): Where a move sent it. None for other actions.
+        freezer_id (int): The freezer, if it still exists. Default = None.
+        freezeritem_id (int): The food, if it still exists. Default = None.
+        occurred (datetime): When it happened.
+    """
+
+    id: int
+    action: str
+    name: str
+    qty: int = 1
+    unit: str = None
+    freezer_name: str
+    to_freezer_name: str = None
+    freezer_id: int = None
+    freezeritem_id: int = None
+    occurred: datetime
+
+
+class PaginatedFreezerLog(Schema):
+    """
+    Schema to represent a paginated page of freezer history.
+
+    Paginated because this is the one list in the app that only grows — every
+    use, move and throw-out is kept — so it cannot be returned whole the way the
+    freezer contents are.
+
+    Attributes:
+        entries (List[FreezerLogOut]): One page of history, newest first.
+        current_page (int): The page returned.
+        total_pages (int): The total number of pages.
+        total_records (int): The total count of matching entries.
+    """
+
+    entries: List[FreezerLogOut]
+    current_page: int
+    total_pages: int
+    total_records: int
 
 
 class FreezerFull(Schema):
@@ -1860,9 +1914,12 @@ def create_freezeritem(request, payload: FreezerItemIn):
         id (int): The ID of the added FreezerItem.
     """
     freezeritem = FreezerItem.objects.create(**payload.dict())
+    FreezerLog.record(FreezerLog.ACTION_ADDED, freezeritem)
     # "freezers" too: the freezer list carries the dashboard's item and expiry
     # counts, so they go stale whenever an item is added, changed or removed.
-    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    broadcast_invalidate(
+        ["freezers", "freezeritems", "freezerfull", "freezerlog"]
+    )
     return {"id": freezeritem.id}
 
 
@@ -2028,6 +2085,8 @@ def use_freezeritem(request, freezeritem_id: int, payload: FreezerItemUseIn):
         )
 
     remaining = freezeritem.qty - payload.qty
+    # Written before the delete below, so the entry still catches the FK.
+    FreezerLog.record(FreezerLog.ACTION_USED, freezeritem, qty=payload.qty)
     if remaining == 0:
         freezeritem.delete()
         result = FreezerItemChangeOut(removed=True, remaining=0)
@@ -2042,7 +2101,9 @@ def use_freezeritem(request, freezeritem_id: int, payload: FreezerItemUseIn):
 
     # "freezers" too: the freezer list carries the dashboard's item and expiry
     # counts, so they go stale whenever an item is added, changed or removed.
-    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    broadcast_invalidate(
+        ["freezers", "freezeritems", "freezerfull", "freezerlog"]
+    )
     return result
 
 
@@ -2099,6 +2160,17 @@ def transfer_freezeritem(
             f"Only {freezeritem.qty} of {freezeritem.name} in the freezer.",
         )
 
+    # Captured before the move reassigns it, so the entry names where the food
+    # came from rather than where it ended up.
+    source = freezeritem.freezer
+    FreezerLog.record(
+        FreezerLog.ACTION_MOVED,
+        freezeritem,
+        qty=qty,
+        freezer=source,
+        to_freezer=target,
+    )
+
     if qty == freezeritem.qty:
         freezeritem.freezer = target
         freezeritem.save()
@@ -2134,7 +2206,9 @@ def transfer_freezeritem(
 
     # "freezers" too: the freezer list carries the dashboard's item and expiry
     # counts, so they go stale whenever an item is added, changed or removed.
-    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    broadcast_invalidate(
+        ["freezers", "freezeritems", "freezerfull", "freezerlog"]
+    )
     return result
 
 
@@ -2155,11 +2229,74 @@ def delete_freezeritem(request, freezeritem_id: int):
         success (bool): True if successfully deleted.
     """
     freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    # Removing food through the app means it was thrown out — using it has its
+    # own endpoint now, so this path no longer carries both meanings.
+    FreezerLog.record(FreezerLog.ACTION_DISCARDED, freezeritem)
     freezeritem.delete()
     # "freezers" too: the freezer list carries the dashboard's item and expiry
     # counts, so they go stale whenever an item is added, changed or removed.
-    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    broadcast_invalidate(
+        ["freezers", "freezeritems", "freezerfull", "freezerlog"]
+    )
     return {"success": True}
+
+
+@api.get("/freezerlog", response=PaginatedFreezerLog)
+def list_freezerlog(
+    request,
+    search: str = None,
+    action: str = None,
+    page: int = 1,
+    page_size: int = 25,
+):
+    """
+    The function `list_freezerlog` returns a page of the freezer history,
+    newest first.
+
+    Answers "what happened to that meatloaf?" — which is why `search` matches
+    the **stored** name on the entry rather than joining back to FreezerItem.
+    The food is usually long deleted by the time anyone asks.
+
+    Endpoint:
+        - **Path**: `/api/freezerlog`
+        - **Method**: `GET`
+
+    Args:
+        request ():
+        search (str): Case-insensitive fragment of the food's name. Default =
+            None, meaning every entry.
+        action (str): Restrict to one action. Default = None, meaning all.
+        page (int): Which page to return. Default = 1.
+        page_size (int): How many entries per page. Default = 25.
+
+    Returns:
+        (PaginatedFreezerLog): One page of history.
+    """
+    qs = FreezerLog.objects.all()
+    if search:
+        qs = qs.filter(name__icontains=search)
+    if action:
+        qs = qs.filter(action=action)
+
+    # count() rather than len(): the history is the one table that grows without
+    # bound, so the whole queryset is never pulled into memory just to size it.
+    total_records = qs.count()
+    total_pages = 0
+    entries = []
+    if total_records > 0:
+        paginator = Paginator(qs, page_size)
+        # A search that shortens the list can leave the page number past the
+        # end; clamping beats a 404 the user cannot act on.
+        page_obj = paginator.page(min(page, paginator.num_pages))
+        entries = list(page_obj.object_list)
+        total_pages = paginator.num_pages
+
+    return PaginatedFreezerLog(
+        entries=entries,
+        current_page=page,
+        total_pages=total_pages,
+        total_records=total_records,
+    )
 
 
 @api.get("/version/list", response=VersionOut)

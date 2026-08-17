@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
+import { computed } from "vue";
 import axios from "axios";
 import { useMainStore } from "@/stores/main";
 
@@ -77,6 +78,24 @@ async function getFreezerFullFunction(freezerID) {
     return response.data;
   } catch (error) {
     handleApiError(error, "Freezer contents not fetched: ");
+  }
+}
+
+async function getFreezerLogFunction({ search, action, page, pageSize }) {
+  try {
+    const response = await apiClient.get("/freezerlog", {
+      // Sent as params rather than a hand-built string so an apostrophe or a
+      // space in a food name is encoded properly.
+      params: {
+        search: search || undefined,
+        action: action || undefined,
+        page,
+        page_size: pageSize,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezer history not fetched: ");
   }
 }
 
@@ -376,6 +395,52 @@ export function useFreezerFull(freezerID) {
     removeFreezerItem,
     useFreezerItem,
     transferFreezerItem,
+  };
+}
+
+/**
+ * A page of the freezer history.
+ *
+ * The arguments are refs, so the query key changes with them and the page
+ * refetches when the search, filter or page number moves.
+ *
+ * The key starts with "freezerlog" so the backend's `broadcast_invalidate`
+ * reaches it — useRealtimeSync invalidates by first key segment.
+ *
+ * @param {Ref<string>} search Fragment of a food name, or empty for everything.
+ * @param {Ref<string>} action One action to show, or empty for all.
+ * @param {Ref<number>} page Which page to show, 1-based.
+ * @param {number} pageSize Entries per page.
+ */
+export function useFreezerLog(search, action, page, pageSize = 25) {
+  const queryClient = useQueryClient();
+
+  const { data: log, isLoading } = useQuery({
+    queryKey: ["freezerlog", search, action, page, pageSize],
+    queryFn: () =>
+      getFreezerLogFunction({
+        search: search.value,
+        action: action.value,
+        page: page.value,
+        pageSize,
+      }),
+    // Keeps the previous page on screen while the next one loads, so paging
+    // and typing a search do not blank the list on every keystroke.
+    placeholderData: previous => previous,
+    select: response => response,
+    client: queryClient,
+  });
+
+  const entries = computed(() => log.value?.entries ?? []);
+  const totalPages = computed(() => log.value?.total_pages ?? 0);
+  const totalRecords = computed(() => log.value?.total_records ?? 0);
+
+  return {
+    log,
+    entries,
+    totalPages,
+    totalRecords,
+    isLoading,
   };
 }
 

@@ -26,5 +26,8 @@
 ## FreezerItem
 ### ::: api.models.FreezerItem
 
+## FreezerLog
+### ::: api.models.FreezerLog
+
 ## Version
 ### ::: api.models.Version

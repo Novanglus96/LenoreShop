@@ -104,6 +104,13 @@ Writes call `broadcast_invalidate([...])` (`backend/api/broadcast.py`) with the 
 > photo is not necessarily its own — `delete_renditions` in `api/images.py`
 > checks `_still_referenced` before unlinking. Anything new that deletes image
 > files must do the same, or one row's removal blanks another's photo.
+- `FreezerLog` → append-only history of what happened to frozen food. Copies the
+  food's name and both freezer names in **as text**, with nullable FKs, because
+  a `FreezerItem` is deleted the moment the last of it is used — which is
+  exactly when its history becomes worth reading. Written by
+  `FreezerLog.record()` from the API handlers, deliberately **not** a
+  `post_delete` signal, so deleting a whole freezer doesn't read as throwing out
+  everything in it
 - `Version` → singleton model
 
 ### Frontend Data Layer
@@ -127,6 +134,7 @@ In dev, Vite proxies `/api` to the configured backend (`vite.config.js`). In pro
 | `/aisles`, `/aisles/:store` | AisleView |
 | `/freezers` | FreezerView |
 | `/freezer` | FreezerContentsView (active freezer) |
+| `/freezerlog` | FreezerLogView (freezer history) |
 
 > Dialogs must be rendered **outside** any `v-for`, as single instances driven
 > by a `selected*` ref. One dialog per row shares the same ref and opens them
