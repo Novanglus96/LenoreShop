@@ -96,9 +96,21 @@
 #### ::: backend.api.list_freezeritemsbyfreezer
 #### ::: backend.api.list_freezeritemsexpiring
 #### ::: backend.api.update_freezeritem
+#### ::: backend.api.use_freezeritem
+#### ::: backend.api.transfer_freezeritem
 #### ::: backend.api.delete_freezeritem
 #### ::: backend.api.upload_freezeritem_image
 #### ::: backend.api.delete_freezeritem_image
 ### Schemas
 #### ::: backend.api.FreezerItemIn
 #### ::: backend.api.FreezerItemOut
+#### ::: backend.api.FreezerItemUseIn
+#### ::: backend.api.FreezerItemTransferIn
+#### ::: backend.api.FreezerItemChangeOut
+
+## FreezerLog
+### Views
+#### ::: backend.api.list_freezerlog
+### Schemas
+#### ::: backend.api.FreezerLogOut
+#### ::: backend.api.PaginatedFreezerLog

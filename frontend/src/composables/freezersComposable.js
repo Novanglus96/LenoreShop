@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
+import { computed } from "vue";
 import axios from "axios";
 import { useMainStore } from "@/stores/main";
 
@@ -80,6 +81,24 @@ async function getFreezerFullFunction(freezerID) {
   }
 }
 
+async function getFreezerLogFunction({ search, action, page, pageSize }) {
+  try {
+    const response = await apiClient.get("/freezerlog", {
+      // Sent as params rather than a hand-built string so an apostrophe or a
+      // space in a food name is encoded properly.
+      params: {
+        search: search || undefined,
+        action: action || undefined,
+        page,
+        page_size: pageSize,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "Freezer history not fetched: ");
+  }
+}
+
 async function getExpiringFunction(days) {
   try {
     const response = await apiClient.get("/freezeritemsexpiring?days=" + days);
@@ -124,6 +143,64 @@ async function deleteFreezerItemFunction(deletedFreezerItem) {
     return response.data;
   } catch (error) {
     handleApiError(error, "Food not removed: ");
+  }
+}
+
+/**
+ * Surfaces the backend's own message for a rejected use or transfer.
+ *
+ * These two endpoints reject with something the user can act on — "Only 3 of
+ * Chili in the freezer" — which is far more useful than the bare status code
+ * `handleApiError` shows. Anything else falls through to the usual handler.
+ *
+ * @param {Object} error The axios error.
+ * @param {string} message Prefix used when there is no detail to show.
+ */
+function handleFreezerActionError(error, message) {
+  const detail = error.response?.data?.detail;
+  if (!detail) {
+    handleApiError(error, message);
+    return;
+  }
+  useMainStore().showSnackbar(detail, "error");
+  throw error;
+}
+
+async function useFreezerItemFunction({ id, qty }) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post(`/freezeritems/${id}/use`, { qty });
+    mainstore.showSnackbar(
+      response.data.removed
+        ? "Used the last of it — removed from the freezer."
+        : `Used ${qty}. ${response.data.remaining} left.`,
+      "success",
+    );
+    return response.data;
+  } catch (error) {
+    handleFreezerActionError(error, "Food not used: ");
+  }
+}
+
+async function transferFreezerItemFunction({ id, freezer_id, qty, name }) {
+  const mainstore = useMainStore();
+  try {
+    // qty omitted entirely means "all of it", which relocates the row rather
+    // than splitting it. Sending null would fail schema validation.
+    const payload = qty == null ? { freezer_id } : { freezer_id, qty };
+    const response = await apiClient.post(
+      `/freezeritems/${id}/transfer`,
+      payload,
+    );
+    mainstore.showSnackbar(
+      response.data.created
+        ? `Moved ${qty} of ${name}. ${response.data.remaining} left behind.`
+        : `Moved ${name}.`,
+      "success",
+    );
+    return response.data;
+  } catch (error) {
+    handleFreezerActionError(error, "Food not moved: ");
   }
 }
 
@@ -244,6 +321,23 @@ export function useFreezerFull(freezerID) {
     onSuccess: invalidate,
   });
 
+  const useFreezerItemMutation = useMutation({
+    mutationFn: useFreezerItemFunction,
+    onSuccess: invalidate,
+  });
+
+  const transferFreezerItemMutation = useMutation({
+    mutationFn: transferFreezerItemFunction,
+    // A transfer changes two freezers, and `invalidate` is scoped to the one
+    // being viewed, so refresh the target's contents as well.
+    onSuccess: (data, variables) => {
+      invalidate();
+      queryClient.invalidateQueries({
+        queryKey: ["freezerfull", variables.freezer_id],
+      });
+    },
+  });
+
   // A photo is saved on its own request after the food itself, because a new
   // freezer item has no id to upload against until it has been created.
   // `image` is the ImagePicker's staged `{ file, remove }`.
@@ -269,12 +363,84 @@ export function useFreezerFull(freezerID) {
     deleteFreezerItemMutation.mutate(deletedFreezerItem);
   }
 
+  // Rejections are already reported to the user by the mutation function, so
+  // swallow them here rather than leaving an unhandled rejection behind.
+  async function useFreezerItem(freezerItem, qty) {
+    try {
+      await useFreezerItemMutation.mutateAsync({ id: freezerItem.id, qty });
+    } catch {
+      /* reported via snackbar */
+    }
+  }
+
+  // `qty` omitted moves the whole row.
+  async function transferFreezerItem(freezerItem, freezerId, qty) {
+    try {
+      await transferFreezerItemMutation.mutateAsync({
+        id: freezerItem.id,
+        freezer_id: freezerId,
+        qty,
+        name: freezerItem.name,
+      });
+    } catch {
+      /* reported via snackbar */
+    }
+  }
+
   return {
     freezerfull,
     isLoading,
     addFreezerItem,
     editFreezerItem,
     removeFreezerItem,
+    useFreezerItem,
+    transferFreezerItem,
+  };
+}
+
+/**
+ * A page of the freezer history.
+ *
+ * The arguments are refs, so the query key changes with them and the page
+ * refetches when the search, filter or page number moves.
+ *
+ * The key starts with "freezerlog" so the backend's `broadcast_invalidate`
+ * reaches it — useRealtimeSync invalidates by first key segment.
+ *
+ * @param {Ref<string>} search Fragment of a food name, or empty for everything.
+ * @param {Ref<string>} action One action to show, or empty for all.
+ * @param {Ref<number>} page Which page to show, 1-based.
+ * @param {number} pageSize Entries per page.
+ */
+export function useFreezerLog(search, action, page, pageSize = 25) {
+  const queryClient = useQueryClient();
+
+  const { data: log, isLoading } = useQuery({
+    queryKey: ["freezerlog", search, action, page, pageSize],
+    queryFn: () =>
+      getFreezerLogFunction({
+        search: search.value,
+        action: action.value,
+        page: page.value,
+        pageSize,
+      }),
+    // Keeps the previous page on screen while the next one loads, so paging
+    // and typing a search do not blank the list on every keystroke.
+    placeholderData: previous => previous,
+    select: response => response,
+    client: queryClient,
+  });
+
+  const entries = computed(() => log.value?.entries ?? []);
+  const totalPages = computed(() => log.value?.total_pages ?? 0);
+  const totalRecords = computed(() => log.value?.total_records ?? 0);
+
+  return {
+    log,
+    entries,
+    totalPages,
+    totalRecords,
+    isLoading,
   };
 }
 
