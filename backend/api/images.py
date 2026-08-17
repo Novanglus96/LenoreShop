@@ -105,18 +105,42 @@ def build_renditions(uploaded_file):
     )
 
 
+def _still_referenced(obj, field, name):
+    """
+    Says whether another row of the same model still points at this file.
+
+    A partial freezer transfer deliberately leaves two FreezerItems sharing one
+    photo rather than copying the bytes, so "this row is gone" no longer implies
+    "nothing needs this file". Without the check, using or deleting either half
+    of a split would blank the photo on the other.
+
+    Args:
+        obj (Model): The Item or FreezerItem whose file is about to go.
+        field (str): The ImageField name, "image" or "thumbnail".
+        name (str): The stored path of the file.
+
+    Returns:
+        (bool): True if some other row references the same path.
+    """
+    others = type(obj)._default_manager.filter(**{field: name})
+    if obj.pk is not None:
+        others = others.exclude(pk=obj.pk)
+    return others.exists()
+
+
 def delete_renditions(obj):
     """
     Deletes the stored image files for an object without touching the row.
 
     Used both when a photo is replaced and when its owner is deleted, so the
-    media volume does not accumulate orphans.
+    media volume does not accumulate orphans. Files that a sibling row still
+    shares are left alone — see `_still_referenced`.
 
     Args:
         obj (Model): An Item or FreezerItem.
     """
     for field in ("image", "thumbnail"):
         stored = getattr(obj, field, None)
-        if stored:
+        if stored and not _still_referenced(obj, field, stored.name):
             # save=False: the caller decides whether the row is worth writing.
             stored.delete(save=False)

@@ -64,6 +64,8 @@
           :freezers="freezers"
           @edit-freezer-item="updateFreezerItem"
           @delete-freezer-item="removeFood"
+          @use-freezer-item="useFood"
+          @transfer-freezer-item="moveFood"
         />
       </div>
     </div>
@@ -104,6 +106,8 @@
     addFreezerItem,
     editFreezerItem,
     removeFreezerItem,
+    useFreezerItem,
+    transferFreezerItem,
   } = useFreezerFull(store.freezer_id);
 
   const contents = computed(() => freezerfull.value?.freezeritems ?? []);
@@ -165,6 +169,15 @@
 
   const removeFood = async deletedFood => {
     await removeFreezerItem(deletedFood);
+  };
+
+  const useFood = async (food, qty) => {
+    await useFreezerItem(food, qty);
+  };
+
+  // `qty` undefined moves the whole row to the other freezer.
+  const moveFood = async (food, freezerId, qty) => {
+    await transferFreezerItem(food, freezerId, qty);
   };
 
   const updateDialog = () => {
