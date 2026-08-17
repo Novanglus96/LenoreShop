@@ -97,6 +97,13 @@ Writes call `broadcast_invalidate([...])` (`backend/api/broadcast.py`) with the 
 - `ListItem` → joins `Item` + `Aisle` + `ShoppingList`
 - `Freezer` → many `FreezerItem`
 - `FreezerItem` → belongs to `Freezer`; carries its own free-text `name` rather than an `Item` FK, so one-off leftovers don't pollute the shopping catalog
+
+> A **partial freezer transfer** (`POST /api/freezeritems/{id}/transfer` with a
+> `qty` below the row's) splits off a new row that **shares** the source's
+> `image`/`thumbnail` path rather than copying the file. So a `FreezerItem`'s
+> photo is not necessarily its own — `delete_renditions` in `api/images.py`
+> checks `_still_referenced` before unlinking. Anything new that deletes image
+> files must do the same, or one row's removal blanks another's photo.
 - `Version` → singleton model
 
 ### Frontend Data Layer

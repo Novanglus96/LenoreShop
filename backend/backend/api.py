@@ -17,6 +17,7 @@ from ninja.errors import HttpError
 from django.core.management import call_command
 from datetime import date, timedelta
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import F, Count, Prefetch, Q
 
 api = NinjaAPI()
@@ -594,6 +595,57 @@ class FreezerItemOut(Schema):
             (str): The media path of the thumbnail, or None.
         """
         return image_path(obj.thumbnail)
+
+
+class FreezerItemUseIn(Schema):
+    """
+    Schema to validate taking some of a FreezerItem out of the freezer.
+
+    Attributes:
+        qty (int): How many to use. Default = 1.
+    """
+
+    qty: int = 1
+
+
+class FreezerItemTransferIn(Schema):
+    """
+    Schema to validate moving a FreezerItem to another freezer.
+
+    Attributes:
+        freezer_id (int): ID of the freezer to move the food into.
+        qty (int): How many to move. Default = None, meaning move all of them,
+            which relocates the row rather than splitting it.
+    """
+
+    freezer_id: int
+    qty: int = None
+
+
+class FreezerItemChangeOut(Schema):
+    """
+    Schema to report what a use or transfer did to a FreezerItem.
+
+    The caller cannot infer this from the request alone: using the last of
+    something removes its row, and transferring all of something moves the row
+    instead of creating one. The frontend needs to know which happened so it can
+    word the confirmation.
+
+    Attributes:
+        removed (bool): True if the source row no longer exists, because the
+            whole quantity was used or moved away.
+        remaining (int): How many are left on the source row. 0 when removed.
+        item (FreezerItemOut): The source row after the change, or None when it
+            was removed.
+        created (FreezerItemOut): The row created on the target freezer by a
+            partial transfer. None for a use, and None for a whole-row transfer
+            since that relocates the existing row.
+    """
+
+    removed: bool = False
+    remaining: int = 0
+    item: FreezerItemOut = None
+    created: FreezerItemOut = None
 
 
 class FreezerFull(Schema):
@@ -1934,6 +1986,156 @@ def update_freezeritem(request, freezeritem_id: int, payload: FreezerItemIn):
     # counts, so they go stale whenever an item is added, changed or removed.
     broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
     return {"success": True}
+
+
+@api.post("/freezeritems/{freezeritem_id}/use", response=FreezerItemChangeOut)
+def use_freezeritem(request, freezeritem_id: int, payload: FreezerItemUseIn):
+    """
+    The function `use_freezeritem` takes some of a FreezerItem out of the
+    freezer, removing the row once none are left.
+
+    The decrement-or-delete decision is made here rather than in the frontend so
+    it stays atomic: a client that read qty, subtracted and then chose between
+    PUT and DELETE can strand a row at qty 0 if the two calls straddle another
+    edit.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}/use`
+        - **Method**: `POST`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of the FreezerItem being used.
+        payload (FreezerItemUseIn): How many to use.
+
+    Returns:
+        (FreezerItemChangeOut): What happened to the row.
+
+    Raises:
+        HttpError: 400 if the quantity is not positive or exceeds what is
+            actually in the freezer.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    if payload.qty < 1:
+        raise HttpError(400, "Quantity to use must be at least 1.")
+    if payload.qty > freezeritem.qty:
+        # Deliberately an error rather than a clamp. Being asked to use more
+        # than exists means the client is working from a stale count, and
+        # quietly emptying the row would hide that.
+        raise HttpError(
+            400,
+            f"Only {freezeritem.qty} of {freezeritem.name} in the freezer.",
+        )
+
+    remaining = freezeritem.qty - payload.qty
+    if remaining == 0:
+        freezeritem.delete()
+        result = FreezerItemChangeOut(removed=True, remaining=0)
+    else:
+        freezeritem.qty = remaining
+        freezeritem.save()
+        result = FreezerItemChangeOut(
+            removed=False,
+            remaining=remaining,
+            item=FreezerItemOut.from_orm(freezeritem),
+        )
+
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    return result
+
+
+@api.post(
+    "/freezeritems/{freezeritem_id}/transfer", response=FreezerItemChangeOut
+)
+def transfer_freezeritem(
+    request, freezeritem_id: int, payload: FreezerItemTransferIn
+):
+    """
+    The function `transfer_freezeritem` moves a FreezerItem, or part of one, to
+    another freezer.
+
+    Moving the whole quantity relocates the existing row so its photo and
+    history follow it. Moving part of it splits off a new row on the target and
+    decrements the source. The split row **shares** the source's photo rather
+    than copying the file — see `_still_referenced` in `api/images.py` for the
+    guard that stops one row's deletion from blanking the other's picture.
+
+    A matching name already in the target freezer is left alone rather than
+    merged into: two batches of the same food usually have different discard
+    dates, and merging would have to silently discard one of them.
+
+    Endpoint:
+        - **Path**: `/api/freezeritems/{freezeritem_id}/transfer`
+        - **Method**: `POST`
+
+    Args:
+        request ():
+        freezeritem_id (int): ID of the FreezerItem being moved.
+        payload (FreezerItemTransferIn): Where to move it, and how many.
+
+    Returns:
+        (FreezerItemChangeOut): What happened to the row.
+
+    Raises:
+        HttpError: 400 if the quantity is not positive, exceeds what is in the
+            freezer, or the target freezer is the one it is already in.
+    """
+    freezeritem = get_object_or_404(FreezerItem, id=freezeritem_id)
+    target = get_object_or_404(Freezer, id=payload.freezer_id)
+
+    if target.id == freezeritem.freezer_id:
+        raise HttpError(400, f"{freezeritem.name} is already in {target.name}.")
+
+    # None means "all of them", which is the common case and saves the caller
+    # having to read the count back first.
+    qty = freezeritem.qty if payload.qty is None else payload.qty
+    if qty < 1:
+        raise HttpError(400, "Quantity to transfer must be at least 1.")
+    if qty > freezeritem.qty:
+        raise HttpError(
+            400,
+            f"Only {freezeritem.qty} of {freezeritem.name} in the freezer.",
+        )
+
+    if qty == freezeritem.qty:
+        freezeritem.freezer = target
+        freezeritem.save()
+        result = FreezerItemChangeOut(
+            removed=False,
+            remaining=freezeritem.qty,
+            item=FreezerItemOut.from_orm(freezeritem),
+        )
+    else:
+        with transaction.atomic():
+            created = FreezerItem.objects.create(
+                name=freezeritem.name,
+                qty=qty,
+                unit=freezeritem.unit,
+                date_added=freezeritem.date_added,
+                discard_date=freezeritem.discard_date,
+                notes=freezeritem.notes,
+                freezer=target,
+                # Same file, not a copy: it is the same food, and duplicating
+                # the bytes on every split would grow the media volume for no
+                # benefit.
+                image=freezeritem.image.name or "",
+                thumbnail=freezeritem.thumbnail.name or "",
+            )
+            freezeritem.qty -= qty
+            freezeritem.save()
+        result = FreezerItemChangeOut(
+            removed=False,
+            remaining=freezeritem.qty,
+            item=FreezerItemOut.from_orm(freezeritem),
+            created=FreezerItemOut.from_orm(created),
+        )
+
+    # "freezers" too: the freezer list carries the dashboard's item and expiry
+    # counts, so they go stale whenever an item is added, changed or removed.
+    broadcast_invalidate(["freezers", "freezeritems", "freezerfull"])
+    return result
 
 
 @api.delete("/freezeritems/{freezeritem_id}")

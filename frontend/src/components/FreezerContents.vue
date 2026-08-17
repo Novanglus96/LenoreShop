@@ -57,6 +57,18 @@
           </template>
           <v-list density="compact">
             <v-list-item
+              prepend-icon="mdi-silverware-fork-knife"
+              title="Use…"
+              @click="selectedUseItem(item)"
+            />
+            <v-list-item
+              prepend-icon="mdi-swap-horizontal"
+              title="Move…"
+              :disabled="freezers.length < 2"
+              @click="selectedTransferItem(item)"
+            />
+            <v-divider />
+            <v-list-item
               prepend-icon="mdi-pencil"
               title="Edit"
               @click="selectedItem(item)"
@@ -88,6 +100,23 @@
     :key="passedFormData.id"
   />
 
+  <FreezerItemUseForm
+    v-model="useDialog"
+    @use-freezer-item="useItem"
+    @update-dialog="closeUseDialog"
+    :passedFormData="passedActionData"
+    :key="`use-${passedActionData.id}`"
+  />
+
+  <FreezerItemTransferForm
+    v-model="transferDialog"
+    @transfer-freezer-item="transferItem"
+    @update-dialog="closeTransferDialog"
+    :freezers="freezers"
+    :passedFormData="passedActionData"
+    :key="`move-${passedActionData.id}`"
+  />
+
   <ConfirmDialog
     v-model="deleteDialog"
     title="Remove from freezer?"
@@ -108,6 +137,8 @@
   // totalexpiring count shown on the freezer cards.
   const SOON_DAYS = 14;
   import ConfirmDialog from "@/components/ConfirmDialog.vue";
+  import FreezerItemTransferForm from "@/components/FreezerItemTransferForm.vue";
+  import FreezerItemUseForm from "@/components/FreezerItemUseForm.vue";
   import ItemThumb from "@/components/ItemThumb.vue";
   const props = defineProps({
     freezeritems: {
@@ -120,7 +151,12 @@
     },
   });
 
-  const emit = defineEmits(["editFreezerItem", "deleteFreezerItem"]);
+  const emit = defineEmits([
+    "editFreezerItem",
+    "deleteFreezerItem",
+    "useFreezerItem",
+    "transferFreezerItem",
+  ]);
 
   const passedFormData = ref({
     id: 0,
@@ -137,8 +173,19 @@
     id: 0,
     name: null,
   });
+  // Shared by the use and move dialogs: both need the same handful of fields
+  // off the row, and only one of them is ever open.
+  const passedActionData = ref({
+    id: 0,
+    name: "",
+    qty: 1,
+    unit: null,
+    freezer_id: 0,
+  });
   const freezerItemFormDialog = ref(false);
   const deleteDialog = ref(false);
+  const useDialog = ref(false);
+  const transferDialog = ref(false);
 
   const hasItems = computed(() => (props.freezeritems?.length ?? 0) > 0);
 
@@ -177,6 +224,42 @@
   const deleteItem = async item => {
     emit("deleteFreezerItem", { id: item.id });
     deleteDialog.value = false;
+  };
+
+  const asActionData = item => ({
+    id: item.id,
+    name: item.name,
+    qty: item.qty,
+    unit: item.unit,
+    freezer_id: item.freezer_id,
+  });
+
+  const selectedUseItem = item => {
+    passedActionData.value = asActionData(item);
+    useDialog.value = true;
+  };
+
+  const selectedTransferItem = item => {
+    passedActionData.value = asActionData(item);
+    transferDialog.value = true;
+  };
+
+  const closeUseDialog = () => {
+    useDialog.value = false;
+  };
+
+  const closeTransferDialog = () => {
+    transferDialog.value = false;
+  };
+
+  const useItem = async (item, qty) => {
+    emit("useFreezerItem", item, qty);
+    useDialog.value = false;
+  };
+
+  const transferItem = async (item, freezerId, qty) => {
+    emit("transferFreezerItem", item, freezerId, qty);
+    transferDialog.value = false;
   };
 
   // A single unitless portion is the default and says nothing; anything else is

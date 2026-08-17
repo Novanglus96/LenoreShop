@@ -128,6 +128,64 @@ async function deleteFreezerItemFunction(deletedFreezerItem) {
 }
 
 /**
+ * Surfaces the backend's own message for a rejected use or transfer.
+ *
+ * These two endpoints reject with something the user can act on — "Only 3 of
+ * Chili in the freezer" — which is far more useful than the bare status code
+ * `handleApiError` shows. Anything else falls through to the usual handler.
+ *
+ * @param {Object} error The axios error.
+ * @param {string} message Prefix used when there is no detail to show.
+ */
+function handleFreezerActionError(error, message) {
+  const detail = error.response?.data?.detail;
+  if (!detail) {
+    handleApiError(error, message);
+    return;
+  }
+  useMainStore().showSnackbar(detail, "error");
+  throw error;
+}
+
+async function useFreezerItemFunction({ id, qty }) {
+  const mainstore = useMainStore();
+  try {
+    const response = await apiClient.post(`/freezeritems/${id}/use`, { qty });
+    mainstore.showSnackbar(
+      response.data.removed
+        ? "Used the last of it — removed from the freezer."
+        : `Used ${qty}. ${response.data.remaining} left.`,
+      "success",
+    );
+    return response.data;
+  } catch (error) {
+    handleFreezerActionError(error, "Food not used: ");
+  }
+}
+
+async function transferFreezerItemFunction({ id, freezer_id, qty, name }) {
+  const mainstore = useMainStore();
+  try {
+    // qty omitted entirely means "all of it", which relocates the row rather
+    // than splitting it. Sending null would fail schema validation.
+    const payload = qty == null ? { freezer_id } : { freezer_id, qty };
+    const response = await apiClient.post(
+      `/freezeritems/${id}/transfer`,
+      payload,
+    );
+    mainstore.showSnackbar(
+      response.data.created
+        ? `Moved ${qty} of ${name}. ${response.data.remaining} left behind.`
+        : `Moved ${name}.`,
+      "success",
+    );
+    return response.data;
+  } catch (error) {
+    handleFreezerActionError(error, "Food not moved: ");
+  }
+}
+
+/**
  * Uploads or clears a freezer item's photo.
  *
  * Separate from the item PUT because a file has to go up as multipart while the
@@ -244,6 +302,23 @@ export function useFreezerFull(freezerID) {
     onSuccess: invalidate,
   });
 
+  const useFreezerItemMutation = useMutation({
+    mutationFn: useFreezerItemFunction,
+    onSuccess: invalidate,
+  });
+
+  const transferFreezerItemMutation = useMutation({
+    mutationFn: transferFreezerItemFunction,
+    // A transfer changes two freezers, and `invalidate` is scoped to the one
+    // being viewed, so refresh the target's contents as well.
+    onSuccess: (data, variables) => {
+      invalidate();
+      queryClient.invalidateQueries({
+        queryKey: ["freezerfull", variables.freezer_id],
+      });
+    },
+  });
+
   // A photo is saved on its own request after the food itself, because a new
   // freezer item has no id to upload against until it has been created.
   // `image` is the ImagePicker's staged `{ file, remove }`.
@@ -269,12 +344,38 @@ export function useFreezerFull(freezerID) {
     deleteFreezerItemMutation.mutate(deletedFreezerItem);
   }
 
+  // Rejections are already reported to the user by the mutation function, so
+  // swallow them here rather than leaving an unhandled rejection behind.
+  async function useFreezerItem(freezerItem, qty) {
+    try {
+      await useFreezerItemMutation.mutateAsync({ id: freezerItem.id, qty });
+    } catch {
+      /* reported via snackbar */
+    }
+  }
+
+  // `qty` omitted moves the whole row.
+  async function transferFreezerItem(freezerItem, freezerId, qty) {
+    try {
+      await transferFreezerItemMutation.mutateAsync({
+        id: freezerItem.id,
+        freezer_id: freezerId,
+        qty,
+        name: freezerItem.name,
+      });
+    } catch {
+      /* reported via snackbar */
+    }
+  }
+
   return {
     freezerfull,
     isLoading,
     addFreezerItem,
     editFreezerItem,
     removeFreezerItem,
+    useFreezerItem,
+    transferFreezerItem,
   };
 }
 

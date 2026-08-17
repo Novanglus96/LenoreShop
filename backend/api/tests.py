@@ -918,3 +918,255 @@ class FreezerItemImageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         row = response.json()["freezeritems"][0]
         self.assertTrue(row["thumbnail_url"].startswith("/media/freezeritems/thumbs/"))
+
+
+class UseFreezerItemTests(TestCase):
+    """
+    Tests for taking food out of the freezer.
+    """
+
+    def setUp(self):
+        self.freezer = Freezer.objects.create(name="Garage")
+        self.freezeritem = FreezerItem.objects.create(
+            name="Chili", qty=3, freezer=self.freezer
+        )
+
+    def use(self, qty, freezeritem_id=None):
+        return self.client.post(
+            f"/api/freezeritems/{freezeritem_id or self.freezeritem.id}/use",
+            {"qty": qty},
+            content_type="application/json",
+        )
+
+    def test_using_some_leaves_the_rest_behind(self):
+        response = self.use(1)
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertFalse(body["removed"])
+        self.assertEqual(body["remaining"], 2)
+        self.assertEqual(body["item"]["qty"], 2)
+
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.qty, 2)
+
+    def test_using_the_last_of_it_removes_the_row(self):
+        response = self.use(3)
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body["removed"])
+        self.assertEqual(body["remaining"], 0)
+        self.assertIsNone(body["item"])
+
+        self.assertFalse(FreezerItem.objects.filter(id=self.freezeritem.id).exists())
+
+    def test_using_more_than_there_is_is_rejected(self):
+        response = self.use(4)
+
+        self.assertEqual(response.status_code, 400)
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.qty, 3)
+
+    def test_using_a_non_positive_quantity_is_rejected(self):
+        self.assertEqual(self.use(0).status_code, 400)
+        self.assertEqual(self.use(-1).status_code, 400)
+
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.qty, 3)
+
+    def test_using_defaults_to_one(self):
+        response = self.client.post(
+            f"/api/freezeritems/{self.freezeritem.id}/use",
+            {},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["remaining"], 2)
+
+    def test_using_a_missing_item_returns_404(self):
+        self.assertEqual(self.use(1, freezeritem_id=9999).status_code, 404)
+
+    def test_the_freezer_count_drops_when_the_row_goes(self):
+        self.use(3)
+        response = self.client.get("/api/freezers")
+
+        self.assertEqual(response.json()[0]["totalitems"], 0)
+
+
+class TransferFreezerItemTests(TestCase):
+    """
+    Tests for moving food between freezers, whole or split.
+    """
+
+    def setUp(self):
+        self.garage = Freezer.objects.create(name="Garage")
+        self.kitchen = Freezer.objects.create(name="Kitchen")
+        self.freezeritem = FreezerItem.objects.create(
+            name="Chili",
+            qty=5,
+            unit="bags",
+            notes="Extra hot",
+            discard_date=date.today() + timedelta(days=30),
+            freezer=self.garage,
+        )
+
+    def transfer(self, freezer_id, qty=None, freezeritem_id=None):
+        payload = {"freezer_id": freezer_id}
+        if qty is not None:
+            payload["qty"] = qty
+        return self.client.post(
+            f"/api/freezeritems/{freezeritem_id or self.freezeritem.id}/transfer",
+            payload,
+            content_type="application/json",
+        )
+
+    def test_transferring_all_moves_the_row_rather_than_splitting(self):
+        response = self.transfer(self.kitchen.id)
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIsNone(body["created"])
+        self.assertEqual(body["remaining"], 5)
+
+        self.assertEqual(FreezerItem.objects.count(), 1)
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.freezer_id, self.kitchen.id)
+
+    def test_omitting_the_quantity_transfers_all_of_it(self):
+        self.transfer(self.kitchen.id)
+
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.freezer_id, self.kitchen.id)
+        self.assertEqual(self.freezeritem.qty, 5)
+
+    def test_transferring_some_splits_off_a_new_row(self):
+        response = self.transfer(self.kitchen.id, qty=2)
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["remaining"], 3)
+        self.assertEqual(body["created"]["qty"], 2)
+        self.assertEqual(body["created"]["freezer_id"], self.kitchen.id)
+
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.qty, 3)
+        self.assertEqual(self.freezeritem.freezer_id, self.garage.id)
+
+    def test_the_split_row_inherits_the_details(self):
+        body = self.transfer(self.kitchen.id, qty=2).json()
+        created = FreezerItem.objects.get(id=body["created"]["id"])
+
+        self.assertEqual(created.name, self.freezeritem.name)
+        self.assertEqual(created.unit, self.freezeritem.unit)
+        self.assertEqual(created.notes, self.freezeritem.notes)
+        self.assertEqual(created.discard_date, self.freezeritem.discard_date)
+
+    def test_transferring_everything_by_number_still_moves_the_row(self):
+        response = self.transfer(self.kitchen.id, qty=5)
+
+        self.assertIsNone(response.json()["created"])
+        self.assertEqual(FreezerItem.objects.count(), 1)
+
+    def test_transferring_more_than_there_is_is_rejected(self):
+        response = self.transfer(self.kitchen.id, qty=6)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(FreezerItem.objects.count(), 1)
+        self.freezeritem.refresh_from_db()
+        self.assertEqual(self.freezeritem.qty, 5)
+
+    def test_transferring_to_the_same_freezer_is_rejected(self):
+        response = self.transfer(self.garage.id, qty=2)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(FreezerItem.objects.count(), 1)
+
+    def test_transferring_a_non_positive_quantity_is_rejected(self):
+        self.assertEqual(self.transfer(self.kitchen.id, qty=0).status_code, 400)
+        self.assertEqual(self.transfer(self.kitchen.id, qty=-1).status_code, 400)
+
+    def test_transferring_to_a_missing_freezer_returns_404(self):
+        self.assertEqual(self.transfer(9999, qty=1).status_code, 404)
+
+    def test_transferring_a_missing_item_returns_404(self):
+        response = self.transfer(self.kitchen.id, qty=1, freezeritem_id=9999)
+        self.assertEqual(response.status_code, 404)
+
+    def test_both_freezers_report_their_share_after_a_split(self):
+        self.transfer(self.kitchen.id, qty=2)
+        counts = {
+            f["name"]: f["totalitems"] for f in self.client.get("/api/freezers").json()
+        }
+
+        self.assertEqual(counts["Garage"], 1)
+        self.assertEqual(counts["Kitchen"], 1)
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class SplitFreezerItemPhotoTests(TestCase):
+    """
+    Tests that a partial transfer's shared photo survives either half going.
+
+    The split row points at the source's file rather than a copy, so the
+    post_delete cleanup has to check for siblings before unlinking — otherwise
+    using up one half blanks the picture on the other.
+    """
+
+    def setUp(self):
+        self.garage = Freezer.objects.create(name="Garage")
+        self.kitchen = Freezer.objects.create(name="Kitchen")
+        self.freezeritem = FreezerItem.objects.create(
+            name="Chili", qty=4, freezer=self.garage
+        )
+        self.client.post(
+            f"/api/freezeritems/{self.freezeritem.id}/image", {"image": upload()}
+        )
+        self.freezeritem.refresh_from_db()
+        self.stored = Path(settings.MEDIA_ROOT) / self.freezeritem.image.name
+
+    def split(self, qty=1):
+        body = self.client.post(
+            f"/api/freezeritems/{self.freezeritem.id}/transfer",
+            {"freezer_id": self.kitchen.id, "qty": qty},
+            content_type="application/json",
+        ).json()
+        return FreezerItem.objects.get(id=body["created"]["id"])
+
+    def test_the_split_row_shares_the_source_photo(self):
+        created = self.split()
+
+        self.assertEqual(created.image.name, self.freezeritem.image.name)
+        self.assertEqual(created.thumbnail.name, self.freezeritem.thumbnail.name)
+        self.assertTrue(self.stored.exists())
+
+    def test_using_up_the_source_keeps_the_shared_file(self):
+        created = self.split()
+
+        self.client.post(
+            f"/api/freezeritems/{self.freezeritem.id}/use",
+            {"qty": 3},
+            content_type="application/json",
+        )
+
+        self.assertFalse(FreezerItem.objects.filter(id=self.freezeritem.id).exists())
+        self.assertTrue(self.stored.exists())
+        self.assertEqual(
+            self.client.get(f"/api/freezeritems/{created.id}").json()["image_url"],
+            f"/media/{created.image.name}",
+        )
+
+    def test_the_last_row_holding_the_photo_does_delete_it(self):
+        created = self.split()
+
+        self.client.delete(f"/api/freezeritems/{self.freezeritem.id}")
+        self.assertTrue(self.stored.exists())
+
+        self.client.delete(f"/api/freezeritems/{created.id}")
+        self.assertFalse(self.stored.exists())
+
+    def test_an_unsplit_photo_is_still_deleted_with_its_row(self):
+        self.client.delete(f"/api/freezeritems/{self.freezeritem.id}")
+
+        self.assertFalse(self.stored.exists())
