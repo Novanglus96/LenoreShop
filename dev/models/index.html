@@ -1277,28 +1277,28 @@
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SingletonModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing a singleton model.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Override save method to validate only one instance exists.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;There is already one instance of this model&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">"There is already one instance of this model"</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SingletonModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Override delete method to block deletes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;You cannot delete this object&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">"You cannot delete this object"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1336,11 +1336,11 @@
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Override save method to validate only one instance exists.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;There is already one instance of this model&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">"There is already one instance of this model"</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SingletonModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1368,10 +1368,10 @@
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Override delete method to block deletes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;You cannot delete this object&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">"You cannot delete this object"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1451,20 +1451,20 @@
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Store</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing a Store.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name (CharField): The name of a store. Required. Unique.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The Store Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1524,10 +1524,10 @@
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The Store Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1634,25 +1634,25 @@
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Aisle</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing an aisle in a store.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name (CharField): The name of the Aisle.</span>
 <span class="sd">        order (IntegerField): The order of appearance for Aisle.</span>
 <span class="sd">        store (Store): An object respresenting a store.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
     <span class="n">order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">store</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Store</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The Aisle Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1711,11 +1711,11 @@
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The Aisle Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1868,7 +1868,7 @@ own.</p>
 <span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing an item.</span>
 
 <span class="sd">    Attributes:</span>
@@ -1881,7 +1881,7 @@ own.</p>
 <span class="sd">        thumbnail (ImageField): The downscaled rendition shown on list rows.</span>
 <span class="sd">            Written by the upload endpoint alongside `image`; never set on its</span>
 <span class="sd">            own.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">254</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1889,14 +1889,14 @@ own.</p>
     <span class="n">aisle</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="n">Aisle</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s2">&quot;items/&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">thumbnail</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s2">&quot;items/thumbs/&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s2">"items/"</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">thumbnail</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s2">"items/thumbs/"</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The Item Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1956,10 +1956,10 @@ own.</p>
 <span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The Item Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2053,23 +2053,23 @@ own.</p>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ShoppingList</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing a ShopingList object.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name (CharField): The name of the shopping list.</span>
 <span class="sd">        store (Store): An object representing a store.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
     <span class="n">store</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Store</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The ShoppingList Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2128,11 +2128,11 @@ own.</p>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The ShoppingList Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2293,7 +2293,7 @@ own.</p>
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ListItem</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing a ListItem object.</span>
 
 <span class="sd">    Attributes:</span>
@@ -2305,7 +2305,7 @@ own.</p>
 <span class="sd">        aisle (Aisle): An object representing an Aisle.</span>
 <span class="sd">        shopping_list (ShoppingList): An object representing a ShoppingList.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">qty</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">purchased</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -2318,10 +2318,10 @@ own.</p>
     <span class="n">shopping_list</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ShoppingList</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The ListItem Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -2381,10 +2381,10 @@ own.</p>
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The ListItem Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2478,22 +2478,22 @@ own.</p>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Freezer</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing a Freezer.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name (CharField): The name of the freezer. Required. Unique.</span>
-<span class="sd">        location (CharField): Where the freezer is, eg. &quot;Garage&quot;. Optional.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        location (CharField): Where the freezer is, eg. "Garage". Optional.</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The Freezer Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -2553,10 +2553,10 @@ own.</p>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The Freezer Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2785,17 +2785,17 @@ own.</p>
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FreezerItem</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing a frozen food stored in a Freezer.</span>
 
 <span class="sd">    Unlike ListItem, this does not reference the Item catalog. Freezer</span>
-<span class="sd">    contents are often one-off leftovers (&quot;chili, Nov 3&quot;) that would only</span>
+<span class="sd">    contents are often one-off leftovers ("chili, Nov 3") that would only</span>
 <span class="sd">    pollute the shopping list catalog if they were forced into it.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name (CharField): The name of the frozen food.</span>
 <span class="sd">        qty (IntegerField): How much is stored. Default = 1.</span>
-<span class="sd">        unit (CharField): The unit for qty, eg. &quot;lbs&quot;, &quot;bags&quot;. Optional.</span>
+<span class="sd">        unit (CharField): The unit for qty, eg. "lbs", "bags". Optional.</span>
 <span class="sd">        date_added (DateField): The date this was put in the freezer. Optional,</span>
 <span class="sd">            since food already in the freezer often has no date on it.</span>
 <span class="sd">        discard_date (DateField): The date this should be thrown out. Optional.</span>
@@ -2806,7 +2806,7 @@ own.</p>
 <span class="sd">        thumbnail (ImageField): The downscaled rendition shown on freezer rows.</span>
 <span class="sd">            Written by the upload endpoint alongside `image`; never set on its</span>
 <span class="sd">            own.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
     <span class="n">qty</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -2819,40 +2819,40 @@ own.</p>
     <span class="p">)</span>
     <span class="n">notes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">freezer</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Freezer</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s2">&quot;freezeritems/&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s2">"freezeritems/"</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">thumbnail</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span>
-        <span class="n">upload_to</span><span class="o">=</span><span class="s2">&quot;freezeritems/thumbs/&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">upload_to</span><span class="o">=</span><span class="s2">"freezeritems/thumbs/"</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;freezer&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"freezer"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">days_until_discard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (int): Days until discard_date, negative once past it. None if no</span>
 <span class="sd">                discard_date is set.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_date</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_date</span> <span class="o">-</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span><span class="o">.</span><span class="n">days</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (bool): True if the discard date has passed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">days</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">days_until_discard</span>
         <span class="k">return</span> <span class="n">days</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The FreezerItem Object name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freezer</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freezer</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2911,11 +2911,11 @@ own.</p>
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The FreezerItem Object name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freezer</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freezer</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3189,11 +3189,11 @@ and null for anything used up, thrown out or since deleted.</p>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FreezerLog</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing something that happened to a frozen food.</span>
 
-<span class="sd">    Answers &quot;what happened to that meatloaf?&quot; months later, so it is written to</span>
-<span class="sd">    be readable on its own: the food&#39;s name, its unit and the freezer names are</span>
+<span class="sd">    Answers "what happened to that meatloaf?" months later, so it is written to</span>
+<span class="sd">    be readable on its own: the food's name, its unit and the freezer names are</span>
 <span class="sd">    **copied in as text** rather than followed through a FK. A FreezerItem is</span>
 <span class="sd">    deleted the moment the last of it is used, which is precisely when its log</span>
 <span class="sd">    entries become interesting, so a cascade would erase the answer along with</span>
@@ -3204,7 +3204,7 @@ and null for anything used up, thrown out or since deleted.</p>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        action (CharField): What happened — one of ACTION_CHOICES.</span>
-<span class="sd">        name (CharField): The food&#39;s name when the event happened.</span>
+<span class="sd">        name (CharField): The food's name when the event happened.</span>
 <span class="sd">        qty (IntegerField): How many the event concerned. For a use or a move</span>
 <span class="sd">            this is the number used or moved, not the number remaining.</span>
 <span class="sd">        unit (CharField): The unit for qty, copied from the food. Optional.</span>
@@ -3215,18 +3215,18 @@ and null for anything used up, thrown out or since deleted.</p>
 <span class="sd">        freezeritem (FreezerItem): The food, while it still exists. Optional,</span>
 <span class="sd">            and null for anything used up, thrown out or since deleted.</span>
 <span class="sd">        occurred (DateTimeField): When it happened. Set once, on write.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">ACTION_ADDED</span> <span class="o">=</span> <span class="s2">&quot;added&quot;</span>
-    <span class="n">ACTION_USED</span> <span class="o">=</span> <span class="s2">&quot;used&quot;</span>
-    <span class="n">ACTION_MOVED</span> <span class="o">=</span> <span class="s2">&quot;moved&quot;</span>
-    <span class="n">ACTION_DISCARDED</span> <span class="o">=</span> <span class="s2">&quot;discarded&quot;</span>
+    <span class="n">ACTION_ADDED</span> <span class="o">=</span> <span class="s2">"added"</span>
+    <span class="n">ACTION_USED</span> <span class="o">=</span> <span class="s2">"used"</span>
+    <span class="n">ACTION_MOVED</span> <span class="o">=</span> <span class="s2">"moved"</span>
+    <span class="n">ACTION_DISCARDED</span> <span class="o">=</span> <span class="s2">"discarded"</span>
 
     <span class="n">ACTION_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="n">ACTION_ADDED</span><span class="p">,</span> <span class="s2">&quot;Added&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">ACTION_USED</span><span class="p">,</span> <span class="s2">&quot;Used&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">ACTION_MOVED</span><span class="p">,</span> <span class="s2">&quot;Moved&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">ACTION_DISCARDED</span><span class="p">,</span> <span class="s2">&quot;Thrown out&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ACTION_ADDED</span><span class="p">,</span> <span class="s2">"Added"</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ACTION_USED</span><span class="p">,</span> <span class="s2">"Used"</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ACTION_MOVED</span><span class="p">,</span> <span class="s2">"Moved"</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ACTION_DISCARDED</span><span class="p">,</span> <span class="s2">"Thrown out"</span><span class="p">),</span>
     <span class="p">]</span>
 
     <span class="n">action</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">ACTION_CHOICES</span><span class="p">)</span>
@@ -3247,17 +3247,17 @@ and null for anything used up, thrown out or since deleted.</p>
         <span class="c1"># Newest first, with id breaking ties: several entries can share a</span>
         <span class="c1"># timestamp, and without the tiebreak their order is undefined and the</span>
         <span class="c1"># history page shuffles between reads.</span>
-        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-occurred&quot;</span><span class="p">,</span> <span class="s2">&quot;-id&quot;</span><span class="p">]</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"-occurred"</span><span class="p">,</span> <span class="s2">"-id"</span><span class="p">]</span>
         <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="c1"># The history page&#39;s two access patterns: the unfiltered feed, and</span>
+            <span class="c1"># The history page's two access patterns: the unfiltered feed, and</span>
             <span class="c1"># a name search.</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-occurred&quot;</span><span class="p">]),</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">"-occurred"</span><span class="p">]),</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]),</span>
         <span class="p">]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">freezeritem</span><span class="p">,</span> <span class="n">qty</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freezer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_freezer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes one entry for something that just happened to a food.</span>
 
 <span class="sd">        Called from the API handlers rather than a post_delete signal, so that a</span>
@@ -3269,23 +3269,23 @@ and null for anything used up, thrown out or since deleted.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            action (str): One of the ACTION_* values.</span>
 <span class="sd">            freezeritem (FreezerItem): The food the event concerns.</span>
-<span class="sd">            qty (int): How many the event concerned. Defaults to the food&#39;s</span>
-<span class="sd">                whole quantity, which is what &quot;added&quot; and &quot;thrown out&quot; mean.</span>
+<span class="sd">            qty (int): How many the event concerned. Defaults to the food's</span>
+<span class="sd">                whole quantity, which is what "added" and "thrown out" mean.</span>
 <span class="sd">            freezer (Freezer): The freezer it happened in. Defaults to the</span>
-<span class="sd">                food&#39;s own, which is wrong once a move has reassigned it — pass</span>
+<span class="sd">                food's own, which is wrong once a move has reassigned it — pass</span>
 <span class="sd">                the source explicitly there.</span>
 <span class="sd">            to_freezer (Freezer): Where a move sent it.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (FreezerLog): The entry written.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">source</span> <span class="o">=</span> <span class="n">freezer</span> <span class="ow">or</span> <span class="n">freezeritem</span><span class="o">.</span><span class="n">freezer</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">freezeritem</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">qty</span><span class="o">=</span><span class="n">freezeritem</span><span class="o">.</span><span class="n">qty</span> <span class="k">if</span> <span class="n">qty</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">qty</span><span class="p">,</span>
             <span class="n">unit</span><span class="o">=</span><span class="n">freezeritem</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
-            <span class="n">freezer_name</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">source</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">freezer_name</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">source</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
             <span class="n">to_freezer_name</span><span class="o">=</span><span class="n">to_freezer</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">to_freezer</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">freezer</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
             <span class="c1"># A row being used up is deleted right after this is written, which</span>
@@ -3294,11 +3294,11 @@ and null for anything used up, thrown out or since deleted.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The FreezerLog Object description.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">occurred</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">occurred</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3357,11 +3357,11 @@ and null for anything used up, thrown out or since deleted.</p>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The FreezerLog Object description.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">occurred</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">occurred</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3418,20 +3418,20 @@ and null for anything used up, thrown out or since deleted.</p>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Version</span><span class="p">(</span><span class="n">SingletonModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model representing app version.</span>
 
 <span class="sd">    Fields:</span>
 <span class="sd">    - version_number (CharField): The current version of the app.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">version_number</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            (String): The version number.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_number</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -3491,10 +3491,10 @@ and null for anything used up, thrown out or since deleted.</p>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (String): The version number.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_number</span>
 </code></pre></div></td></tr></table></div>
             </details>
