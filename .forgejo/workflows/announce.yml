@@ -7,6 +7,7 @@ on:
       tag:
         description: "Release tag to announce (e.g. v1.8.1)"
         required: true
+        type: string
 jobs:
   # Reddit only. Unlike LenoreFin this repo has no scripts/post_to_patreon.py
   # and never had a Patreon job — just as well, since Patreon's public API v2

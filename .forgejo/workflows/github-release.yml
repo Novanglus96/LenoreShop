@@ -13,6 +13,7 @@ on:
       tag:
         description: "Release tag to publish to GitHub (e.g. v1.8.1)"
         required: true
+        type: string
 jobs:
   github-release:
     uses: lenore/lenore-ci/.forgejo/workflows/github-release.yml@v1
